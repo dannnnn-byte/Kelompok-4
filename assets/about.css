@@ -1,0 +1,168 @@
+/* 🌿 ======= HALAMAN PARIWISATA MODERN ======= */
+
+/* Reset dasar */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Warna tema */
+:root {
+    --primary: #009970;
+    --secondary: #00c48c;
+    --light-bg: #f9f9f9;
+    --text-dark: #333;
+}
+
+/* Hero Section */
+.hero-pariwisata {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    text-align: center;
+    padding: 100px 20px;
+    border-radius: 0 0 40px 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+}
+
+.hero-pariwisata h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.hero-pariwisata p {
+    font-size: 1.1rem;
+    margin-top: 12px;
+    opacity: 0.9;
+}
+
+/* Sejarah Section */
+.sejarah {
+    padding: 80px 10%;
+    background-color: #fff;
+    line-height: 1.8;
+    color: var(--text-dark);
+    animation: slideUp 0.8s ease-in-out;
+}
+
+.sejarah h2 {
+    color: var(--primary);
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.sejarah p {
+    margin-bottom: 18px;
+    text-align: justify;
+    font-size: 1rem;
+}
+
+/* Destinasi Section */
+.destinasi {
+    background-color: var(--light-bg);
+    padding: 80px 8%;
+    text-align: center;
+}
+
+.destinasi h2 {
+    color: var(--primary);
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 40px;
+}
+
+/* Gallery grid modern */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    justify-content: center;
+    align-items: stretch;
+}
+
+/* Card */
+.card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Gambar destinasi */
+.card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+/* Overlay teks */
+.overlay {
+    padding: 20px;
+    text-align: left;
+}
+
+.overlay h3 {
+    color: var(--primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.overlay p {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+/* Animasi halus */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .hero-pariwisata h1 {
+        font-size: 2.2rem;
+    }
+    .sejarah, .destinasi {
+        padding: 50px 6%;
+    }
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-link:hover .card {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.card {
+    cursor: pointer;
+    transition: 0.3s;
+}

@@ -1,0 +1,147 @@
+.destination-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.dest-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 25px;
+  height: 420px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: 0.3s ease;
+}
+
+.dest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+}
+
+.dest-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dest-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 25px;
+  color: white;
+  background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0));
+}
+
+.dest-category {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.dest-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-top: 3px;
+  margin-bottom: 15px;
+}
+
+.dest-btn {
+  background: #2f7043;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.dest-btn:hover {
+  background: #00b050;
+}
+
+.destination-section {
+  position: relative;
+  padding: 100px 0;
+}
+
+/* Background full dengan gambar + blur */
+.destination-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  /* GANTI dengan gambar background yang kamu mau */
+ background-image: url('../img/back.JPG'); /* sesuaikan path */
+
+  filter: blur(8px) brightness(0.95);
+  opacity: 0.7;      /* bisa kamu turunkan/naikkan */
+  z-index: -1;
+}
+
+/* Bungkus untuk agar card tetap tajam */
+.destination-wrapper {
+  position: relative;
+  z-index: 5;
+}
+
+/* Kartu lebih kecil */
+.dest-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;      /* diperkecil */
+  height: 260px;            /* ukuran kecil */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  transition: 0.3s ease;
+}
+
+.dest-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+}
+
+/* Gambar menyesuaikan ukuran baru */
+.dest-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay disesuaikan untuk tinggi kecil */
+.dest-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 15px;          /* diperkecil */
+  background: linear-gradient(to top, rgba(0,0,0,0.70), rgba(0,0,0,0));
+  color: #fff;
+}
+
+/* Teks kategori */
+.dest-category {
+  font-size: 10px;         /* lebih kecil */
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* Judul */
+.dest-title {
+  font-size: 20px;         /* lebih kecil */
+  font-weight: 700;
+  margin: 2px 0 10px 0;
+}
+
+/* Tombol */
+.dest-btn {
+  background: #2f7043;
+  color: white;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;         /* diperkecil */
+  text-decoration: none;
+  font-weight: 600;
+}

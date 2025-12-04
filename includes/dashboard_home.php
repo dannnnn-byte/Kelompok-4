@@ -72,3 +72,26 @@ ini_set('display_errors', 1);
       <li><a href="login.php">Login</a></li>
   </ul>
 </nav>
+
+<script>
+  // Ambil elemen checkbox
+  const menuCheckbox = document.getElementById('toggle-menu');
+
+  // FUNGSI 1: Cek memori saat halaman dimuat
+  // Jika sebelumnya statusnya 'open', maka centang checkbox secara otomatis
+  if (localStorage.getItem('sidebarStatus') === 'open') {
+    menuCheckbox.checked = true;
+  }
+
+  // FUNGSI 2: Simpan status setiap kali checkbox berubah
+  menuCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+      // Jika dicentang (terbuka), simpan status 'open'
+      localStorage.setItem('sidebarStatus', 'open');
+    } else {
+      // Jika tidak dicentang (tertutup), simpan status 'closed'
+      localStorage.setItem('sidebarStatus', 'closed');
+    }
+  });
+</script>
+<label for="toggle-menu" class="close-btn">&times;</label>

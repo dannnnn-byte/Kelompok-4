@@ -208,14 +208,9 @@ html, body {
 @media (min-width: 992px) {
   /* On large screens: show sidebar permanently and push content */
   .side-menu {
-    left: 0;
     position: fixed;
     top: 0;
     z-index: 1200; /* higher than navbar (1100) */
-  }
-
-  body {
-    padding-left: 240px; /* space for permanent sidebar */
   }
 
   main, .container, section {
@@ -224,6 +219,24 @@ html, body {
 
   /* hide hamburger on desktop */
   .menu-icon {
-    display: none;
+    display: flex;
+  }
+
+  #toggle-menu:checked ~ .main-content {
+    margin-left: 240px; /* Samakan dengan width sidebar kamu */
   }
 }
+
+.main-content {
+  transition: margin-left 0.35s ease; /* Kecepatan animasi mengikuti sidebar */
+  width: 100%;
+}
+
+/* 3. Logika Mobile (Layar < 992px) */
+@media (max-width: 991px) {
+  /* Di HP jangan digeser, biarkan sidebar menimpa layar agar tidak sempit */
+  #toggle-menu:checked ~ .main-content {
+    margin-left: 0;
+  }
+}
+

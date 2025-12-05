@@ -171,7 +171,7 @@
 
    <div class="promo-container">
 
-    <a href="destinasi_detail.php?kota=Batu" class="promo-link">
+    <a href="batu.php?kota=Batu" class="promo-link">
         <div class="promo-card">
             <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
@@ -185,14 +185,14 @@
         </div>
     </a>
 
-    <a href="destinasi_detail.php?kota=Ijen" class="promo-link">
+    <a href="lumajang.php?kota=Ijen" class="promo-link">
         <div class="promo-card">
             <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
-                <img src="img/ijen2.jpg" alt="Kawah Ijen Tour">
+                <img src="img/lumajang.webp" alt="Lumajang">
             </div>
             <div class="promo-info">
-                <h5>Kawah Ijen Blue Fire</h5>
+                <h5>Lumajang</h5>
                 <p>Private Trip • 10 Jan 2026</p>
                 <p class="promo-price">Rp 450.000</p>
             </div>

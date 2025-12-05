@@ -1,38 +1,64 @@
-/* Sidebar */
+/* ============================= */
+/* DASHBOARD SIDEBAR TOGGLE */
+/* ============================= */
+
+/* Reset body/html margin to eliminate whitespace */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide the checkbox */
+#toggle-menu {
+  display: none;
+}
+
+/* Hide hamburger when menu open */
+#toggle-menu:checked + .menu-icon {
+  display: none;
+}
+
+/* ============================= */
+/* SIDEBAR */
+/* ============================= */
+
 .side-menu {
-    /* ... (CSS Anda yang lain) ... */
-    /* Warna latar belakang cerah membuat teks hitam terlihat jelas */
-    background: rgba(255,255,255,0.9);
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 240px;                 /* sedikit lebih kecil */
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 30px 20px;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+  transition: left 0.35s ease;
+  z-index: 1199;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;             /* agar bisa di-scroll */
 }
 
-/* 1. Teks Menu Utama (Beranda, Paket Wisata, dll.) */
-.side-menu ul li a {
-    text-decoration: none;
-    color: #333; /* Font hitam untuk tautan normal */
-    font-weight: 600;
-    /* ... (CSS Anda yang lain) ... */
+/* Sidebar slide open */
+#toggle-menu:checked ~ .side-menu {
+  left: 0;
 }
 
-/* 2. Tombol Dropdown (Rekomendasi Wisata) */
-.side-menu .accordion-button {
-    background: transparent;
-    color: #333; /* Font hitam untuk tombol dropdown */
-    border: none;
-    text-align: left;
-    padding: 8px 10px;
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 30px;
+  color: #00b050;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-/* 3. Dropdown Menu Items (Bromo, Tumpak Sewu, dll.) */
-.side-menu .dropdown-menu .dropdown-item {
-    color: #333; /* Font hitam untuk item di dalam dropdown */
+.close-btn:hover {
+  transform: rotate(90deg);
+  color: #ff4444;
 }
-<<<<<<< HEAD
-/* Pastikan saat hover warna font berubah menjadi putih agar kontras */
-.side-menu .dropdown-menu .dropdown-item:hover {
-    background-color: #00b050;
-    color: white; /* Font putih saat hover */
-}
-=======
 
 /* ============================= */
 /* LOGO */
@@ -185,7 +211,6 @@
     position: fixed;
     top: 0;
     z-index: 1200; /* higher than navbar (1100) */
-    right: auto;
   }
 
   main, .container, section {
@@ -215,4 +240,3 @@
   }
 }
 
->>>>>>> 48a93e59853f4d27bd929525f36fcb5d0a4f2ef4

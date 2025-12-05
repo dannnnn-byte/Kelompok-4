@@ -1,4 +1,7 @@
 <?php include 'includes/header.php'; ?>
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/dashboard_home.php'; ?>
+
 
 <?php  
 $kota = $_GET['kota'] ?? '';
@@ -46,7 +49,7 @@ $tempat = [
                         <h5 class="fw-bold"><?= $p[0] ?></h5>
                         <p class="mb-0 mt-3" style="font-size: 13px;"><i>Start from</i></p>
                         <p class="fw-bold"><?= $p[1] ?></p>
-                        <a href="lengkap.php" class="btn w-100" style="background: #CDAA7D;">Lihat Paket</a>
+                        <a href="wisatamalang.php" class="btn w-100" style="background: #CDAA7D;">Lihat Paket</a>
                     </div>
                 </div>
             </div>

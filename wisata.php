@@ -21,7 +21,7 @@
         foreach ($destinasi as $d) {
           echo "
           <div class='col-md-3'>
-            <a href='destinasi_detail.php?kota={$d[0]}' style='text-decoration:none; color:black;'>
+            <a href='batu.php?kota={$d[0]}' style='text-decoration:none; color:black;'>
               <div class='card h-100 shadow-sm'>
                 <img src='{$d[1]}' class='card-img-top' style='height:250px; object-fit:cover;'>
                 <div class='card-body text-center' style='background: #145C43; color: white;'>

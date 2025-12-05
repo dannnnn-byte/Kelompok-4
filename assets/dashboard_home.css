@@ -211,6 +211,7 @@ html, body {
     position: fixed;
     top: 0;
     z-index: 1200; /* higher than navbar (1100) */
+    right: auto;
   }
 
   main, .container, section {

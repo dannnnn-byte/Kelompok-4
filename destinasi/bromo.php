@@ -1,6 +1,52 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+/* ========================
+   KONEKSI DATABASE
+======================== */
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "jawatrip";
+
+$conn = new mysqli($host, $user, $pass, $db);
+
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+
+/* ========================
+   TEMPAT / DESTINASI
+======================== */
+$tempat = "bromo";
+
+/* ========================
+   SIMPAN REVIEW (POST)
+======================== */
+if (isset($_POST["submit_review"])) {
+
+    $nama     = $_POST["nama"];
+    $rating   = $_POST["rating"];
+    $komentar = $_POST["komentar"];
+
+    $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?,?,?,?)");
+    $stmt->bind_param("ssis", $tempat, $nama, $rating, $komentar);
+    $stmt->execute();
+    $stmt->close();
+
+    echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.');</script>";
+}
+
+/* ========================
+   AMBIL DATA REVIEW
+======================== */
+$reviews = [];
+$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY id DESC");
+
+while ($row = $result->fetch_assoc()) {
+    $reviews[] = $row;
+}
 ?>
 
 <!DOCTYPE html>
@@ -261,6 +307,33 @@ section.sejarah-bromo img {
         flex-direction: column;
     }
 }
+
+.review-section {
+    margin-top: 50px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+.review-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffdd57;
+    margin-bottom: 25px;
+}
+.review-card {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.review-stars {
+    color: #ffd700;
+    margin-bottom: 10px;
+}
 </style>
 </head>
 <body>
@@ -393,6 +466,64 @@ section.sejarah-bromo img {
   </div>
 
   <div id="map"></div>
+
+  <!-- ================= FORM REVIEW ================= -->
+<h4 class="text-white mt-5">Tambah Ulasan</h4>
+
+<form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
+
+    <div class="mb-3">
+        <label class="text-white">Nama Anda</label>
+        <input type="text" name="nama" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="text-white">Rating</label>
+        <select name="rating" class="form-control" required>
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★☆ (4)</option>
+            <option value="3">★★★☆☆ (3)</option>
+            <option value="2">★★☆☆☆ (2)</option>
+            <option value="1">★☆☆☆☆ (1)</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="text-white">Komentar</label>
+        <textarea name="komentar" class="form-control" rows="3" required></textarea>
+    </div>
+
+    <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
+        Kirim Ulasan
+    </button>
+</form>
+
+<!-- ================= TAMPILKAN REVIEW ================= -->
+<section class="review-section">
+    <h2 class="review-title">Ulasan Pengunjung</h2>
+
+    <?php if (count($reviews) === 0): ?>
+
+        <p class="text-white">Belum ada ulasan. Jadilah yang pertama!</p>
+
+    <?php else: ?>
+
+        <?php foreach ($reviews as $r): ?>
+            <div class="review-card">
+                <h5><?= htmlspecialchars($r['nama']) ?></h5>
+
+                <div class="review-stars">
+                    <?= str_repeat("★", $r['rating']); ?>
+                    <?= str_repeat("☆", 5 - $r['rating']); ?>
+                </div>
+
+                <p><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
+                <small><?= $r['created_at'] ?></small>
+            </div>
+        <?php endforeach; ?>
+
+    <?php endif; ?>
+</section>
 
 </main>
 

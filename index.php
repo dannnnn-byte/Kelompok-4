@@ -85,117 +85,150 @@
       </div>
     </section>
 
-    <style>
-    .promo-section { padding: 50px 0; }
-    .promo-title { font-size: 32px; font-weight: 800; color: #28a745; }
-    .promo-container { display: flex; overflow-x: auto; gap: 25px; padding-bottom: 15px; }
-    .promo-card { min-width: 320px; background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.12); transition: .2s; }
-    .promo-link { text-decoration: none; color: inherit; display: block; }
-    .promo-card:hover { transform: translateY(-5px); }
-    .promo-img img { width: 100%; height: 220px; object-fit: cover; }
-    .promo-tag { position: absolute; background: black; color: white; padding: 6px 14px; font-size: 13px; font-weight: 700; top: 10px; left: 10px; border-radius: 6px; }
-    .promo-img { position: relative; }
-    .promo-info { padding: 18px; }
-    .promo-price { color: #ff4500; font-weight: 800; font-size: 20px; }
-    </style>
+   <style>
+.promo-section { padding: 50px 0; }
+.promo-title { font-size: 32px; font-weight: 800; color: #28a745; }
 
-    <section class="promo-section">
-      <div class="container">
-        <h2 class="promo-title">Promo Paket Wisata Domestik Murah! 🌴✈️</h2>
-        <div class="promo-container">
-          <a href="destinasi/bromo.php" class="promo-link">
-            <div class="promo-card">
-              <div class="promo-img">
+/* Container Scroll */
+.promo-container {
+    display: flex;
+    gap: 25px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+}
+
+/* Card */
+.promo-card {
+    min-width: 320px;
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transition: .25s ease;
+    scroll-snap-align: start;
+}
+
+.promo-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.promo-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+}
+
+/* Image */
+.promo-img {
+    position: relative;
+}
+
+.promo-img img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+.promo-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #111;
+    color: white;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px;
+}
+
+/* Info */
+.promo-info {
+    padding: 18px 20px;
+}
+
+.promo-info h5 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.promo-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.promo-price {
+    margin-top: 10px;
+    color: #ff4500;
+    font-weight: 800;
+    font-size: 20px;
+}
+</style>
+
+   <div class="promo-container">
+
+    <a href="destinasi_detail.php?kota=Batu" class="promo-link">
+        <div class="promo-card">
+            <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
-                <img src="img/bromo4.jpg" alt="Bromo Tour">
-              </div>
-              <div class="promo-info">
-                <h5>Bromo Sunrise Tour</h5>
+                <img src="img/batu.webp" alt="Batu Tour">
+            </div>
+            <div class="promo-info">
+                <h5>BATU - MALANG</h5>
                 <p>Open Trip • 9 Mar 2026</p>
                 <p class="promo-price">Rp 350.000</p>
-              </div>
             </div>
-          </a>
+        </div>
+    </a>
 
-          <a href="destinasi/kawahijen.php" class="promo-link">
-            <div class="promo-card">
-              <div class="promo-img">
+    <a href="destinasi_detail.php?kota=Ijen" class="promo-link">
+        <div class="promo-card">
+            <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
                 <img src="img/ijen2.jpg" alt="Kawah Ijen Tour">
-              </div>
-              <div class="promo-info">
+            </div>
+            <div class="promo-info">
                 <h5>Kawah Ijen Blue Fire</h5>
                 <p>Private Trip • 10 Jan 2026</p>
                 <p class="promo-price">Rp 450.000</p>
-              </div>
             </div>
-          </a>
+        </div>
+    </a>
 
-          <a href="destinasi/tumpaksewu.php" class="promo-link">
-            <div class="promo-card">
-              <div class="promo-img">
+    <a href="destinasi_detail.php?kota=TumpakSewu" class="promo-link">
+        <div class="promo-card">
+            <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
                 <img src="img/tumpaksewu.jpg" alt="Tumpak Sewu">
-              </div>
-              <div class="promo-info">
+            </div>
+            <div class="promo-info">
                 <h5>Tumpak Sewu Waterfall</h5>
                 <p>Open Trip • 5 Feb 2026</p>
                 <p class="promo-price">Rp 300.000</p>
-              </div>
             </div>
-          </a>
+        </div>
+    </a>
 
-          <a href="destinasi/museumangkut.php" class="promo-link">
-            <div class="promo-card">
-              <div class="promo-img">
+    <a href="destinasi_detail.php?kota=MuseumAngkut" class="promo-link">
+        <div class="promo-card">
+            <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
                 <img src="img/angkut.webp" alt="Museum Angkut">
-              </div>
-              <div class="promo-info">
+            </div>
+            <div class="promo-info">
                 <h5>Museum Angkut Malang</h5>
                 <p>Wisata Keluarga</p>
                 <p class="promo-price">Rp 120.000</p>
-              </div>
             </div>
-          </a>
         </div>
-      </div>
-    </section>
+    </a>
 
-    <section class="why-jawatrip py-5">
-      <div class="container">
-        <h2 class="text-center fw-bold text-success mb-5">Kenapa Harus <span class="text-warning">JawaTrip</span>?</h2>
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="card h-100 text-center shadow-sm border-0">
-              <img src="img/paketbromo.jpg" class="card-img-top" alt="Paket Wisata">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold">Paket Wisata Lengkap</h5>
-                <p>Transportasi, akomodasi, hingga tour guide profesional.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card h-100 text-center shadow-sm border-0">
-              <img src="img/tourguide.jpg" class="card-img-top" alt="Tour Guide">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold">Tour Guide Berpengalaman</h5>
-                <p>Guide ramah dan berpengalaman menemani perjalanan Anda.</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card h-100 text-center shadow-sm border-0">
-              <img src="img/liburan.jpg" class="card-img-top" alt="Liburan Tanpa Ribet">
-              <div class="card-body">
-                <h5 class="card-title fw-semibold">Liburan Tanpa Ribet</h5>
-                <p>Cukup nikmati perjalanan, semua itinerary kami siapkan.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+</div>
+
 
     <?php include 'includes/footer.php'; ?>
 

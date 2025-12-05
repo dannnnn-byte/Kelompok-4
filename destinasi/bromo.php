@@ -199,7 +199,7 @@ nav.navbar { z-index: 1100; }
 .main-content {
     margin-left: 0;
     padding: 40px;
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.35s ease;
     background-image: url('../img/back.JPG'); 
     background-size: cover;
     background-position: center;
@@ -209,6 +209,7 @@ nav.navbar { z-index: 1100; }
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     color: #fff; 
     font-weight: 700;
+    width: 100%;
 }
 
 /* Section Sejarah Bromo */
@@ -401,36 +402,105 @@ section.sejarah-bromo img {
   </ul>
 </nav>
 
-<main class="main-content">
+<div class="main-content">
 
- <header class="text-center mb-5 main-header">
-  <h1>Gunung Bromo</h1>
-  <p>Eksotisme Gunung Berapi Jawa Timur</p>
-</header>
+  <header class="text-center mb-5 main-header">
+    <h1>Gunung Bromo</h1>
+    <p>Eksotisme Gunung Berapi Jawa Timur</p>
+  </header>
 
 
-  <section class="sejarah-bromo mt-4">
-    <div class="content row align-items-center">
-      <div class="col-md-6">
-        <h3>Sejarah & Latar Belakang Gunung Bromo</h3>
-        <p>
-          Gunung Bromo, bagian dari Taman Nasional Bromo Tengger Semeru di Jawa Timur, adalah salah satu ikon alam Indonesia yang paling terkenal.
-          Nama “Bromo” berasal dari kata Brahma, dewa Hindu, karena masyarakat Tengger yang mendiami daerah ini menganut kepercayaan Hindu sejak ratusan tahun.
-          Gunung Bromo dikenal aktif secara vulkanik, dengan kawah yang selalu mengepulkan asap tipis, dan menjadi pusat upacara Kasada,
-          tradisi tahunan untuk menghormati para leluhur dengan mempersembahkan sesaji ke kawah gunung.
-        </p>
-        <p>
-          Kawasan Bromo memiliki nilai historis dan budaya yang tinggi, sekaligus menyuguhkan lanskap alam yang memukau—lautan pasir, sunrise spektakuler,
-          dan pemandangan Gunung Semeru di kejauhan. Sejak zaman kolonial Belanda, Bromo telah menjadi tujuan wisata sekaligus penelitian vulkanologi,
-          menarik wisatawan dari seluruh dunia.
-        </p>
+    <section class="sejarah-bromo mt-4">
+      <div class="content row align-items-center">
+        <div class="col-md-6">
+          <h3>Sejarah & Latar Belakang Gunung Bromo</h3>
+          <p>
+            Gunung Bromo, bagian dari Taman Nasional Bromo Tengger Semeru di Jawa Timur, adalah salah satu ikon alam Indonesia yang paling terkenal.
+            Nama “Bromo” berasal dari kata Brahma, dewa Hindu, karena masyarakat Tengger yang mendiami daerah ini menganut kepercayaan Hindu sejak ratusan tahun.
+            Gunung Bromo dikenal aktif secara vulkanik, dengan kawah yang selalu mengepulkan asap tipis, dan menjadi pusat upacara Kasada,
+            tradisi tahunan untuk menghormati para leluhur dengan mempersembahkan sesaji ke kawah gunung.
+          </p>
+          <p>
+            Kawasan Bromo memiliki nilai historis dan budaya yang tinggi, sekaligus menyuguhkan lanskap alam yang memukau—lautan pasir, sunrise spektakuler,
+            dan pemandangan Gunung Semeru di kejauhan. Sejak zaman kolonial Belanda, Bromo telah menjadi tujuan wisata sekaligus penelitian vulkanologi,
+            menarik wisatawan dari seluruh dunia.
+          </p>
+        </div>
+        <div class="col-md-6 text-center">
+          <img src="../img/bromo2.jpg" alt="Gunung Bromo">
+        </div>
       </div>
-      <div class="col-md-6 text-center">
-        <img src="../img/bromo2.jpg" alt="Gunung Bromo">
-      </div>
+    </section>
+
+    <div class="map-info">
+      <h4>Gunung Bromo</h4>
+      <p>Taman Nasional Bromo Tengger Semeru</p>
+      <p>Ketinggian: 2.329 mdpl</p>
+      <p>Provinsi: Jawa Timur, Indonesia</p>
+      <p><a href="https://www.google.com/maps/place/Gunung+Bromo/@-7.9425,112.9530,15z" target="_blank">Buka Google Maps</a></p>
     </div>
+
+    <div id="map"></div>
+
+    <!-- ================= FORM REVIEW ================= -->
+  <h4 class="text-white mt-5">Tambah Ulasan</h4>
+
+  <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
+
+      <div class="mb-3">
+          <label class="text-white">Nama Anda</label>
+          <input type="text" name="nama" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+          <label class="text-white">Rating</label>
+          <select name="rating" class="form-control" required>
+              <option value="5">★★★★★ (5)</option>
+              <option value="4">★★★★☆ (4)</option>
+              <option value="3">★★★☆☆ (3)</option>
+              <option value="2">★★☆☆☆ (2)</option>
+              <option value="1">★☆☆☆☆ (1)</option>
+          </select>
+      </div>
+
+      <div class="mb-3">
+          <label class="text-white">Komentar</label>
+          <textarea name="komentar" class="form-control" rows="3" required></textarea>
+      </div>
+
+      <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
+          Kirim Ulasan
+      </button>
+  </form>
+
+  <!-- ================= TAMPILKAN REVIEW ================= -->
+  <section class="review-section">
+      <h2 class="review-title">Ulasan Pengunjung</h2>
+
+      <?php if (count($reviews) === 0): ?>
+
+          <p class="text-white">Belum ada ulasan. Jadilah yang pertama!</p>
+
+      <?php else: ?>
+
+          <?php foreach ($reviews as $r): ?>
+              <div class="review-card">
+                  <h5><?= htmlspecialchars($r['nama']) ?></h5>
+
+                  <div class="review-stars">
+                      <?= str_repeat("★", $r['rating']); ?>
+                      <?= str_repeat("☆", 5 - $r['rating']); ?>
+                  </div>
+
+                  <p><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
+                  <small><?= $r['created_at'] ?></small>
+              </div>
+          <?php endforeach; ?>
+
+      <?php endif; ?>
   </section>
 
+<<<<<<< HEAD
   <div class="map-info">
     <h4>Gunung Bromo</h4>
     <p>Taman Nasional Bromo Tengger Semeru</p>
@@ -500,6 +570,9 @@ section.sejarah-bromo img {
 </section>
 
 </main>
+=======
+</div>
+>>>>>>> 48a93e59853f4d27bd929525f36fcb5d0a4f2ef4
 
 <footer class="modern-footer">
   <div class="footer-container">

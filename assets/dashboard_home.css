@@ -26,8 +26,193 @@
 .side-menu .dropdown-menu .dropdown-item {
     color: #333; /* Font hitam untuk item di dalam dropdown */
 }
+<<<<<<< HEAD
 /* Pastikan saat hover warna font berubah menjadi putih agar kontras */
 .side-menu .dropdown-menu .dropdown-item:hover {
     background-color: #00b050;
     color: white; /* Font putih saat hover */
 }
+=======
+
+/* ============================= */
+/* LOGO */
+/* ============================= */
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 35px;
+}
+
+.logo-title img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #00b050;
+}
+
+.logo-title h3 {
+  font-size: 18px;          /* lebih kecil */
+  font-weight: 700;
+  color: #00b050;
+}
+
+/* ============================= */
+/* MENU LIST */
+/* ============================= */
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-menu ul li {
+  margin: 18px 0;
+}
+
+.side-menu ul li a,
+.accordion-button {
+  display: flex;
+  align-items: center;
+  font-size: 14px;           /* lebih kecil */
+  font-weight: 60;
+  color: #333;
+  text-decoration: none;
+  padding: 7px 10px;
+  border-radius: 8px;
+  transition: 0.25s ease;
+}
+
+.side-menu ul li a:hover,
+.accordion-button:hover {
+  background: #00b050;
+  color: #fff;
+  transform: translateX(4px);
+}
+
+/* Accordion button fix */
+.accordion-button {
+  background: #fff;
+  border: none;
+  box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #e8ffe8;
+  color: #00b050;
+}
+
+/* Dropdown list */
+.accordion-body a {
+  display: block;
+  font-size: 13px;
+  padding: 6px 10px;
+  color: #444;
+}
+
+.accordion-body a:hover {
+  background: #00b050;
+  color: white;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 576px) {
+  .menu-icon {
+    top: 15px;
+    left: 15px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .menu-icon div {
+    width: 16px;
+    height: 2.5px;
+  }
+
+  .logo-title h3 {
+    font-size: 16px;
+  }
+}
+
+/* Hamburger (menu icon) base styles */
+.menu-icon {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1300; /* di atas navbar */
+  background: linear-gradient(135deg, #00b050, #38d39f);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.menu-icon:hover {
+  background: linear-gradient(135deg, #009c3e, #2fc383);
+  transform: scale(1.05);
+}
+
+.menu-icon div {
+  width: 22px;
+  height: 3px;
+  background: #fff;
+  margin: 3px 0;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* When checkbox checked, open sidebar */
+#toggle-menu:checked ~ .side-menu {
+  left: 0;
+}
+
+/* Keep hamburger visible only on small screens */
+@media (min-width: 992px) {
+  /* On large screens: show sidebar permanently and push content */
+  .side-menu {
+    position: fixed;
+    top: 0;
+    z-index: 1200; /* higher than navbar (1100) */
+    right: auto;
+  }
+
+  main, .container, section {
+    margin-left: 0;
+  }
+
+  /* hide hamburger on desktop */
+  .menu-icon {
+    display: flex;
+  }
+
+  #toggle-menu:checked ~ .main-content {
+    margin-left: 240px; /* Samakan dengan width sidebar kamu */
+  }
+}
+
+.main-content {
+  transition: margin-left 0.35s ease; /* Kecepatan animasi mengikuti sidebar */
+  width: 100%;
+}
+
+/* 3. Logika Mobile (Layar < 992px) */
+@media (max-width: 991px) {
+  /* Di HP jangan digeser, biarkan sidebar menimpa layar agar tidak sempit */
+  #toggle-menu:checked ~ .main-content {
+    margin-left: 0;
+  }
+}
+
+>>>>>>> 48a93e59853f4d27bd929525f36fcb5d0a4f2ef4

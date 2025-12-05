@@ -1,7 +1,6 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 /* ========================
    KONEKSI DATABASE
 ======================== */
@@ -79,24 +78,29 @@ nav.navbar { z-index: 1100; }
 #toggle-menu { display: none; }
 
 /* Tombol menu (Hamburger) */
+/* Tombol menu (Hamburger) */
 .menu-icon {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #00b050, #38d39f);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  border-radius: 10px;
-  cursor: pointer;
-  z-index: 1200;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00b050, #38d39f); /* Warna hijau/teal */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 10px; /* Membuat sudut membulat seperti gambar */
+  cursor: pointer;
+  z-index: 1200;
 }
-.menu-icon div { width:22px; height:3px; background:white; border-radius:3px; }
-
+.menu-icon div { 
+    width:22px; 
+    height:3px; 
+    background:white; /* Warna garis putih */
+    border-radius:3px; 
+}
 /* Sidebar */
 .side-menu {
   position: fixed;
@@ -307,40 +311,13 @@ section.sejarah-bromo img {
         flex-direction: column;
     }
 }
-
-.review-section {
-    margin-top: 50px;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 15px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-.review-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #ffdd57;
-    margin-bottom: 25px;
-}
-.review-card {
-    background: rgba(0, 0, 0, 0.45);
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-.review-stars {
-    color: #ffd700;
-    margin-bottom: 10px;
-}
 </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4" href="../index.php">
+    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
       <img src="../img/jawatrip1.png" alt="logo" class="logo me-2">
       JawaTrip
     </a>
@@ -350,9 +327,6 @@ section.sejarah-bromo img {
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav text-center">
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../index.php">Home</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../wisata.php">Destination</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../hotel.php">Accommodation</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../transportasi.php">Transportation</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../pesan.php">Book Ticket</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a></li>
       </ul>
@@ -467,7 +441,7 @@ section.sejarah-bromo img {
 
   <div id="map"></div>
 
-  <!-- ================= FORM REVIEW ================= -->
+   <!-- ================= FORM REVIEW ================= -->
 <h4 class="text-white mt-5">Tambah Ulasan</h4>
 
 <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">

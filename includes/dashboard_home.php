@@ -3,6 +3,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ?>
 
+<link rel="stylesheet" href="assets/dashboard_home.css">
+
 <!-- Sidebar toggle and markup (partial include) -->
 
 <!-- Sidebar toggle -->

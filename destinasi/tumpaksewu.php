@@ -86,27 +86,32 @@ NOTE: Sidebar CSS is now handled by includes/dashboard_home.css
 Commenting out local sidebar styles to avoid conflicts
 
 /* Tombol menu */
-/*
+/* Tombol menu (Hamburger) */
 .menu-icon {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #00b050, #38d39f);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  border-radius: 10px;
-  cursor: pointer;
-  z-index: 1200;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00b050, #38d39f); /* Warna hijau/teal */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 10px; /* Membuat sudut membulat seperti gambar */
+  cursor: pointer;
+  z-index: 1200;
 }
-.menu-icon div { width:22px; height:3px; background:white; border-radius:3px; }
+.menu-icon div { 
+    width:22px; 
+    height:3px; 
+    background:white; /* Warna garis putih */
+    border-radius:3px; 
+}
 
 /* Sidebar */
-/*
+
 .side-menu {
   position: fixed;
   top:0;
@@ -125,7 +130,7 @@ Commenting out local sidebar styles to avoid conflicts
 #toggle-menu:checked ~ .side-menu { left: 0; }
 
 /* Close button */
-/*
+
 .close-btn {
   position: absolute;
   top: 18px;
@@ -138,13 +143,13 @@ Commenting out local sidebar styles to avoid conflicts
 .close-btn:hover { transform: rotate(90deg); color:#ff3333; }
 
 /* Logo */
-/*
+
 .logo-title { display:flex; align-items:center; gap:12px; margin-bottom:40px; }
 .logo-title img { width:45px; height:45px; border-radius:50%; border:2px solid #00b050; }
 .logo-title h3 { font-size:22px; color:#00b050; font-weight:800; }
 
 /* Menu items */
-/*
+
 .side-menu ul { list-style:none; padding:0; }
 .side-menu ul li { margin:20px 0; }
 .side-menu ul li a {
@@ -253,7 +258,7 @@ section.sejarah-bromo img {
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4" href="../index.php">
+    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
       <img src="../img/jawatrip1.png" alt="logo" class="logo me-2">
       JawaTrip
     </a>
@@ -263,9 +268,6 @@ section.sejarah-bromo img {
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav text-center">
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../index.php">Home</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../wisata.php">Destination</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../hotel.php">Accommodation</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../transportasi.php">Transportation</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../pesan.php">Book Ticket</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a></li>
       </ul>

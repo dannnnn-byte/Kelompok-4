@@ -34,8 +34,10 @@ while($row = mysqli_fetch_assoc($result_fasilitas)) {
 
 // Data Dummy Gambar Destinasi (Karena tabel destinasi belum ada, pakai array dulu sesuai kodemu)
 $destinasi_list = [
-    ["nama" => "Spot Utama", "img" => "img/" . $data_paket['gambar_paket']],
-    ["nama" => "Sunrise Point", "img" => "img/bromo.jpg"], // Ganti dengan gambar lain yang ada
+    ["nama" => "Jawa Timur Park 1", "img" => "img/" . $data_paket['gambar_paket']],
+    ["nama" => "Musium Angkut", "img" => "img/angkut.webp"], // Ganti dengan gambar lain yang ada
+    ["nama" => "Alun-Alun Batu", "img" => "img/batu.webp"],
+    ["nama" => "Coban Rondo", "img" => "img/cobanrondo1.webp"],
 ];
 
 ?>
@@ -106,6 +108,16 @@ $destinasi_list = [
     .tab-content-area { display: none; animation: fadeIn 0.5s; }
     .tab-content-area.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .btn-overview {
+        background-color: #CDAA7D;
+        color: #145C43;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
 </style>
 
 <div class="hero-section">
@@ -136,10 +148,12 @@ $destinasi_list = [
                             <div class="col">
                                 <label class="form-label fw-bold">Dewasa</label>
                                 <input type="number" name="jml" value="1" min="1" class="form-control">
+                                <label class="form-label fw-bold">Anak</label>
+                                <input type="number" name="jml" value="1" min="1" class="form-control">
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" style="background-color: #0d6efd;">Book Now</button>
+                        <button type="submit" class="btn btn-warning w-100 py-2 fw-bold">Book Now</button>
                     </form>
                     
                     <hr>
@@ -180,8 +194,11 @@ $destinasi_list = [
             <div class="col-md-6">
                 <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100">
                     <img src="<?= $item['img']; ?>" class="img-fluid w-100" style="height: 300px; object-fit: cover;">
-                    <div class="card-body bg-light">
+                    <div class="card-body d-flex justify-content-between align-items-center" style="background: #145C43; color: white;">
                         <h5 class="fw-bold m-0"><?= $item['nama']; ?></h5>
+                        <a href="#" class="text-decoration-none">
+                            <span class="btn-overview fw-bold" style="white-space: nowrap;">Overview ➜</span>
+                        </a>
                     </div>
                 </div>
             </div>

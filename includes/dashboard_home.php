@@ -69,8 +69,6 @@ ini_set('display_errors', 1);
 </div>
 
       <li><a href="wisata.php">Paket Wisata</a></li>
-      <li><a href="hotel.php">Hotel</a></li>
-      <li><a href="transportasi.php">Transportasi</a></li>
       <li><a href="pesan.php">Pesan Tiket</a></li>
       <li><a href="login.php">Login</a></li>
   </ul>

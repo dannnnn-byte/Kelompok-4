@@ -1,46 +1,76 @@
 <?php
 session_start();
+// Pastikan path ke koneksi.php benar
 require_once 'koneksi.php';
 
-// Include komponen
-include 'includes/navbar.php';
-include 'includes/header.php';
-include 'includes/dashboard_home.php';
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+
+// HAPUS include komponen TAMPILAN di atas logika PHP! Ini MENGATASI error "Cannot modify header information"
+// include 'includes/navbar.php'; 
+// include 'includes/header.php';
 
 $error = "";
-$redirect = $_GET['redirect'] ?? '../index.php'; // Halaman tujuan setelah login
+$redirect = $_GET['redirect'] ?? '../index.php'; 
+$identifier = ""; // Digunakan untuk menampung input email
+$table_name = "users"; // Nama tabel gabungan Admin dan User (sesuai data Anda)
 
 if (isset($_POST['login'])) {
-    $email    = trim($_POST['email']);
-    $password = trim($_POST['password']);
+    $identifier = trim($_POST['email']); 
+    $password_input = $_POST['password']; 
 
-    $email    = mysqli_real_escape_string($conn, $email);
-    $password = mysqli_real_escape_string($conn, $password);
+    if (empty($identifier) || empty($password_input)) {
+        $error = "Semua kolom harus diisi!";
+    } else {
+        $user_found = false;
 
-    // LOGIN ADMIN
-    $sql_admin = "SELECT * FROM admins WHERE username='$email' AND password='$password'";
-    $admin_res = mysqli_query($conn, $sql_admin);
-    if ($admin_res && mysqli_num_rows($admin_res) > 0) {
-        $_SESSION['admin'] = $email;
-        header("Location: admin/dashboard.php");
-        exit;
+        // --- PROSES LOGIN AMAN (Menggunakan Prepared Statement) ---
+        // Mencari pengguna berdasarkan 'email'. Kolom disesuaikan dengan struktur database Anda.
+        $sql = "SELECT id_user, nama_lengkap, email, password, role FROM {$table_name} WHERE email = ?";
+        
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $stmt->bind_param("s", $identifier);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows === 1) {
+                $user = $result->fetch_assoc();
+                
+                // VERIFIKASI PASSWORD (Membutuhkan password di DB sudah dalam bentuk hash)
+                if (password_verify($password_input, $user['password'])) {
+                    $user_found = true;
+                    
+                    // Cek Role dan Redirect
+                    if ($user['role'] === 'admin') {
+                        // SET SESSION ADMIN
+                        $_SESSION['admin_id'] = $user['id_user'];
+                        $_SESSION['admin_username'] = $user['nama_lengkap'];
+                        $_SESSION['admin'] = $user['email']; 
+                        
+                        header("Location: admin/dashboard.php");
+                        exit;
+                    } else if ($user['role'] === 'user') {
+                        // SET SESSION USER
+                        $_SESSION['user_id']    = $user['id_user'];
+                        $_SESSION['username']   = $user['nama_lengkap'];
+                        $_SESSION['email']      = $user['email'];
+
+                        header("Location: " . $redirect);
+                        exit;
+                    }
+                }
+            }
+            $stmt->close();
+        }
+        
+        if (!$user_found) {
+            $error = "Email atau password yang Anda masukkan salah!";
+        }
     }
-
-    // LOGIN USER
-    $sql_user = "SELECT * FROM users WHERE email='$email' AND password='$password'";
-    $user_res = mysqli_query($conn, $sql_user);
-
-    if ($user_res && mysqli_num_rows($user_res) > 0) {
-        $user = mysqli_fetch_assoc($user_res);
-        $_SESSION['user_id']  = $user['id'];
-        $_SESSION['username'] = $user['nama'];
-        $_SESSION['email']    = $user['email'];
-
-        header("Location: $redirect");
-        exit;
-    }
-
-    $error = "Email atau password yang Anda masukkan salah!";
 }
 ?>
 
@@ -56,6 +86,11 @@ if (isset($_POST['login'])) {
 </head>
 <body>
 
+<?php 
+include 'includes/navbar.php'; 
+include 'includes/header.php';
+?>
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-4 col-md-6">
@@ -68,13 +103,13 @@ if (isset($_POST['login'])) {
                 <div class="card-body p-4">
 
                     <?php if (!empty($error)): ?>
-                        <div class="alert alert-danger text-center"><?= $error ?></div>
+                        <div class="alert alert-danger text-center"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
 
                     <form method="POST" action="">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Email / Username Admin</label>
-                            <input type="text" name="email" class="form-control rounded-3" placeholder="Masukkan email" required>
+                            <label class="form-label fw-semibold">Email</label>
+                            <input type="text" name="email" class="form-control rounded-3" placeholder="Masukkan email" required value="<?= htmlspecialchars($identifier) ?>">
                         </div>
 
                         <div class="mb-3">

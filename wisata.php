@@ -22,7 +22,7 @@
                 <img src='{$d[1]}' class='card-img-top' style='height:250px; object-fit:cover;'>
                 <div class='card-body text-center' style='background: #145C43; color: white;'>
                   <h5 class='fw-bold'>{$d[0]}</h5>
-                  <button class='btn w-100 mt-2' style='background: #CDAA7D;'>Lihat Paket</button>
+                  <button class='btn w-100 mt-2 fw-bold' style='background: #CDAA7D; color: #145C43;'>Lihat Paket</button>
                 </div>
               </div>
             </a>

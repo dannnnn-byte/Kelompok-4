@@ -1,48 +1,39 @@
 <?php
+session_start(); // WAJIB di baris paling atas
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-/* ========================
-   KONEKSI DATABASE
-======================== */
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "jawatrip";
 
-$conn = new mysqli($host, $user, $pass, $db);
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
-
-/* ========================
-   TEMPAT / DESTINASI
-======================== */
+// Tempat / destinasi
 $tempat = "bromo";
 
-/* ========================
-   SIMPAN REVIEW (POST)
-======================== */
-if (isset($_POST["submit_review"])) {
+// Cek login
+$isLogin = isset($_SESSION['user_id']); // pakai user_id konsisten
+$namaUser = $isLogin ? $_SESSION['username'] : "";
 
-    $nama     = $_POST["nama"];
-    $rating   = $_POST["rating"];
-    $komentar = $_POST["komentar"];
+// Simpan review
+if (isset($_POST['submit_review']) && $isLogin) {
+    $rating   = $_POST['rating'];
+    $komentar = trim($_POST['komentar']); // trim untuk menghapus spasi
 
-    $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?,?,?,?)");
-    $stmt->bind_param("ssis", $tempat, $nama, $rating, $komentar);
-    $stmt->execute();
-    $stmt->close();
+    if ($rating && $komentar) {
+        $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssis", $tempat, $namaUser, $rating, $komentar);
+        $stmt->execute();
+        $stmt->close();
 
-    echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.');</script>";
+        echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.'); window.location='bromo.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Rating dan komentar harus diisi.');</script>";
+    }
 }
 
-/* ========================
-   AMBIL DATA REVIEW
-======================== */
+// Ambil data review
 $reviews = [];
-$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY id DESC");
-
+$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY review_id DESC");
 while ($row = $result->fetch_assoc()) {
     $reviews[] = $row;
 }
@@ -315,24 +306,51 @@ section.sejarah-bromo img {
 </head>
 <body>
 
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start(); // Pastikan session sudah aktif
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
+    <a class="navbar-brand d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
       <img src="../img/jawatrip1.png" alt="logo" class="logo me-2">
       JawaTrip
     </a>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav text-center">
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../index.php">Home</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../pesan.php">Book Ticket</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a></li>
+
+        <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+          <!-- User sudah login -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-white fw-semibold px-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              👤 <?= htmlspecialchars($_SESSION['username']); ?>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item text-danger fw-bold" href="../logout.php">Logout</a></li>
+            </ul>
+          </li>
+        <?php else: ?>
+          <!-- User belum login -->
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a>
+          </li>
+        <?php endif; ?>
+
       </ul>
     </div>
   </div>
 </nav>
+
+
 
 <input type="checkbox" id="toggle-menu">
 
@@ -441,19 +459,24 @@ section.sejarah-bromo img {
 
   <div id="map"></div>
 
-   <!-- ================= FORM REVIEW ================= -->
+
+<!-- FORM REVIEW -->
 <h4 class="text-white mt-5">Tambah Ulasan</h4>
+<?php if (!$isLogin): ?>
+    <div class="alert alert-warning fw-bold">
+        Anda harus <a href="../login.php">login</a> sebelum memberi ulasan.
+    </div>
+<?php endif; ?>
 
 <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
-
     <div class="mb-3">
         <label class="text-white">Nama Anda</label>
-        <input type="text" name="nama" class="form-control" required>
+        <input type="text" class="form-control" value="<?= $isLogin ? htmlspecialchars($namaUser) : '' ?>" disabled>
     </div>
 
     <div class="mb-3">
         <label class="text-white">Rating</label>
-        <select name="rating" class="form-control" required>
+        <select name="rating" class="form-control" <?= $isLogin ? '' : 'disabled' ?>>
             <option value="5">★★★★★ (5)</option>
             <option value="4">★★★★☆ (4)</option>
             <option value="3">★★★☆☆ (3)</option>
@@ -464,40 +487,36 @@ section.sejarah-bromo img {
 
     <div class="mb-3">
         <label class="text-white">Komentar</label>
-        <textarea name="komentar" class="form-control" rows="3" required></textarea>
+        <textarea name="komentar" class="form-control" rows="3" <?= $isLogin ? '' : 'disabled' ?>></textarea>
     </div>
 
-    <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
-        Kirim Ulasan
-    </button>
+    <?php if ($isLogin): ?>
+        <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">Kirim Ulasan</button>
+    <?php else: ?>
+        <a href="../login.php" class="btn btn-danger fw-bold w-100">Login untuk memberi ulasan</a>
+    <?php endif; ?>
 </form>
 
-<!-- ================= TAMPILKAN REVIEW ================= -->
-<section class="review-section">
-    <h2 class="review-title">Ulasan Pengunjung</h2>
-
+<!-- TAMPILKAN REVIEW -->
+<section class="review-section mt-4">
+    <h2 class="review-title text-white">Ulasan Pengunjung</h2>
     <?php if (count($reviews) === 0): ?>
-
         <p class="text-white">Belum ada ulasan. Jadilah yang pertama!</p>
-
     <?php else: ?>
-
         <?php foreach ($reviews as $r): ?>
-            <div class="review-card">
+            <div class="review-card bg-light p-3 mb-2 rounded">
                 <h5><?= htmlspecialchars($r['nama']) ?></h5>
-
-                <div class="review-stars">
+                <div class="review-stars text-warning">
                     <?= str_repeat("★", $r['rating']); ?>
                     <?= str_repeat("☆", 5 - $r['rating']); ?>
                 </div>
-
                 <p><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
-                <small><?= $r['created_at'] ?></small>
+                <small class="text-muted"><?= $r['created_at'] ?></small>
             </div>
         <?php endforeach; ?>
-
     <?php endif; ?>
-</section>
+</section>  
+
 
 </main>
 

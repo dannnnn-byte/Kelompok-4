@@ -1,51 +1,39 @@
 <?php
+session_start(); // WAJIB di baris paling atas
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-/* ========================
-   KONEKSI DATABASE
-======================== */
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db   = "jawatrip";
+include '../koneksi.php';
 
-$conn = new mysqli($host, $user, $pass, $db);
+// Tempat / destinasi
+$tempat = "museumangkut";
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
+// Cek login
+$isLogin = isset($_SESSION['user_id']); // pakai user_id konsisten
+$namaUser = $isLogin ? $_SESSION['username'] : "";
+
+// Simpan review
+if (isset($_POST['submit_review']) && $isLogin) {
+    $rating   = $_POST['rating'];
+    $komentar = trim($_POST['komentar']); // trim untuk menghapus spasi
+
+    if ($rating && $komentar) {
+        $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssis", $tempat, $namaUser, $rating, $komentar);
+        $stmt->execute();
+        $stmt->close();
+
+        echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.'); window.location='bromo.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Rating dan komentar harus diisi.');</script>";
+    }
 }
 
-/* ========================
-   TEMPAT / DESTINASI
-======================== */
-$tempat = "Museum Angkut";
-
-/* ========================
-   SIMPAN REVIEW (POST)
-======================== */
-if (isset($_POST["submit_review"])) {
-
-    $nama     = $_POST["nama"];
-    $rating   = $_POST["rating"];
-    $komentar = $_POST["komentar"];
-
-    $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?,?,?,?)");
-    $stmt->bind_param("ssis", $tempat, $nama, $rating, $komentar);
-    $stmt->execute();
-    $stmt->close();
-
-    echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.');</script>";
-}
-
-/* ========================
-   AMBIL DATA REVIEW
-======================== */
+// Ambil data review
 $reviews = [];
-$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY id DESC");
-
+$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY review_id DESC");
 while ($row = $result->fetch_assoc()) {
     $reviews[] = $row;
 }
@@ -233,11 +221,17 @@ section.sejarah-bromo img {
 </head>
 <body>
 
-<!-- Navbar -->
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start(); // Pastikan session sudah aktif
+}
+?>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand fw-bold d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
-      <img src="../img/jawatrip1.png" class="logo me-2"> JawaTrip
+    <a class="navbar-brand d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
+      <img src="../img/jawatrip1.png" alt="logo" class="logo me-2">
+      JawaTrip
     </a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -248,65 +242,90 @@ section.sejarah-bromo img {
       <ul class="navbar-nav text-center">
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../index.php">Home</a></li>
         <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../pesan.php">Book Ticket</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a></li>
+
+        <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
+          <!-- User sudah login -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-white fw-semibold px-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              👤 <?= htmlspecialchars($_SESSION['username']); ?>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item text-danger fw-bold" href="../logout.php">Logout</a></li>
+            </ul>
+          </li>
+        <?php else: ?>
+          <!-- User belum login -->
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a>
+          </li>
+        <?php endif; ?>
+
       </ul>
     </div>
   </div>
 </nav>
 
-<!-- Sidebar Toggle -->
+
+
 <input type="checkbox" id="toggle-menu">
 
 <label for="toggle-menu" class="menu-icon">
-  <div></div><div></div><div></div>
+  <div></div>
+  <div></div>
+  <div></div>
 </label>
 
-<!-- Sidebar -->
 <nav class="side-menu">
-  <label for="toggle-menu" class="close-btn">&times;</label>
+  <label for="toggle-menu" class="close-btn">&times;</label> 
+
   <div class="logo-title">
-      <img src="../img/jawatrip1.png">
+      <img src="../img/jawatrip1.png" alt="Logo JawaTrip">
       <h3>JawaTrip</h3>
   </div>
+
   <ul>
       <li><a href="../index.php">Beranda</a></li>
-            <div class="accordion" id="rekWisata">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-    <button class="accordion-button collapsed" type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseOne"
-        style="font-weight: bold;">
-    Rekomendasi Wisata
-</button>
-
-    </h2>
-
-    <div id="collapseOne" 
-         class="accordion-collapse collapse" 
-         data-bs-parent="#rekWisata">
-      <div class="accordion-body">
-
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" 
-                  type="button" 
-                  data-bs-toggle="dropdown">
-            Pilih Wisata
+      
+      <div class="accordion" id="rekWisata">
+        <div class="accordion-item" style="border: none;">
+          <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button collapsed" type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="false"
+              aria-controls="collapseOne"
+              style="font-weight: bold;">
+          Rekomendasi Wisata
           </button>
+          </h2>
 
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="../destinasi/bromo.php">Bromo</a></li>
-            <li><a class="dropdown-item" href="../destinasi/tumpaksewu.php">Tumpak Sewu</a></li>
-            <li><a class="dropdown-item" href="../destinasi/kawahijen.php">Kawah Ijen</a></li>
-            <li><a class="dropdown-item" href="../destinasi/museumangkut.php">Museum Angkut</a></li>
-            <li><a class="dropdown-item" href="../destinasi/wbl.php">Wisata Bahari Lamongan</a></li>
-          </ul>
+          <div id="collapseOne" 
+              class="accordion-collapse collapse" 
+              aria-labelledby="headingOne" 
+              data-bs-parent="#rekWisata">
+            <div class="accordion-body">
+
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" 
+                        type="button" 
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                  Pilih Wisata
+                </button>
+
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="../destinasi/bromo.php">Bromo</a></li>
+                  <li><a class="dropdown-item" href="../destinasi/tumpaksewu.php">Tumpak Sewu</a></li>
+                  <li><a class="dropdown-item" href="../destinasi/kawahijen.php">Kawah Ijen</a></li>
+                  <li><a class="dropdown-item" href="../destinasi/museumangkut.php">Museum Angkut</a></li>
+                  <li><a class="dropdown-item" href="../destinasi/wbl.php">Wisata Bahari Lamongan</a></li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
         </div>
-
       </div>
-    </div>
-  </div>
-</div>
       <li><a href="../wisata.php">Paket Wisata</a></li>
       <li><a href="../hotel.php">Hotel</a></li>
       <li><a href="../transportasi.php">Transportasi</a></li>
@@ -357,63 +376,74 @@ section.sejarah-bromo img {
 
 <div id="map"></div>
 
-  <!-- ================= FORM REVIEW ================= -->
-<h4 class="text-white mt-5">Tambah Ulasan</h4>
+<!-- FORM REVIEW -->
+<div class="container mb-5">
+    <h4 class="text-white">Tambah Ulasan</h4>
 
-<form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
+    <?php if (!$isLogin): ?>
+        <div class="alert alert-warning fw-bold">
+            Anda harus <a href="../login.php">login</a> sebelum memberi ulasan.
+        </div>
+    <?php endif; ?>
 
-    <div class="mb-3">
-        <label class="text-white">Nama Anda</label>
-        <input type="text" name="nama" class="form-control" required>
-    </div>
+    <?php if (isset($error_review)): ?>
+        <div class="alert alert-danger"><?= $error_review ?></div>
+    <?php endif; ?>
 
-    <div class="mb-3">
-        <label class="text-white">Rating</label>
-        <select name="rating" class="form-control" required>
-            <option value="5">★★★★★ (5)</option>
-            <option value="4">★★★★☆ (4)</option>
-            <option value="3">★★★☆☆ (3)</option>
-            <option value="2">★★☆☆☆ (2)</option>
-            <option value="1">★☆☆☆☆ (1)</option>
-        </select>
-    </div>
+    <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
+        <div class="mb-3">
+            <label class="text-white">Nama Anda</label>
+            <input type="text" class="form-control" value="<?= $isLogin ? htmlspecialchars($namaUser) : '' ?>" disabled>
+        </div>
 
-    <div class="mb-3">
-        <label class="text-white">Komentar</label>
-        <textarea name="komentar" class="form-control" rows="3" required></textarea>
-    </div>
+        <div class="mb-3">
+            <label class="text-white">Rating</label>
+            <select name="rating" class="form-control" <?= $isLogin ? '' : 'disabled' ?>>
+                <option value="5">★★★★★ (5)</option>
+                <option value="4">★★★★☆ (4)</option>
+                <option value="3">★★★☆☆ (3)</option>
+                <option value="2">★★☆☆☆ (2)</option>
+                <option value="1">★☆☆☆☆ (1)</option>
+            </select>
+        </div>
 
-    <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
-        Kirim Ulasan
-    </button>
-</form>
+        <div class="mb-3">
+            <label class="text-white">Komentar</label>
+            <textarea name="komentar" class="form-control" rows="3" <?= $isLogin ? '' : 'disabled' ?>></textarea>
+        </div>
 
-<!-- ================= TAMPILKAN REVIEW ================= -->
-<section class="review-section">
-    <h2 class="review-title">Ulasan Pengunjung</h2>
+        <?php if ($isLogin): ?>
+            <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
+                Kirim Ulasan
+            </button>
+        <?php else: ?>
+            <a href="../login.php" class="btn btn-danger fw-bold w-100">
+                Login untuk memberi ulasan
+            </a>
+        <?php endif; ?>
+    </form>
+</div>
 
+<!-- TAMPILKAN REVIEW -->
+<div class="container mb-5">
+    <h4 class="text-white">Ulasan Pengunjung</h4>
     <?php if (count($reviews) === 0): ?>
-
         <p class="text-white">Belum ada ulasan. Jadilah yang pertama!</p>
-
     <?php else: ?>
-
         <?php foreach ($reviews as $r): ?>
-            <div class="review-card">
-                <h5><?= htmlspecialchars($r['nama']) ?></h5>
-
-                <div class="review-stars">
+            <div class="review-card bg-light p-3 mb-2 rounded">
+                <h5><?= htmlspecialchars($r['nama'] ?? 'User') ?></h5>
+                <div class="review-stars text-warning">
                     <?= str_repeat("★", $r['rating']); ?>
                     <?= str_repeat("☆", 5 - $r['rating']); ?>
                 </div>
-
                 <p><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
-                <small><?= $r['created_at'] ?></small>
             </div>
         <?php endforeach; ?>
-
     <?php endif; ?>
-</section>
+</div>
+
+</main>
 
 
 </main>

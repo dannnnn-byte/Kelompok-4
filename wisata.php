@@ -9,13 +9,9 @@
       <?php
         $destinasi = [
           ["Batu", "img/batu.webp"],
-          ["Malang", "img/malang.webp"],
-          ["Lumajang", "img/lumajang.webp"],
           ["Mojokerto", "img/mojokerto.jpeg"],
           ["Sumenep", "img/sumenep.jpg"],
-          ["Probolinggo", "img/probolinggo.jpg"],
           ["Banyuwangi", "img/banyuwangi.jpeg"],
-          ["Surabaya", "img/surabaya.jpg"],
         ];
 
         foreach ($destinasi as $d) {

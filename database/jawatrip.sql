@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 05 Des 2025 pada 03.26
+-- Waktu pembuatan: 06 Des 2025 pada 02.48
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -40,6 +40,24 @@ CREATE TABLE `admins` (
 INSERT INTO `admins` (`id`, `username`, `password`) VALUES
 (4, 'kelompok4@gmail.com', '1234'),
 (5, 'dani', '12345');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `bookings`
+--
+
+CREATE TABLE `bookings` (
+  `booking_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `destination_id` int(11) NOT NULL,
+  `jumlah_orang` int(11) NOT NULL,
+  `tanggal_pemesanan` date NOT NULL,
+  `total_harga` decimal(10,2) NOT NULL,
+  `status` enum('pending','confirmed','cancelled') DEFAULT 'pending',
+  `catatan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -134,42 +152,17 @@ CREATE TABLE `pembayaran` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pemesanan`
---
-
-CREATE TABLE `pemesanan` (
-  `id_pemesanan` varchar(20) NOT NULL,
-  `id_user` int(11) DEFAULT NULL,
-  `id_paket` int(11) DEFAULT NULL,
-  `tgl_tour` date DEFAULT NULL,
-  `jumlah_peserta` int(11) DEFAULT NULL,
-  `total_bayar` decimal(15,2) DEFAULT NULL,
-  `status_bayar` enum('pending','lunas','batal') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Struktur dari tabel `reviews`
 --
 
 CREATE TABLE `reviews` (
-  `id` int(11) NOT NULL,
-  `kota` varchar(100) NOT NULL,
-  `nama` varchar(100) NOT NULL,
-  `rating` int(11) NOT NULL,
-  `komentar` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `tempat` varchar(100) NOT NULL
+  `review_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `tempat` varchar(150) NOT NULL,
+  `rating` int(11) NOT NULL CHECK (`rating` between 1 and 5),
+  `komentar` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `reviews`
---
-
-INSERT INTO `reviews` (`id`, `kota`, `nama`, `rating`, `komentar`, `created_at`, `tempat`) VALUES
-(4, '', 'Dani ', 5, 'Mantap', '2025-12-05 02:02:00', 'bromo'),
-(5, '', 'dani', 4, 'mantap', '2025-12-05 02:05:52', 'tumpak_sewu');
 
 -- --------------------------------------------------------
 
@@ -178,12 +171,21 @@ INSERT INTO `reviews` (`id`, `kota`, `nama`, `rating`, `komentar`, `created_at`,
 --
 
 CREATE TABLE `users` (
-  `id_user` int(11) NOT NULL,
-  `nama_lengkap` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `role` enum('admin','user') DEFAULT 'user'
+  `user_id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `alamat` varchar(255) DEFAULT NULL,
+  `email` varchar(150) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `alamat`, `email`, `password`, `created_at`) VALUES
+(1, 'Dani', 'madura', 'dani@gmail.com', '$2y$10$bbzdZDmhjvh3VG9AWeKVe.PBykxaMqveBMH26RBmSBLFSmpgRhrZy', '2025-12-05 22:16:24'),
+(2, 'erina', 'surabaya', 'erina@gmail.com', '$2y$10$G7kuucMRXCN2BP4eQWtRZ.ognpp87yHfMddt2Kq5Yh/CAoSCcgcES', '2025-12-05 23:02:52');
 
 --
 -- Indexes for dumped tables
@@ -195,6 +197,14 @@ CREATE TABLE `users` (
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indeks untuk tabel `bookings`
+--
+ALTER TABLE `bookings`
+  ADD PRIMARY KEY (`booking_id`),
+  ADD KEY `fk_booking_user` (`user_id`),
+  ADD KEY `fk_booking_destination` (`destination_id`);
 
 --
 -- Indeks untuk tabel `hotel`
@@ -236,24 +246,17 @@ ALTER TABLE `pembayaran`
   ADD KEY `id_pemesanan` (`id_pemesanan`);
 
 --
--- Indeks untuk tabel `pemesanan`
---
-ALTER TABLE `pemesanan`
-  ADD PRIMARY KEY (`id_pemesanan`),
-  ADD KEY `id_user` (`id_user`),
-  ADD KEY `id_paket` (`id_paket`);
-
---
 -- Indeks untuk tabel `reviews`
 --
 ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`review_id`),
+  ADD KEY `fk_reviews_user` (`user_id`);
 
 --
 -- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id_user`),
+  ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
@@ -265,6 +268,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `bookings`
+--
+ALTER TABLE `bookings`
+  MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `hotel`
@@ -306,17 +315,24 @@ ALTER TABLE `pembayaran`
 -- AUTO_INCREMENT untuk tabel `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
+
+--
+-- Ketidakleluasaan untuk tabel `bookings`
+--
+ALTER TABLE `bookings`
+  ADD CONSTRAINT `fk_booking_destination` FOREIGN KEY (`destination_id`) REFERENCES `destinations` (`destination_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `paket_wisata`
@@ -332,11 +348,10 @@ ALTER TABLE `pembayaran`
   ADD CONSTRAINT `pembayaran_ibfk_1` FOREIGN KEY (`id_pemesanan`) REFERENCES `pemesanan` (`id_pemesanan`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `pemesanan`
+-- Ketidakleluasaan untuk tabel `reviews`
 --
-ALTER TABLE `pemesanan`
-  ADD CONSTRAINT `pemesanan_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`),
-  ADD CONSTRAINT `pemesanan_ibfk_2` FOREIGN KEY (`id_paket`) REFERENCES `paket_wisata` (`id_paket`);
+ALTER TABLE `reviews`
+  ADD CONSTRAINT `fk_reviews_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

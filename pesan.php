@@ -1,8 +1,10 @@
 <?php 
 session_start();
+include 'auth_check.php';
 include 'koneksi.php';
 include 'includes/header.php';
 include 'includes/navbar.php';
+
 
 // Ambil data dari URL
 $id_paket = isset($_GET['id_paket']) ? $_GET['id_paket'] : 1;

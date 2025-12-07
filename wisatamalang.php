@@ -4,6 +4,8 @@ include 'includes/header.php';
 include 'includes/navbar.php'; 
 include 'includes/dashboard_home.php'; 
 
+
+
 // 1. AMBIL ID DARI URL (Contoh: detail.php?id=1)
 $id_paket = isset($_GET['id']) ? $_GET['id'] : 1; // Default id 1 kalo ga ada
 

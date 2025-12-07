@@ -1,5 +1,21 @@
+<?php
+session_start();
+
+
+if (isset($_SESSION['login_success'])): ?>
+<div id="loginToast" class="login-toast show">
+    <div class="toast-icon">✔</div>
+    <div class="toast-text"><?= $_SESSION['login_success']; ?></div>
+</div>
+<?php unset($_SESSION['login_success']); ?>
+<?php endif; ?>
+
+
+
+
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/dashboard_home.php'; ?>
+
 
 <div class="main-content">
 
@@ -88,6 +104,39 @@
    <style>
 .promo-section { padding: 50px 0; }
 .promo-title { font-size: 32px; font-weight: 800; color: #28a745; }
+.login-toast {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #28a745;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    opacity: 0;
+    z-index: 99999;
+    transition: all 0.6s ease;
+}
+
+.login-toast.show {
+    top: 30px;
+    opacity: 1;
+}
+
+.login-toast.hide {
+    opacity: 0;
+    top: -80px;
+}
+
+.toast-icon {
+    font-size: 22px;
+}
 
 /* Container Scroll */
 .promo-container {
@@ -233,6 +282,22 @@
     <?php include 'includes/footer.php'; ?>
 
 </div> 
+<script>
+    let toast = document.getElementById("loginToast");
+
+    if (toast) {
+        // hilang otomatis setelah 3 detik
+        setTimeout(() => {
+            toast.classList.remove("show");
+            toast.classList.add("hide");
+
+            // hapus setelah animasi selesai
+            setTimeout(() => toast.remove(), 1000);
+        }, 3000);
+    }
+</script>
+
+
 
 </body>
-</html>
+</html> 

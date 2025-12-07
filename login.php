@@ -29,7 +29,7 @@ if (isset($_POST['login'])) {
         // --- PROSES LOGIN AMAN (Menggunakan Prepared Statement) ---
         // Mencari pengguna berdasarkan 'email'. Kolom disesuaikan dengan struktur database Anda.
         $sql = "SELECT id_user, nama_lengkap, email, password, role FROM {$table_name} WHERE email = ?";
-        
+    
         $stmt = $conn->prepare($sql);
 
         if ($stmt) {
@@ -45,23 +45,32 @@ if (isset($_POST['login'])) {
                     $user_found = true;
                     
                     // Cek Role dan Redirect
-                    if ($user['role'] === 'admin') {
-                        // SET SESSION ADMIN
-                        $_SESSION['admin_id'] = $user['id_user'];
-                        $_SESSION['admin_username'] = $user['nama_lengkap'];
-                        $_SESSION['admin'] = $user['email']; 
-                        
-                        header("Location: admin/dashboard.php");
-                        exit;
-                    } else if ($user['role'] === 'user') {
-                        // SET SESSION USER
-                        $_SESSION['user_id']    = $user['id_user'];
-                        $_SESSION['username']   = $user['nama_lengkap'];
-                        $_SESSION['email']      = $user['email'];
+// Cek Role dan Redirect
+if ($user['role'] === 'admin') {
 
-                        header("Location: " . $redirect);
-                        exit;
-                    }
+    $_SESSION['admin_id'] = $user['id_user'];
+    $_SESSION['admin_username'] = $user['nama_lengkap'];
+    $_SESSION['admin'] = $user['email'];
+
+    $_SESSION['login_success'] = "Selamat datang, Admin!";
+
+header("Location: /Kelompok-4/admin/dashboard.php");
+    exit;
+
+} else if ($user['role'] === 'user') {
+
+    $_SESSION['user_id']  = $user['id_user'];
+    $_SESSION['username'] = $user['nama_lengkap'];
+    $_SESSION['email']    = $user['email'];
+
+    $_SESSION['login_success'] = "Berhasil login User!";
+
+header("Location: /Kelompok-4/index.php");
+    exit;
+
+}}
+
+
                 }
             }
             $stmt->close();
@@ -71,7 +80,7 @@ if (isset($_POST['login'])) {
             $error = "Email atau password yang Anda masukkan salah!";
         }
     }
-}
+
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +115,7 @@ include 'includes/header.php';
                         <div class="alert alert-danger text-center"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="">
+                    <form method="POST" action="login.php">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Email</label>
                             <input type="text" name="email" class="form-control rounded-3" placeholder="Masukkan email" required value="<?= htmlspecialchars($identifier) ?>">

@@ -1,86 +1,74 @@
 <?php
 session_start();
-// Pastikan path ke koneksi.php benar
 require_once 'koneksi.php';
 
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
-
-// HAPUS include komponen TAMPILAN di atas logika PHP! Ini MENGATASI error "Cannot modify header information"
-// include 'includes/navbar.php'; 
-// include 'includes/header.php';
-
 $error = "";
-$redirect = $_GET['redirect'] ?? '../index.php'; 
-$identifier = ""; // Digunakan untuk menampung input email
-$table_name = "users"; // Nama tabel gabungan Admin dan User (sesuai data Anda)
+$identifier = "";
 
 if (isset($_POST['login'])) {
-    $identifier = trim($_POST['email']); 
-    $password_input = $_POST['password']; 
+
+    $identifier = trim($_POST['email']);
+    $password_input = $_POST['password'];
 
     if (empty($identifier) || empty($password_input)) {
         $error = "Semua kolom harus diisi!";
     } else {
-        $user_found = false;
 
-        // --- PROSES LOGIN AMAN (Menggunakan Prepared Statement) ---
-        // Mencari pengguna berdasarkan 'email'. Kolom disesuaikan dengan struktur database Anda.
-        $sql = "SELECT id_user, nama_lengkap, email, password, role FROM {$table_name} WHERE email = ?";
-    
+        $sql = "SELECT id_user, nama_lengkap, email, password, role
+                FROM users
+                WHERE email = ?
+                LIMIT 1";
+
         $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $identifier);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        if ($stmt) {
-            $stmt->bind_param("s", $identifier);
-            $stmt->execute();
-            $result = $stmt->get_result();
+        if ($result && $result->num_rows === 1) {
 
-            if ($result && $result->num_rows === 1) {
-                $user = $result->fetch_assoc();
-                
-                // VERIFIKASI PASSWORD (Membutuhkan password di DB sudah dalam bentuk hash)
-                if (password_verify($password_input, $user['password'])) {
-                    $user_found = true;
-                    
-                    // Cek Role dan Redirect
-// Cek Role dan Redirect
-if ($user['role'] === 'admin') {
+            $user = $result->fetch_assoc();
+            $password_db = $user['password'];
 
-    $_SESSION['admin_id'] = $user['id_user'];
-    $_SESSION['admin_username'] = $user['nama_lengkap'];
-    $_SESSION['admin'] = $user['email'];
+            // ✅ LOGIN SUPPORT HASH + PLAINTEXT
+            if (
+                password_verify($password_input, $password_db) ||
+                $password_input === $password_db
+            ) {
 
-    $_SESSION['login_success'] = "Selamat datang, Admin!";
+                $_SESSION['role'] = $user['role'];
 
-header("Location: /Kelompok-4/admin/dashboard.php");
-    exit;
+                if ($user['role'] === 'admin') {
 
-} else if ($user['role'] === 'user') {
+                    $_SESSION['admin_id']       = $user['id_user'];
+                    $_SESSION['admin_username'] = $user['nama_lengkap'];
+                    $_SESSION['admin']          = $user['email'];
 
-    $_SESSION['user_id']  = $user['id_user'];
-    $_SESSION['username'] = $user['nama_lengkap'];
-    $_SESSION['email']    = $user['email'];
+                    $_SESSION['login_success'] = "Selamat datang, Admin!";
+                    header("Location: /Kelompok-4/admin/dashboard.php");
+                    exit;
 
-    $_SESSION['login_success'] = "Berhasil login User!";
+                } else {
 
-header("Location: /Kelompok-4/index.php");
-    exit;
+                    $_SESSION['user_id']  = $user['id_user'];
+                    $_SESSION['username'] = $user['nama_lengkap'];
+                    $_SESSION['email']    = $user['email'];
 
-}}
-
-
+                    $_SESSION['login_success'] = "Berhasil login User!";
+                    header("Location: /Kelompok-4/index.php");
+                    exit;
                 }
+
+            } else {
+                $error = "Email atau password yang Anda masukkan salah!";
             }
-            $stmt->close();
-        }
-        
-        if (!$user_found) {
+
+        } else {
             $error = "Email atau password yang Anda masukkan salah!";
         }
-    }
 
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -112,27 +100,39 @@ include 'includes/header.php';
                 <div class="card-body p-4">
 
                     <?php if (!empty($error)): ?>
-                        <div class="alert alert-danger text-center"><?= htmlspecialchars($error) ?></div>
+                        <div class="alert alert-danger text-center">
+                            <?= htmlspecialchars($error) ?>
+                        </div>
                     <?php endif; ?>
 
                     <form method="POST" action="login.php">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Email</label>
-                            <input type="text" name="email" class="form-control rounded-3" placeholder="Masukkan email" required value="<?= htmlspecialchars($identifier) ?>">
+                            <input type="text" name="email" class="form-control rounded-3"
+                                   placeholder="Masukkan email"
+                                   required
+                                   value="<?= htmlspecialchars($identifier) ?>">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Password</label>
-                            <input type="password" name="password" class="form-control rounded-3" placeholder="Masukkan password" required>
+                            <input type="password" name="password"
+                                   class="form-control rounded-3"
+                                   placeholder="Masukkan password"
+                                   required>
                         </div>
 
-                        <button type="submit" name="login" class="btn btn-success w-100 py-2 rounded-3 fw-semibold">
+                        <button type="submit" name="login"
+                                class="btn btn-success w-100 py-2 rounded-3 fw-semibold">
                             Login
                         </button>
 
                         <p class="text-center mt-3 mb-0">
                             Belum punya akun?
-                            <a href="register.php" class="text-success fw-bold text-decoration-none">Daftar Sekarang</a>
+                            <a href="register.php"
+                               class="text-success fw-bold text-decoration-none">
+                                Daftar Sekarang
+                            </a>
                         </p>
 
                     </form>

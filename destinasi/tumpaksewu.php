@@ -7,7 +7,7 @@ ini_set('display_errors', 1);
 include '../koneksi.php';
 
 // Tempat / destinasi
-$tempat = "tumpaksewu";
+$tempat = "tumpak sewu";
 
 // Cek login
 $isLogin = isset($_SESSION['user_id']); // pakai user_id konsisten
@@ -24,16 +24,68 @@ if (isset($_POST['submit_review']) && $isLogin) {
         $stmt->execute();
         $stmt->close();
 
-        echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.'); window.location='bromo.php';</script>";
+        echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.'); window.location='tumpaksewu.php';</script>";
         exit;
     } else {
         echo "<script>alert('Rating dan komentar harus diisi.');</script>";
     }
 }
 
+// ------------------------
+// FITUR EDIT ULASAN
+// ------------------------
+if (isset($_POST['edit_review']) && $isLogin) {
+    $review_id = $_POST['review_id'];
+    $rating = $_POST['rating'];
+    $komentar = trim($_POST['komentar']);
+
+    // Cek apakah ulasan milik user login
+    $cek = $conn->prepare("SELECT * FROM reviews WHERE id=? AND nama=?");
+    $cek->bind_param("is", $review_id, $namaUser);
+    $cek->execute();
+    $hasil = $cek->get_result()->fetch_assoc();
+
+    if ($hasil) {
+        $update = $conn->prepare("UPDATE reviews SET rating=?, komentar=? WHERE id=?");
+        $update->bind_param("isi", $rating, $komentar, $review_id);
+        $update->execute();
+
+        echo "<script>alert('Ulasan Anda berhasil diperbarui!'); window.location='tumpaksewu.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Gagal: Anda hanya bisa mengedit ulasan milik Anda sendiri.');</script>";
+    }
+}
+
+
+// ------------------------
+// FITUR HAPUS ULASAN
+// ------------------------
+
+if (isset($_POST['delete_review']) && $isLogin) {
+    $review_id = $_POST['review_id'];
+
+    // Cek kepemilikan
+    $cek = $conn->prepare("SELECT * FROM reviews WHERE id=? AND nama=?");
+    $cek->bind_param("is", $review_id, $namaUser);
+    $cek->execute();
+    $hasil = $cek->get_result()->fetch_assoc();
+
+    if ($hasil) {
+        $delete = $conn->prepare("DELETE FROM reviews WHERE id=?");
+        $delete->bind_param("i", $review_id);
+        $delete->execute();
+
+        echo "<script>alert('Ulasan berhasil dihapus!'); window.location='tumpaksewu.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Anda tidak punya izin menghapus ulasan ini.');</script>";
+    }
+}
+
 // Ambil data review
 $reviews = [];
-$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY review_id DESC");
+$result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY id DESC");
 while ($row = $result->fetch_assoc()) {
     $reviews[] = $row;
 }
@@ -405,73 +457,94 @@ if (session_status() == PHP_SESSION_NONE) {
 <div id="map"></div>
 
 <!-- FORM REVIEW -->
-<div class="container mb-5">
-    <h4 class="text-white">Tambah Ulasan</h4>
+<h4 class="text-white mt-5">Tambah Ulasan</h4>
+<?php if (!$isLogin): ?>
+    <div class="alert alert-warning fw-bold">
+        Anda harus <a href="../login.php">login</a> sebelum memberi ulasan.
+    </div>
+<?php endif; ?>
 
-    <?php if (!$isLogin): ?>
-        <div class="alert alert-warning fw-bold">
-            Anda harus <a href="../login.php">login</a> sebelum memberi ulasan.
-        </div>
+<form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
+    <div class="mb-3">
+        <label class="text-white">Nama Anda</label>
+        <input type="text" class="form-control" value="<?= $isLogin ? htmlspecialchars($namaUser) : '' ?>" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label class="text-white">Rating</label>
+        <select name="rating" class="form-control" <?= $isLogin ? '' : 'disabled' ?>>
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★☆ (4)</option>
+            <option value="3">★★★☆☆ (3)</option>
+            <option value="2">★★☆☆☆ (2)</option>
+            <option value="1">★☆☆☆☆ (1)</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="text-white">Komentar</label>
+        <textarea name="komentar" class="form-control" rows="3" <?= $isLogin ? '' : 'disabled' ?>></textarea>
+    </div>
+
+    <?php if ($isLogin): ?>
+        <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">Kirim Ulasan</button>
+    <?php else: ?>
+        <a href="../login.php" class="btn btn-danger fw-bold w-100">Login untuk memberi ulasan</a>
     <?php endif; ?>
-
-    <?php if (isset($error_review)): ?>
-        <div class="alert alert-danger"><?= $error_review ?></div>
-    <?php endif; ?>
-
-    <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
-        <div class="mb-3">
-            <label class="text-white">Nama Anda</label>
-            <input type="text" class="form-control" value="<?= $isLogin ? htmlspecialchars($namaUser) : '' ?>" disabled>
-        </div>
-
-        <div class="mb-3">
-            <label class="text-white">Rating</label>
-            <select name="rating" class="form-control" <?= $isLogin ? '' : 'disabled' ?>>
-                <option value="5">★★★★★ (5)</option>
-                <option value="4">★★★★☆ (4)</option>
-                <option value="3">★★★☆☆ (3)</option>
-                <option value="2">★★☆☆☆ (2)</option>
-                <option value="1">★☆☆☆☆ (1)</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="text-white">Komentar</label>
-            <textarea name="komentar" class="form-control" rows="3" <?= $isLogin ? '' : 'disabled' ?>></textarea>
-        </div>
-
-        <?php if ($isLogin): ?>
-            <button type="submit" name="submit_review" class="btn btn-warning fw-bold w-100">
-                Kirim Ulasan
-            </button>
-        <?php else: ?>
-            <a href="../login.php" class="btn btn-danger fw-bold w-100">
-                Login untuk memberi ulasan
-            </a>
-        <?php endif; ?>
-    </form>
-</div>
+</form>
 
 <!-- TAMPILKAN REVIEW -->
-<div class="container mb-5">
-    <h4 class="text-white">Ulasan Pengunjung</h4>
+<section class="review-section mt-4">
+    <h2 class="review-title text-white">Ulasan Pengunjung</h2>
     <?php if (count($reviews) === 0): ?>
         <p class="text-white">Belum ada ulasan. Jadilah yang pertama!</p>
     <?php else: ?>
-        <?php foreach ($reviews as $r): ?>
-            <div class="review-card bg-light p-3 mb-2 rounded">
-                <h5><?= htmlspecialchars($r['nama'] ?? 'User') ?></h5>
-                <div class="review-stars text-warning">
-                    <?= str_repeat("★", $r['rating']); ?>
-                    <?= str_repeat("☆", 5 - $r['rating']); ?>
-                </div>
-                <p><?= nl2br(htmlspecialchars($r['komentar'])) ?></p>
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
-</div>
+       <?php foreach ($reviews as $r): ?>
+    <div class="review-card bg-light p-3 mb-2 rounded">
 
-</main> 
+        <h5 style="color: #000; font-weight: 600;">
+            <?= htmlspecialchars($r['nama']) ?>
+        </h5>
+
+        <div class="review-stars text-warning">
+            <?= str_repeat("★", $r['rating']); ?>
+            <?= str_repeat("☆", 5 - $r['rating']); ?>
+        </div>
+
+        <p style="color: #000;">
+            <?= nl2br(htmlspecialchars($r['komentar'])) ?>
+        </p>
+
+        <small class="text-muted"><?= $r['created_at'] ?></small>
+
+        <?php if ($isLogin && $namaUser === $r['nama']): ?>
+          <div>
+            <button class="btn btn-sm btn-primary mt-2"
+                onclick="openEditModal('<?= $r['id'] ?>','<?= $r['rating'] ?>','<?= htmlspecialchars($r['komentar'], ENT_QUOTES) ?>')">
+                Edit Ulasan
+            </button>
+          </div>
+        <?php endif; ?>
+
+        <?php if ($isLogin && $namaUser === $r['nama']): ?>
+    <div>
+        <form method="POST" style="display:inline;" 
+              onsubmit="return confirm('Yakin ingin menghapus ulasan ini?');">
+            <input type="hidden" name="review_id" value="<?= $r['id'] ?>">
+            <button type="submit" name="delete_review" class="btn btn-sm btn-danger mt-2">
+                Hapus
+            </button>
+        </form>
+    </div>
+<?php endif; ?>
+
+
+    </div>
+<?php endforeach; ?>
+
+
+    <?php endif; ?>
+</section> 
 
 </main>
 
@@ -542,7 +615,62 @@ var icon = L.icon({
 L.marker([lat, lon], {icon: icon}).addTo(map)
   .bindPopup('<strong>Tumpak Sewu</strong><br>Pronojiwo, Lumajang.')
   .openPopup();
+
+function openEditModal(id, rating, komentar){
+    document.getElementById('editReviewId').value = id;
+    document.getElementById('editRating').value = rating;
+    document.getElementById('editKomentar').value = komentar;
+
+    var modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+    modal.show();
+}
+
+function openEditModal(id, rating, komentar) {
+    document.getElementById('edit_review_id').value = id;
+    document.getElementById('edit_rating').value = rating;
+    document.getElementById('edit_komentar').value = komentar;
+
+    var modal = new bootstrap.Modal(document.getElementById('editModal'));
+    modal.show();
+}
 </script>
+
+<!-- MODAL EDIT REVIEW -->
+<div class="modal fade" id="editReviewModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Ulasan Anda</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" name="review_id" id="editReviewId">
+
+          <label>Rating</label>
+          <select name="rating" id="editRating" class="form-control">
+              <option value="5">★★★★★ (5)</option>
+              <option value="4">★★★★☆ (4)</option>
+              <option value="3">★★★☆☆ (3)</option>
+              <option value="2">★★☆☆☆ (2)</option>
+              <option value="1">★☆☆☆☆ (1)</option>
+          </select>
+
+          <label class="mt-3">Komentar</label>
+          <textarea name="komentar" id="editKomentar" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" name="edit_review" class="btn btn-warning">Simpan Perubahan</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 
 </body>
 </html>

@@ -1,16 +1,18 @@
 <?php
 session_start();
-// Pastikan path ke koneksi.php benar
 include 'koneksi.php'; 
+include 'includes/header.php'; 
+include 'includes/dashboard_home.php'; 
+include 'includes/navbar.php'; 
 
 $error = "";
 $success = "";
 
 if (isset($_POST['register'])) {
 
-    $nama    = trim($_POST['nama']);
-    // Kolom 'alamat' dihapus karena tidak ada di tabel database Anda.
-    $email   = trim($_POST['email']);
+    $nama      = trim($_POST['nama']);
+    $alamat    = trim($_POST['alamat']); // <-- DITAMBAHKAN
+    $email     = trim($_POST['email']);
     $password  = trim($_POST['password']);
     $password2 = trim($_POST['password2']);
 
@@ -19,7 +21,7 @@ if (isset($_POST['register'])) {
         $error = "Password tidak sama!";
     } else {
 
-        // Cek apakah email sudah ada (Prepared Statement)
+        // Cek email sudah ada
         $check = $conn->prepare("SELECT email FROM users WHERE email = ?");
         $check->bind_param("s", $email);
         $check->execute();
@@ -29,23 +31,22 @@ if (isset($_POST['register'])) {
             $error = "Email sudah digunakan!";
         } else {
 
-            // Hash password
             $hashed = password_hash($password, PASSWORD_DEFAULT);
-            $role_default = 'user'; // FIX: Tetapkan role default
+            $role_default = 'user';
 
-            // Insert user (Prepared Statement)
-            // Kolom diisi: nama_lengkap, email, password, role
-            $stmt = $conn->prepare("INSERT INTO users (nama_lengkap, email, password, role) VALUES (?, ?, ?, ?)");
-            
-            // Parameter bind_param: ssss (Semua string)
-            $stmt->bind_param("ssss", $nama, $email, $hashed, $role_default);
+            // INSERT sudah ditambahkan kolom alamat
+            $stmt = $conn->prepare("
+                INSERT INTO users (nama_lengkap, alamat, email, password, role) 
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("sssss", $nama, $alamat, $email, $hashed, $role_default);
 
             if ($stmt->execute()) {
                 $success = "Registrasi berhasil! Silahkan login.";
             } else {
-                // Tampilkan error database yang lebih spesifik jika gagal
-                $error = "Registrasi GAGAL! Error Database: " . htmlspecialchars($stmt->error); 
+                $error = "Registrasi GAGAL! Error Database: " . htmlspecialchars($stmt->error);
             }
+
             $stmt->close();
         }
         $check->close();
@@ -60,7 +61,8 @@ if (isset($_POST['register'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi JawaTrip</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/dashboard_home.css">
 </head>
 <body>
 
@@ -69,7 +71,7 @@ if (isset($_POST['register'])) {
     <div class="col-lg-5 col-md-8">
 
       <div class="card shadow border-0">
-<div class="card-header bg-success text-white text-center py-3">
+        <div class="card-header bg-success text-white text-center py-3">
           <h4 class="fw-bold mb-0">Daftar Akun Baru</h4>
         </div>
 
@@ -89,7 +91,13 @@ if (isset($_POST['register'])) {
               <label class="form-label">Nama Lengkap</label>
               <input type="text" name="nama" class="form-control" required>
             </div>
-            
+
+            <!-- INPUT ALAMAT -->
+            <div class="mb-3">
+              <label class="form-label">Alamat</label>
+              <input type="text" name="alamat" class="form-control" required>
+            </div>
+
             <div class="mb-3">
               <label class="form-label">Email</label>
               <input type="email" name="email" class="form-control" required>
@@ -105,7 +113,7 @@ if (isset($_POST['register'])) {
               <input type="password" name="password2" class="form-control" required>
             </div>
 
-<button type="submit" name="register" class="btn btn-success w-100 py-2 rounded-3 fw-semibold">
+            <button type="submit" name="register" class="btn btn-success w-100 py-2 rounded-3 fw-semibold">
               DAFTAR
             </button>
 
@@ -126,3 +134,5 @@ if (isset($_POST['register'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<?php include 'includes/footer.php'; ?>

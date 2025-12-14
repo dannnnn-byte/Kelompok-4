@@ -2,6 +2,7 @@
 session_start();
 require_once 'koneksi.php';
 
+
 $error = "";
 $identifier = "";
 
@@ -105,6 +106,7 @@ if (isset($_POST['login'])) {
 <?php 
 include 'includes/navbar.php'; 
 include 'includes/header.php';
+include 'includes/dashboard_home.php';
 ?>
 
 <div class="container my-5">

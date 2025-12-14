@@ -13,23 +13,53 @@ $tempat = "tumpak sewu";
 $isLogin = isset($_SESSION['user_id']); // pakai user_id konsisten
 $namaUser = $isLogin ? $_SESSION['username'] : "";
 
-// Simpan review
-if (isset($_POST['submit_review']) && $isLogin) {
-    $rating   = $_POST['rating'];
-    $komentar = trim($_POST['komentar']); // trim untuk menghapus spasi
+$roleUser = $_SESSION['role'] ?? 'user';
+$isAdmin  = ($roleUser === 'admin');
 
-    if ($rating && $komentar) {
-        $stmt = $conn->prepare("INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssis", $tempat, $namaUser, $rating, $komentar);
-        $stmt->execute();
-        $stmt->close();
 
-        echo "<script>alert('Terima kasih! Ulasan Anda berhasil dikirim.'); window.location='tumpaksewu.php';</script>";
+// =======================
+// SIMPAN REVIEW (USER ONLY)
+// =======================
+if (isset($_POST['submit_review'])) {
+
+    if (!$isLogin) {
+        echo "<script>alert('Silakan login terlebih dahulu.');
+        window.history.back();
+        </script>";
         exit;
-    } else {
-        echo "<script>alert('Rating dan komentar harus diisi.');</script>";
     }
+
+    if ($isAdmin) {
+        echo "<script>alert('Admin tidak diperbolehkan memberi ulasan.');
+        window.history.back();
+        </script>";
+        exit;
+    }
+
+    $rating   = $_POST['rating'] ?? '';
+    $komentar = trim($_POST['komentar'] ?? '');
+
+    if (empty($rating) || empty($komentar)) {
+        echo "<script>alert('Rating dan komentar harus diisi.');
+        window.history.back();
+        </script>";
+        exit;
+    }
+
+    $stmt = $conn->prepare(
+        "INSERT INTO reviews (tempat, nama, rating, komentar) VALUES (?, ?, ?, ?)"
+    );
+    $stmt->bind_param("ssis", $tempat, $namaUser, $rating, $komentar);
+    $stmt->execute();
+    $stmt->close();
+
+    echo "<script>
+        alert('Terima kasih! Ulasan Anda berhasil dikirim.');
+        window.location='bromo.php';
+    </script>";
+    exit;
 }
+
 
 // ------------------------
 // FITUR EDIT ULASAN
@@ -88,6 +118,19 @@ $reviews = [];
 $result = $conn->query("SELECT * FROM reviews WHERE tempat='$tempat' ORDER BY id DESC");
 while ($row = $result->fetch_assoc()) {
     $reviews[] = $row;
+}
+
+// FITUR BALASAN ADMIN
+if (isset($_POST['reply_admin']) && $isAdmin) {
+    $review_id = $_POST['review_id'];
+    $balasan   = trim($_POST['balasan_admin']);
+
+    $stmt = $conn->prepare("UPDATE reviews SET balasan_admin=? WHERE id=?");
+    $stmt->bind_param("si", $balasan, $review_id);
+    $stmt->execute();
+
+    echo "<script>alert('Balasan admin berhasil dikirim'); window.location='bromo.php';</script>";
+    exit;
 }
 ?>
 
@@ -299,17 +342,39 @@ section.sejarah-bromo img {
 <body>
 
 
-<!-- Sidebar -->
 <?php
 if (session_status() == PHP_SESSION_NONE) {
-    session_start(); // Pastikan session sudah aktif
+    session_start();
 }
+
+$isLogin = isset($_SESSION['user_id']) || isset($_SESSION['admin_id']);
+
+$isAdmin = (
+    isset($_SESSION['admin_id']) ||
+    (isset($_SESSION['role']) && $_SESSION['role'] === 'admin')
+);
+
+$username =
+    $_SESSION['username']
+    ?? $_SESSION['admin_username']
+    ?? 'User';
+
+
+// ================= AUTO PATH LOGO =================
+$basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center text-white fs-4 ms-5" href="../index.php">
-      <img src="../img/jawatrip1.png" alt="logo" class="logo me-2">
+
+    <a class="navbar-brand d-flex align-items-center text-white fs-4 ms-5"
+       href="<?= $basePath ?>index.php">
+
+      <img src="<?= $basePath ?>../img/jawatrip1.png"
+           alt="logo"
+           style="height:42px"
+           class="me-2">
+
       JawaTrip
     </a>
 
@@ -319,25 +384,71 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
       <ul class="navbar-nav text-center">
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../index.php">Home</a></li>
-        <li class="nav-item"><a class="nav-link text-white fw-semibold px-3" href="../pesan.php">Book Ticket</a></li>
 
-        <?php if (isset($_SESSION['username']) && !empty($_SESSION['username'])): ?>
-          <!-- User sudah login -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white fw-semibold px-3" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-              👤 <?= htmlspecialchars($_SESSION['username']); ?>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item text-danger fw-bold" href="../logout.php">Logout</a></li>
-            </ul>
-          </li>
-        <?php else: ?>
-          <!-- User belum login -->
-          <li class="nav-item">
-            <a class="nav-link text-white fw-semibold px-3" href="../login.php">Login</a>
-          </li>
-        <?php endif; ?>
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold px-3"
+             href="<?= $basePath ?>index.php">Home</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold px-3"
+             href="<?= $basePath ?>pesan.php">Book Ticket</a>
+        </li>
+
+          <?php if ($isLogin): ?>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle text-white fw-semibold px-3"
+       href="#"
+       role="button"
+       data-bs-toggle="dropdown">
+
+      👤 <?= htmlspecialchars($username) ?>
+      <?php if ($isAdmin): ?>
+        <span class="badge bg-warning text-dark ms-1">ADMIN</span>
+      <?php endif; ?>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-end">
+
+      <!-- MENU ADMIN -->
+      <?php if ($isAdmin): ?>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>../admin/dashboard.php">
+             Dashboard Admin
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+
+      <!-- MENU USER -->
+      <?php else: ?>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>profil.php">
+             Profil Saya
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>riwayat.php">
+             Riwayat Pesanan
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+      <?php endif; ?>
+
+      <!-- LOGOUT (UNTUK SEMUA) -->
+      <li>
+        <a class="dropdown-item text-danger fw-bold"
+           href="<?= $basePath ?>../logout.php">
+           Logout
+        </a>
+      </li>
+
+    </ul>
+</li>
+<?php endif; ?>
+
 
       </ul>
     </div>
@@ -462,6 +573,10 @@ if (session_status() == PHP_SESSION_NONE) {
     <div class="alert alert-warning fw-bold">
         Anda harus <a href="../login.php">login</a> sebelum memberi ulasan.
     </div>
+<?php elseif ($isLogin && $isAdmin): ?>
+    <div class="alert alert-info fw-bold">
+        Admin tidak dapat memberi ulasan, namun dapat membalas ulasan pengunjung.
+    </div>
 <?php endif; ?>
 
 <form action="" method="POST" class="p-3 rounded-3" style="background: rgba(0,0,0,0.4);">
@@ -517,6 +632,13 @@ if (session_status() == PHP_SESSION_NONE) {
 
         <small class="text-muted"><?= $r['created_at'] ?></small>
 
+        <?php if (!empty($r['balasan_admin'])): ?>
+    <div class="alert alert-success mt-2">
+        <strong>Balasan Admin:</strong><br>
+        <?= nl2br(htmlspecialchars($r['balasan_admin'])) ?>
+    </div>
+    <?php endif; ?>
+
         <?php if ($isLogin && $namaUser === $r['nama']): ?>
           <div>
             <button class="btn btn-sm btn-primary mt-2"
@@ -537,6 +659,19 @@ if (session_status() == PHP_SESSION_NONE) {
         </form>
     </div>
 <?php endif; ?>
+
+
+<?php if ($isAdmin): ?>
+<form method="POST" class="mt-2">
+    <input type="hidden" name="review_id" value="<?= $r['id'] ?>">
+    <textarea name="balasan_admin" class="form-control mb-2"
+        placeholder="Tulis balasan admin..." required></textarea>
+    <button type="submit" name="reply_admin" class="btn btn-sm btn-success">
+        Balas sebagai Admin
+    </button>
+</form>
+<?php endif; ?>
+
 
 
     </div>

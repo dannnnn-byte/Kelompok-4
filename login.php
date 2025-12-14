@@ -5,6 +5,16 @@ require_once 'koneksi.php';
 $error = "";
 $identifier = "";
 
+// ================= CEK SUDAH LOGIN =================
+if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: /Kelompok-4/admin/dashboard.php");
+    } else {
+        header("Location: /Kelompok-4/index.php");
+    }
+    exit;
+}
+
 if (isset($_POST['login'])) {
 
     $identifier = trim($_POST['email']);
@@ -29,31 +39,40 @@ if (isset($_POST['login'])) {
             $user = $result->fetch_assoc();
             $password_db = $user['password'];
 
-            // ✅ LOGIN SUPPORT HASH + PLAINTEXT
+            // SUPPORT HASH + PLAINTEXT
             if (
                 password_verify($password_input, $password_db) ||
                 $password_input === $password_db
             ) {
 
-                $_SESSION['role'] = $user['role'];
+                // ================= SESSION GLOBAL =================
+                $_SESSION['login'] = true;
+                $_SESSION['role']  = $user['role'];
 
+                // ================= ADMIN =================
                 if ($user['role'] === 'admin') {
 
                     $_SESSION['admin_id']       = $user['id_user'];
                     $_SESSION['admin_username'] = $user['nama_lengkap'];
                     $_SESSION['admin']          = $user['email'];
 
+                    // 🔥 INI YANG PENTING UNTUK NAVBAR
+                    $_SESSION['nama']     = $user['nama_lengkap'];
+                    $_SESSION['username'] = $user['nama_lengkap'];
+
                     $_SESSION['login_success'] = "Selamat datang, Admin!";
                     header("Location: /Kelompok-4/admin/dashboard.php");
                     exit;
 
-                } else {
+                } 
+                // ================= USER =================
+                else {
 
                     $_SESSION['user_id']  = $user['id_user'];
                     $_SESSION['username'] = $user['nama_lengkap'];
                     $_SESSION['email']    = $user['email'];
 
-                    $_SESSION['login_success'] = "Berhasil login User!";
+                    $_SESSION['login_success'] = "Berhasil login!";
                     header("Location: /Kelompok-4/index.php");
                     exit;
                 }

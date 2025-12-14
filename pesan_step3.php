@@ -48,37 +48,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_pembayaran'])) 
     
     try {
         // Insert data pemesanan sesuai struktur database
-        $query_insert = "INSERT INTO pemesanan (
-            id_pemesanan, 
-            kode_booking,
-            id_user, 
-            id_paket, 
-            tgl_tour,
-            tanggal_keberangkatan, 
-            jumlah_peserta,
-            jumlah_dewasa, 
-            jumlah_anak, 
-            total_bayar,
-            total_harga, 
-            status_bayar,
-            status, 
-            tanggal_pesan
-        ) VALUES (
-            '$id_pemesanan',
-            '$kode_booking',
-            NULL,
-            '$id_paket', 
-            '{$booking['tanggal']}',
-            '{$booking['tanggal']}', 
-            $total_peserta,
-            {$booking['dewasa']}, 
-            {$booking['anak']}, 
-            $total,
-            $total, 
-            'pending',
-            '$status', 
-            '$tanggal_pesan'
-        )";
+$query_insert = "INSERT INTO pemesanan (
+    id_pemesanan,
+    kode_booking,
+    id_user,
+    id_paket,
+    tgl_tour,
+    jumlah_peserta,
+    jumlah_dewasa,
+    jumlah_anak,
+    total_bayar,
+    total_harga,
+    status_bayar,
+    status,
+    tanggal_pesan
+) VALUES (
+    '$id_pemesanan',
+    '$kode_booking',
+    NULL,
+    '$id_paket',
+    '{$booking['tanggal']}',
+    $total_peserta,
+    {$booking['dewasa']},
+    {$booking['anak']},
+    $total,
+    $total,
+    'pending',
+    '$status',
+    '$tanggal_pesan'
+)";
+
+
         
         if (!mysqli_query($conn, $query_insert)) {
             throw new Exception("Error insert pemesanan: " . mysqli_error($conn));

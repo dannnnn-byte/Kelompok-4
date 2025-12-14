@@ -14,41 +14,37 @@ include '../includes/navbar.php';
 /* ================= NAMA ADMIN ================= */
 $nama_admin = $_SESSION['nama'] ?? $_SESSION['email'] ?? 'Admin';
 
-/* ================= FUNCTION CEK TABEL ================= */
-function cekTabel($conn, $table) {
-    $cek = mysqli_query($conn, "SHOW TABLES LIKE '$table'");
-    return mysqli_num_rows($cek) > 0;
-}
+/* ================= STATISTIK PEMESANAN ================= */
+$q_count = mysqli_query($conn, "SELECT COUNT(*) total FROM pemesanan");
+$total_pemesanan = mysqli_fetch_assoc($q_count)['total'] ?? 0;
 
-/* ================= STATISTIK ================= */
-$wisata_count = 0;
-$hotel_count  = 0;
+$q_pendapatan = mysqli_query($conn, "SELECT SUM(total_bayar) total FROM pemesanan");
+$total_pendapatan = mysqli_fetch_assoc($q_pendapatan)['total'] ?? 0;
 
-if (cekTabel($conn, 'pemesanan_wisata')) {
-    $q = mysqli_query($conn, "SELECT COUNT(*) total FROM pemesanan_wisata");
-    $wisata_count = mysqli_fetch_assoc($q)['total'];
-}
+/* ================= DATA PEMESANAN ================= */
+$query = "
+SELECT 
+    p.id_pemesanan,
+    p.kode_booking,
+    p.tgl_tour,
+    p.jumlah_peserta,
+    p.total_bayar,
+    p.status_bayar,
+    COALESCE(p.tanggal_pesan, NOW()) AS tanggal_pesan,
+    pk.nama_paket,
+    k.nama_kota,
+    COALESCE(u.nama_lengkap, 'Guest') AS nama_pemesan
+FROM pemesanan p
+JOIN paket_wisata pk ON p.id_paket = pk.id_paket
+JOIN kota k ON pk.id_kota = k.id_kota
+LEFT JOIN users u ON p.id_user = u.id_user
+ORDER BY p.id_pemesanan DESC
+";
 
-if (cekTabel($conn, 'pemesanan_hotel')) {
-    $q = mysqli_query($conn, "SELECT COUNT(*) total FROM pemesanan_hotel");
-    $hotel_count = mysqli_fetch_assoc($q)['total'];
-}
 
-/* ================= LAPORAN KEUANGAN ================= */
-$total_wisata = 0;
-$total_hotel  = 0;
 
-if (cekTabel($conn, 'pemesanan_wisata')) {
-    $q = mysqli_query($conn, "SELECT SUM(total_harga) total FROM pemesanan_wisata");
-    $total_wisata = mysqli_fetch_assoc($q)['total'] ?? 0;
-}
 
-if (cekTabel($conn, 'pemesanan_hotel')) {
-    $q = mysqli_query($conn, "SELECT SUM(total_harga) total FROM pemesanan_hotel");
-    $total_hotel = mysqli_fetch_assoc($q)['total'] ?? 0;
-}
-
-$total_pendapatan = $total_wisata + $total_hotel;
+$data_pemesanan = mysqli_query($conn, $query);
 ?>
 
 <div class="container py-5">
@@ -65,12 +61,12 @@ $total_pendapatan = $total_wisata + $total_hotel;
     </div>
 
     <!-- ================= STATISTIK ================= -->
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-5">
         <div class="col-md-6">
             <div class="card bg-primary text-white shadow h-100">
                 <div class="card-body">
-                    <h6>Total Pemesanan Wisata</h6>
-                    <h1 class="fw-bold"><?= $wisata_count ?></h1>
+                    <h6>Total Pemesanan</h6>
+                    <h1 class="fw-bold"><?= $total_pemesanan ?></h1>
                 </div>
             </div>
         </div>
@@ -78,44 +74,10 @@ $total_pendapatan = $total_wisata + $total_hotel;
         <div class="col-md-6">
             <div class="card bg-success text-white shadow h-100">
                 <div class="card-body">
-                    <h6>Total Pemesanan Hotel</h6>
-                    <h1 class="fw-bold"><?= $hotel_count ?></h1>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= LAPORAN KEUANGAN ================= -->
-    <div class="row g-4 mb-5">
-        <div class="col-md-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h6 class="text-muted">Pendapatan Wisata</h6>
-                    <h4 class="fw-bold text-primary">
-                        Rp <?= number_format($total_wisata, 0, ',', '.') ?>
-                    </h4>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow border-0">
-                <div class="card-body">
-                    <h6 class="text-muted">Pendapatan Hotel</h6>
-                    <h4 class="fw-bold text-success">
-                        Rp <?= number_format($total_hotel, 0, ',', '.') ?>
-                    </h4>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card bg-dark text-white shadow border-0">
-                <div class="card-body">
                     <h6>Total Pendapatan</h6>
-                    <h4 class="fw-bold">
+                    <h1 class="fw-bold">
                         Rp <?= number_format($total_pendapatan, 0, ',', '.') ?>
-                    </h4>
+                    </h1>
                 </div>
             </div>
         </div>
@@ -129,82 +91,55 @@ $total_pendapatan = $total_wisata + $total_hotel;
         </div>
     </div>
 
-    <!-- ================= RIWAYAT WISATA ================= -->
+    <!-- ================= TABEL PEMESANAN ================= -->
     <h4 class="fw-bold mb-3">Riwayat Pemesanan Wisata</h4>
-    <div class="table-responsive mb-5">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Nama</th>
-                    <th>Wisata</th>
-                    <th>Tanggal</th>
-                    <th>Jumlah</th>
-                    <th>Transportasi</th>
-                    <th>Waktu</th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php
-            if (cekTabel($conn, 'pemesanan_wisata')) {
-                $no = 1;
-                $q = mysqli_query($conn, "SELECT * FROM pemesanan_wisata ORDER BY created_at DESC");
-                while ($row = mysqli_fetch_assoc($q)) {
-                    echo "<tr>
-                        <td>$no</td>
-                        <td>{$row['nama']}</td>
-                        <td>{$row['wisata']}</td>
-                        <td>{$row['tanggal']}</td>
-                        <td>{$row['jumlah']}</td>
-                        <td>{$row['transportasi']}</td>
-                        <td>{$row['created_at']}</td>
-                    </tr>";
-                    $no++;
-                }
-            }
-            ?>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- ================= RIWAYAT HOTEL ================= -->
-    <h4 class="fw-bold mb-3">Riwayat Pemesanan Hotel</h4>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>#</th>
-                    <th>Nama</th>
-                    <th>Hotel</th>
-                    <th>Check-in</th>
-                    <th>Check-out</th>
-                    <th>Kamar</th>
-                    <th>Orang</th>
-                    <th>Transportasi</th>
-                    <th>Waktu</th>
+                    <th>Kode Booking</th>
+                    <th>Nama Pemesan</th>
+                    <th>Paket</th>
+                    <th>Kota</th>
+                    <th>Tanggal Tour</th>
+                    <th>Peserta</th>
+                    <th>Total Bayar</th>
+                    <th>Status</th>
+                    <th>Waktu Pesan</th>
                 </tr>
             </thead>
             <tbody>
-            <?php
-            if (cekTabel($conn, 'pemesanan_hotel')) {
-                $no = 1;
-                $q = mysqli_query($conn, "SELECT * FROM pemesanan_hotel ORDER BY created_at DESC");
-                while ($row = mysqli_fetch_assoc($q)) {
-                    echo "<tr>
-                        <td>$no</td>
-                        <td>{$row['nama']}</td>
-                        <td>{$row['hotel']}</td>
-                        <td>{$row['tanggal_checkin']}</td>
-                        <td>{$row['tanggal_checkout']}</td>
-                        <td>{$row['jumlah_kamar']}</td>
-                        <td>{$row['jumlah_orang']}</td>
-                        <td>{$row['transportasi']}</td>
-                        <td>{$row['created_at']}</td>
-                    </tr>";
-                    $no++;
-                }
-            }
-            ?>
+            <?php if (mysqli_num_rows($data_pemesanan) > 0): ?>
+                <?php $no = 1; while ($row = mysqli_fetch_assoc($data_pemesanan)): ?>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td><strong><?= $row['kode_booking'] ?></strong></td>
+<td><?= htmlspecialchars($row['nama_pemesan']) ?></td>
+
+                    <td><?= $row['nama_paket'] ?></td>
+                    <td><?= $row['nama_kota'] ?></td>
+                    <td><?= date('d M Y', strtotime($row['tgl_tour'])) ?></td>
+                    <td><?= $row['jumlah_peserta'] ?> Orang</td>
+                    <td>
+                        Rp <?= number_format($row['total_bayar'], 0, ',', '.') ?>
+                    </td>
+                    <td>
+                        <span class="badge 
+                            <?= $row['status_bayar'] == 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
+                            <?= ucfirst($row['status_bayar']) ?>
+                        </span>
+                    </td>
+<td><?= date('d M Y H:i', strtotime($row['tanggal_pesan'])) ?></td>
+                </tr>
+                <?php endwhile; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="10" class="text-center text-muted">
+                        Belum ada pemesanan
+                    </td>
+                </tr>
+            <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -217,10 +152,10 @@ $total_pendapatan = $total_wisata + $total_hotel;
 new Chart(document.getElementById('chartPemesanan'), {
     type: 'bar',
     data: {
-        labels: ['Wisata', 'Hotel'],
+        labels: ['Pemesanan'],
         datasets: [{
-            data: [<?= $wisata_count ?>, <?= $hotel_count ?>],
-            backgroundColor: ['#0d6efd','#198754']
+            data: [<?= $total_pemesanan ?>],
+            backgroundColor: ['#198754']
         }]
     },
     options: {

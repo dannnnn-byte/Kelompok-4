@@ -91,6 +91,23 @@ if (isset($_POST['login'])) {
 }
 ?>
 
+<style>
+.login-page {
+    min-height: 100vh;
+    background: 
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.45)
+        ),
+        url("img/ijen4.jpg") no-repeat center center / cover;
+}
+
+.login-page .card {
+    backdrop-filter: blur(2px);
+    border-radius: 16px;
+}
+</style>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -164,6 +181,8 @@ include 'includes/dashboard_home.php';
         </div>
     </div>
 </div>
+
+<body class="login-page">
 
 <?php include 'includes/footer.php'; ?>
 

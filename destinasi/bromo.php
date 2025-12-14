@@ -511,7 +511,17 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 
     </ul>
 </li>
+
+<?php else: ?>
+    <!-- BELUM LOGIN -->
+    <li class="nav-item">
+        <a class="nav-link text-white fw-semibold px-3"
+           href="<?= $basePath ?>../login.php">
+           Login
+        </a>
+    </li>
 <?php endif; ?>
+
 
 
       </ul>

@@ -136,6 +136,67 @@ if (isset($_POST['reply_admin']) && $isAdmin) {
     exit;
 }
 
+// ===============================
+// SIMPAN PEMESANAN BROMO
+// ===============================
+if (isset($_POST['pesan_bromo'])) {
+
+    if (!$isLogin) {
+        echo "<script>alert('Silakan login terlebih dahulu');window.location='../login.php';</script>";
+        exit;
+    }
+
+    if ($isAdmin) {
+        echo "<script>alert('Admin tidak diperbolehkan memesan');</script>";
+        exit;
+    }
+
+    $tanggal      = $_POST['tanggal_kunjungan'];
+    $jumlah_orang = (int) $_POST['jumlah_orang'];
+    $sewa_jeep    = $_POST['sewa_jeep'];
+    $sewa_trail   = $_POST['sewa_trail'];
+    $jumlah_trail = (int) $_POST['jumlah_trail'];
+
+    // ===== HARGA =====
+    $hari = date('N', strtotime($tanggal)); // 6-7 weekend
+    $harga_tiket = ($hari >= 6) ? 34000 : 29000;
+    $total_tiket = $harga_tiket * $jumlah_orang;
+
+    $harga_jeep  = ($sewa_jeep === 'ya') ? 600000 : 0;
+    $harga_trail = ($sewa_trail === 'ya') ? 250000 * $jumlah_trail : 0;
+
+    $total = $total_tiket + $harga_jeep + $harga_trail;
+
+    $stmt = $conn->prepare("
+        INSERT INTO pemesanan_bromo
+        (user_id, tanggal_kunjungan, jumlah_orang,
+         sewa_jeep, sewa_trail, jumlah_trail,
+         total_harga, status)
+        VALUES (?,?,?,?,?,?,?, 'pending')
+    ");
+
+    $stmt->bind_param(
+        "isissii",
+        $_SESSION['user_id'],
+        $tanggal,
+        $jumlah_orang,
+        $sewa_jeep,
+        $sewa_trail,
+        $jumlah_trail,
+        $total
+    );
+
+    $stmt->execute();
+    $stmt->close();
+
+    echo "<script>
+        alert('Pemesanan berhasil! Total: Rp ".number_format($total,0,',','.')."');
+        window.location='../riwayat.php';
+    </script>";
+    exit;
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -639,6 +700,88 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 
   <div id="map"></div>
 
+  <section class="mt-5 p-4 rounded"
+         style="background:rgba(0,0,0,0.55);">
+
+<h3 class="text-warning fw-bold mb-3">
+    🎟️ Pesan Tiket & Sewa Kendaraan Bromo
+</h3>
+
+<?php if (!$isLogin): ?>
+    <div class="alert alert-warning fw-bold">
+        Silakan <a href="../login.php">login</a> untuk memesan
+    </div>
+
+<?php elseif ($isAdmin): ?>
+    <div class="alert alert-info fw-bold">
+        Admin tidak diperbolehkan melakukan pemesanan
+    </div>
+
+<?php else: ?>
+
+<form method="POST">
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Tanggal Kunjungan</label>
+            <input type="date" name="tanggal_kunjungan"
+                   class="form-control" required>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Jumlah Orang</label>
+            <input type="number" name="jumlah_orang"
+                   min="1" value="1"
+                   class="form-control" required>
+        </div>
+    </div>
+
+    <hr class="text-white">
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Sewa Jeep</label>
+            <select name="sewa_jeep" class="form-control">
+                <option value="tidak">Tidak</option>
+                <option value="ya">Ya (Rp 600.000)</option>
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label class="text-white">Sewa Motor Trail</label>
+            <select name="sewa_trail" class="form-control"
+                onchange="toggleTrail(this.value)">
+                <option value="tidak">Tidak</option>
+                <option value="ya">Ya</option>
+            </select>
+        </div>
+
+        <div class="col-md-4 mb-3" id="trailBox" style="display:none;">
+            <label class="text-white">Jumlah Motor Trail</label>
+            <input type="number" name="jumlah_trail"
+                   min="1" value="1"
+                   class="form-control">
+        </div>
+    </div>
+
+    <div class="alert alert-info fw-bold">
+        <ul class="mb-0">
+            <li>Tiket: Rp 29.000 (weekday) / Rp 34.000 (weekend)</li>
+            <li>Jeep: Rp 600.000 / unit</li>
+            <li>Motor Trail: Rp 250.000 / unit</li>
+        </ul>
+    </div>
+
+    <button type="submit" name="pesan_bromo"
+            class="btn btn-warning fw-bold w-100">
+        Pesan Sekarang
+    </button>
+
+</form>
+<?php endif; ?>
+</section>
+
+
 
 <!-- FORM REVIEW -->
 <h4 class="text-white mt-5">Tambah Ulasan</h4>
@@ -842,7 +985,15 @@ function openEditModal(id, rating, komentar) {
     modal.show();
 }
 
+function toggleTrail(val) {
+    document.getElementById('trailBox').style.display =
+        (val === 'ya') ? 'block' : 'none';
+}
+
+
 </script>
+
+
 <!-- MODAL EDIT REVIEW -->
 <div class="modal fade" id="editReviewModal" tabindex="-1">
   <div class="modal-dialog">

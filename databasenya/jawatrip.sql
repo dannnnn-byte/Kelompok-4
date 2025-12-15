@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Waktu pembuatan: 14 Des 2025 pada 16.53
+-- Host: 127.0.0.1
+-- Waktu pembuatan: 14 Des 2025 pada 20.32
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -40,6 +40,28 @@ CREATE TABLE `admins` (
 INSERT INTO `admins` (`id`, `username`, `password`) VALUES
 (4, 'kelompok4@gmail.com', '1234'),
 (5, 'dani', '12345');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `booking_log`
+--
+
+CREATE TABLE `booking_log` (
+  `id_log` int(11) NOT NULL,
+  `id_pemesanan` varchar(50) DEFAULT NULL,
+  `aktivitas` varchar(100) DEFAULT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `booking_log`
+--
+
+INSERT INTO `booking_log` (`id_log`, `id_pemesanan`, `aktivitas`, `keterangan`, `created_at`) VALUES
+(1, 'PMS1765740615', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT20251214936C', '2025-12-14 19:30:15'),
+(2, 'PMS1765740688', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT2025121434BA', '2025-12-14 19:31:28');
 
 -- --------------------------------------------------------
 
@@ -260,13 +282,54 @@ CREATE TABLE `pembayaran` (
 
 CREATE TABLE `pemesanan` (
   `id_pemesanan` varchar(20) NOT NULL,
+  `kode_booking` varchar(30) DEFAULT NULL,
   `id_user` int(11) DEFAULT NULL,
   `id_paket` int(11) DEFAULT NULL,
   `tgl_tour` date DEFAULT NULL,
+  `tanggal_keberangkatan` date DEFAULT NULL,
   `jumlah_peserta` int(11) DEFAULT NULL,
+  `jumlah_dewasa` int(11) DEFAULT NULL,
+  `jumlah_anak` int(11) DEFAULT NULL,
   `total_bayar` decimal(15,2) DEFAULT NULL,
-  `status_bayar` enum('pending','lunas','batal') DEFAULT NULL
+  `total_harga` decimal(15,2) DEFAULT NULL,
+  `status_bayar` enum('pending','lunas','batal') DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `tanggal_pesan` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `pemesanan`
+--
+
+INSERT INTO `pemesanan` (`id_pemesanan`, `kode_booking`, `id_user`, `id_paket`, `tgl_tour`, `tanggal_keberangkatan`, `jumlah_peserta`, `jumlah_dewasa`, `jumlah_anak`, `total_bayar`, `total_harga`, `status_bayar`, `status`, `tanggal_pesan`) VALUES
+('PMS1765740615', 'JWT20251214936C', NULL, 2, '2025-12-24', NULL, 1, 1, 0, 450000.00, 450000.00, 'pending', 'pending', '2025-12-14 20:30:15'),
+('PMS1765740688', 'JWT2025121434BA', NULL, 3, '2025-12-24', NULL, 1, 1, 0, 250000.00, 250000.00, 'pending', 'pending', '2025-12-14 20:31:28');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penumpang`
+--
+
+CREATE TABLE `penumpang` (
+  `id_penumpang` int(11) NOT NULL,
+  `id_pemesanan` varchar(50) DEFAULT NULL,
+  `nama_lengkap` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `no_telepon` varchar(20) DEFAULT NULL,
+  `alamat` text DEFAULT NULL,
+  `no_identitas` varchar(50) DEFAULT NULL,
+  `tipe_penumpang` enum('Dewasa','Anak') DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `penumpang`
+--
+
+INSERT INTO `penumpang` (`id_penumpang`, `id_pemesanan`, `nama_lengkap`, `email`, `no_telepon`, `alamat`, `no_identitas`, `tipe_penumpang`, `created_at`) VALUES
+(1, 'PMS1765740615', 'huhu', 'asda@gyadyagdabda.com', '0812836178236', 'ajbsndjabdjas', '12312321312312321', 'Dewasa', '2025-12-14 19:30:15'),
+(2, 'PMS1765740688', 'riko tampati', 'Rikoboy@gmail.com', '0812836178236', 'smnuad', '1234567890123456', 'Dewasa', '2025-12-14 19:31:28');
 
 -- --------------------------------------------------------
 
@@ -331,6 +394,12 @@ INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `password`, `role`, `no
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
+
+--
+-- Indeks untuk tabel `booking_log`
+--
+ALTER TABLE `booking_log`
+  ADD PRIMARY KEY (`id_log`);
 
 --
 -- Indeks untuk tabel `destinasi`
@@ -407,6 +476,12 @@ ALTER TABLE `pemesanan`
   ADD KEY `id_paket` (`id_paket`);
 
 --
+-- Indeks untuk tabel `penumpang`
+--
+ALTER TABLE `penumpang`
+  ADD PRIMARY KEY (`id_penumpang`);
+
+--
 -- Indeks untuk tabel `reviews`
 --
 ALTER TABLE `reviews`
@@ -428,6 +503,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `booking_log`
+--
+ALTER TABLE `booking_log`
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `destinasi`
@@ -488,6 +569,12 @@ ALTER TABLE `paket_wisata`
 --
 ALTER TABLE `pembayaran`
   MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `penumpang`
+--
+ALTER TABLE `penumpang`
+  MODIFY `id_penumpang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT untuk tabel `reviews`

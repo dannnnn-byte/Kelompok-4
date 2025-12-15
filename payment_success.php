@@ -1,13 +1,9 @@
-<?php
+<?php 
 session_start();
 include 'koneksi.php';
+include 'includes/header.php';
+include 'includes/navbar.php';
 
-// Debug sementara (aktifkan saat development)
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-// Ambil kode booking (escape)
 $kode_booking = isset($_GET['kode']) ? mysqli_real_escape_string($conn, $_GET['kode']) : '';
 
 if (empty($kode_booking)) {
@@ -15,218 +11,162 @@ if (empty($kode_booking)) {
     exit;
 }
 
-// --- Ambil data pemesanan ---
+// Ambil data pemesanan
 $query = "SELECT p.*, pk.nama_paket, pk.gambar_paket 
           FROM pemesanan p
           JOIN paket_wisata pk ON p.id_paket = pk.id_paket
           WHERE p.kode_booking = '$kode_booking'";
 $result = mysqli_query($conn, $query);
-if (!$result || mysqli_num_rows($result) == 0) {
-    // jika tidak ditemukan, redirect kembali
-    header("Location: index.php");
-    exit;
-}
 $pemesanan = mysqli_fetch_assoc($result);
 
-// ===== mengambil kolom tanggal yang tersedia di tabel pembayaran (robust) =====
-$kode_booking_esc = $kode_booking;
-$cols = [];
-$res_cols = mysqli_query($conn, "SHOW COLUMNS FROM pembayaran");
-if ($res_cols) {
-    while ($r = mysqli_fetch_assoc($res_cols)) {
-        $cols[] = $r['Field'];
-    }
-}
-$possible = ['tgl_bayar','tanggal_bayar','tanggal_konfirmasi','tgl','created_at','tanggal_pesan'];
-$dateCol = null;
-foreach ($possible as $c) {
-    if (in_array($c, $cols)) {
-        $dateCol = $c;
-        break;
-    }
-}
-$orderBy = $dateCol ? "ORDER BY `$dateCol` DESC" : "";
-// debug comment (bisa dilihat di view-source)
-echo "<!-- Debug: pembayaran cols: " . htmlspecialchars(implode(',', $cols)) . " | using dateCol: " . htmlspecialchars($dateCol) . " -->";
-
-$query_payment = "SELECT * FROM pembayaran WHERE kode_booking = '$kode_booking_esc' $orderBy LIMIT 1";
+// Ambil data pembayaran
+$query_payment = "SELECT * FROM pembayaran WHERE kode_booking = '$kode_booking' ORDER BY tanggal_bayar DESC LIMIT 1";
 $result_payment = mysqli_query($conn, $query_payment);
-$payment = $result_payment && mysqli_num_rows($result_payment) ? mysqli_fetch_assoc($result_payment) : null;
-// ===== end payment lookup =====
+$payment = mysqli_fetch_assoc($result_payment);
 
-// --- Proses form upload (HARUS sebelum include header/navbar sehingga header() bekerja) ---
-$error = null;
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_bukti'])) {
-    $upload_dir = __DIR__ . '/uploads/bukti_bayar/';
-    if (!file_exists($upload_dir)) {
-        if (!mkdir($upload_dir, 0777, true)) {
-            $error = "Gagal membuat folder upload. Cek permission.";
-        }
-    }
-    
-    if (!$error) {
-        if (isset($_FILES['bukti_bayar']) && $_FILES['bukti_bayar']['error'] == 0) {
-            $file = $_FILES['bukti_bayar'];
-            $allowed = ['jpg', 'jpeg', 'png', 'pdf'];
-            $filename = $file['name'];
-            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-            
-            if (in_array($ext, $allowed)) {
-                $new_filename = 'bukti_' . $kode_booking . '_' . time() . '.' . $ext;
-                $upload_path = $upload_dir . $new_filename;
-                
-                if (move_uploaded_file($file['tmp_name'], $upload_path)) {
-                    // Escape input sebelum simpan ke DB
-                    $catatan = isset($_POST['catatan']) ? mysqli_real_escape_string($conn, $_POST['catatan']) : '';
-                    $nama_pengirim = isset($_POST['nama_pengirim']) ? mysqli_real_escape_string($conn, $_POST['nama_pengirim']) : '';
-                    $bank_asal = isset($_POST['bank_asal']) ? mysqli_real_escape_string($conn, $_POST['bank_asal']) : '';
-                    $new_filename_db = mysqli_real_escape_string($conn, $new_filename);
-
-                    // Gunakan id_pembayaran jika tersedia agar UPDATE lebih spesifik
-                    if ($payment && !empty($payment['id_pembayaran'])) {
-                        $id_pembayaran_update = mysqli_real_escape_string($conn, $payment['id_pembayaran']);
-                        $where = "id_pembayaran = '$id_pembayaran_update'";
-                    } else {
-                        // fallback: update berdasarkan kode_booking (hati-hati jika ada banyak row)
-                        $where = "kode_booking = '$kode_booking_esc'";
-                    }
-
-                    $query_update = "UPDATE pembayaran SET 
-                        bukti_bayar = '$new_filename_db',
-                        catatan = '$catatan',
-                        status_bayar = 'menunggu_verifikasi',
-                        tanggal_konfirmasi = NOW(),
-                        nama_pengirim = '$nama_pengirim',
-                        bank_asal = '$bank_asal'
-                        WHERE $where";
-
-                    if (mysqli_query($conn, $query_update)) {
-                        // Update status pemesanan
-                        mysqli_query($conn, "UPDATE pemesanan SET status = 'menunggu_verifikasi' WHERE kode_booking = '$kode_booking_esc'");
-                        
-                        // Insert log (escape id_pemesanan)
-                        $id_pemesanan_log = mysqli_real_escape_string($conn, $pemesanan['id_pemesanan']);
-                        mysqli_query($conn, "INSERT INTO booking_log (id_pemesanan, aktivitas, keterangan) 
-                                            VALUES ('$id_pemesanan_log', 'Bukti Bayar Diupload', 'Menunggu verifikasi admin')");
-                        
-                        $_SESSION['success_message'] = "Bukti pembayaran berhasil diupload! Mohon tunggu verifikasi dari admin.";
-                        header("Location: payment_success.php?kode=" . urlencode($kode_booking_esc));
-                        exit;
-                    } else {
-                        $error = "Gagal menyimpan data ke database: " . mysqli_error($conn);
-                    }
-                } else {
-                    $error = "Gagal mengupload file. Pastikan folder uploads dapat ditulis oleh webserver.";
-                }
-            } else {
-                $error = "Format file tidak diizinkan. Gunakan JPG, PNG, atau PDF.";
-            }
-        } else {
-            $error = "Silakan pilih file bukti pembayaran.";
-        }
-    }
-}
-
-// Jika sampai sini, proses selesai / belum submit atau ada error => lanjut render halaman
-include 'includes/header.php';
-include 'includes/navbar.php';
+// Ambil data penumpang
+$query_penumpang = "SELECT * FROM penumpang WHERE id_pemesanan = '{$pemesanan['id_pemesanan']}'";
+$result_penumpang = mysqli_query($conn, $query_penumpang);
 ?>
 
 <link rel="stylesheet" href="assets/payment-style.css">
 
 <div class="payment-container">
-    <div class="confirmation-wrapper">
-        <div class="confirmation-card-full">
-            <div class="confirmation-icon">
-                <i class="bi bi-upload"></i>
-            </div>
-            
-            <h2>Upload Bukti Pembayaran</h2>
-            <p class="subtitle">Upload bukti pembayaran Anda untuk verifikasi</p>
-            
-            <div class="booking-info-box">
-                <div class="info-row">
-                    <span class="label">Kode Booking:</span>
-                    <strong><?= htmlspecialchars($kode_booking) ?></strong>
-                </div>
-                <div class="info-row">
-                    <span class="label">Total Pembayaran:</span>
-                    <strong class="price">Rp <?= number_format($pemesanan['total_harga'], 0, ',', '.') ?></strong>
-                </div>
-                <div class="info-row">
-                    <span class="label">Metode Pembayaran:</span>
-                    <strong><?= strtoupper(htmlspecialchars($payment['metode_bayar'] ?? 'N/A')) ?></strong>
+    <div class="success-wrapper">
+        <div class="success-card">
+            <!-- Success Animation -->
+            <div class="success-animation">
+                <div class="checkmark-circle">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle-path" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
                 </div>
             </div>
 
-            <?php if (isset($error) && $error): ?>
-            <div class="alert alert-danger">
-                <i class="bi bi-exclamation-triangle"></i>
-                <?= htmlspecialchars($error) ?>
-            </div>
-            <?php endif; ?>
+            <h1 class="success-title">Pembayaran Berhasil Diupload!</h1>
+            <p class="success-subtitle">Terima kasih atas pembayaran Anda</p>
 
-            <form method="POST" enctype="multipart/form-data" class="upload-form">
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" name="bukti_bayar" id="bukti_bayar" accept="image/*,.pdf" required hidden>
-                    <label for="bukti_bayar" class="upload-label">
-                        <div class="upload-icon">
-                            <i class="bi bi-cloud-upload"></i>
-                        </div>
-                        <h4>Klik atau Drag & Drop</h4>
-                        <p>Format: JPG, PNG, PDF (Max 5MB)</p>
-                        <span class="upload-btn">Pilih File</span>
-                    </label>
-                    <div id="preview" class="preview-area" style="display: none;">
-                        <img id="previewImage" src="" alt="Preview">
-                        <button type="button" class="btn-remove-preview" onclick="removePreview()">
-                            <i class="bi bi-x-circle"></i>
-                        </button>
+            <!-- Booking Card -->
+            <div class="booking-card-success">
+                <div class="booking-header-success">
+                    <div class="booking-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div class="booking-info">
+                        <h3><?= $pemesanan['nama_paket'] ?></h3>
+                        <p><i class="bi bi-calendar"></i> <?= date('d M Y', strtotime($pemesanan['tgl_tour'])) ?></p>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="nama_pengirim">Nama Pengirim <span class="required">*</span></label>
-                    <input type="text" name="nama_pengirim" id="nama_pengirim" class="form-control" required>
+                <div class="booking-details-grid">
+                    <div class="detail-item">
+                        <i class="bi bi-receipt"></i>
+                        <div>
+                            <p class="label">Kode Booking</p>
+                            <p class="value"><?= $kode_booking ?></p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-cash-stack"></i>
+                        <div>
+                            <p class="label">Total Pembayaran</p>
+                            <p class="value price">Rp <?= number_format($pemesanan['total_harga'], 0, ',', '.') ?></p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-people"></i>
+                        <div>
+                            <p class="label">Jumlah Penumpang</p>
+                            <p class="value"><?= $pemesanan['jumlah_peserta'] ?> Orang</p>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-hourglass-split"></i>
+                        <div>
+                            <p class="label">Status</p>
+                            <span class="status-badge menunggu_verifikasi">
+                                <i class="bi bi-clock-history"></i> Menunggu Verifikasi
+                            </span>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="bank_asal">Bank Asal Transfer <span class="required">*</span></label>
-                    <select name="bank_asal" id="bank_asal" class="form-control" required>
-                        <option value="">-- Pilih Bank / E-wallet --</option>
-                        <optgroup label="Bank">
-                            <option value="BCA">BCA</option>
-                            <option value="BNI">BNI</option>
-                            <option value="BRI">BRI</option>
-                            <option value="Mandiri">Mandiri</option>
-                        </optgroup>
-                        <optgroup label="E-Wallet">
-                            <option value="GOPAY">GOPAY</option>
-                            <option value="OVO">OVO</option>
-                        </optgroup>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
+            <!-- Daftar Penumpang -->
+            <div class="passenger-list-success">
+                <h4><i class="bi bi-people"></i> Daftar Penumpang</h4>
+                <?php $no = 1; while ($p = mysqli_fetch_assoc($result_penumpang)): ?>
+                <div class="passenger-item-success">
+                    <div class="passenger-number"><?= $no ?></div>
+                    <div class="passenger-details">
+                        <h5><?= htmlspecialchars($p['nama_lengkap']) ?></h5>
+                        <p><?= htmlspecialchars($p['email']) ?> | <?= htmlspecialchars($p['no_telepon']) ?></p>
+                    </div>
+                    <span class="passenger-type-badge"><?= $p['tipe_penumpang'] ?></span>
                 </div>
+                <?php $no++; endwhile; ?>
+            </div>
 
-                <div class="form-group">
-                    <label for="catatan">Catatan (Opsional)</label>
-                    <textarea name="catatan" id="catatan" rows="3" class="form-control"></textarea>
+            <!-- Action Buttons -->
+            <div class="action-buttons-grid">
+                <a href="index.php" class="btn-home">
+                    <i class="bi bi-house"></i> Kembali ke Beranda
+                </a>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="next-steps">
+                <h4><i class="bi bi-list-check"></i> Langkah Selanjutnya</h4>
+                <div class="steps-grid">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h5>Verifikasi Pembayaran</h5>
+                            <p>Tim kami akan memverifikasi pembayaran Anda dalam 1x24 jam</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h5>Konfirmasi Email</h5>
+                            <p>Anda akan menerima email konfirmasi setelah verifikasi selesai</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h5>Persiapan Keberangkatan</h5>
+                            <p>Detail perjalanan akan dikirim 3 hari sebelum keberangkatan</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="action-buttons">
-                    <a href="pembayaran.php?kode=<?= htmlspecialchars($kode_booking) ?>" class="btn-secondary">
-                        <i class="bi bi-arrow-left"></i>
-                        Kembali
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <p><i class="bi bi-headset"></i> <strong>Butuh Bantuan?</strong></p>
+                <div class="contact-methods">
+                    <a href="https://wa.me/6281234567890" class="contact-btn">
+                        <i class="bi bi-whatsapp"></i> WhatsApp
                     </a>
-                    <button type="submit" name="submit_bukti" class="btn-primary" id="btnSubmit">
-                        <i class="bi bi-check-circle"></i>
-                        Upload & Konfirmasi
-                    </button>
+                    <a href="tel:081234567890" class="contact-btn">
+                        <i class="bi bi-telephone"></i> Telepon
+                    </a>
+                    <a href="mailto:support@jawatrip.com" class="contact-btn">
+                        <i class="bi bi-envelope"></i> Email
+                    </a>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Tambahkan CSS dari file lama yang sudah ada styling success page */
+</style>
+
+<?php include 'includes/footer.php'; ?>
 
 <script>
 // (JS preview yang sama — tidak berubah)

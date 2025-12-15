@@ -42,6 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_pembayaran'])) 
     $tanggal_pesan = date('Y-m-d H:i:s');
     $status = 'pending';
     $total_peserta = $booking['dewasa'] + $booking['anak'];
+    // Ambil id_user jika user sedang login
+    $id_user_sql = (isset($_SESSION['user_id']) && is_numeric($_SESSION['user_id'])) 
+        ? (int)$_SESSION['user_id'] 
+        : 'NULL';
     
     // Mulai transaction
     mysqli_begin_transaction($conn);
@@ -65,7 +69,7 @@ $query_insert = "INSERT INTO pemesanan (
 ) VALUES (
     '$id_pemesanan',
     '$kode_booking',
-    NULL,
+    $id_user_sql,
     '$id_paket',
     '{$booking['tanggal']}',
     $total_peserta,

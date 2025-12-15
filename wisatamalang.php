@@ -141,19 +141,6 @@ $destinasi_list = [
                     <form action="pesan.php" method="GET">
                         <input type="hidden" name="id_paket" value="<?= $id_paket ?>">
                         
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Pilih Tanggal</label>
-                            <input type="date" name="tgl" class="form-control">
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label fw-bold">Dewasa</label>
-                                <input type="number" name="jml" value="1" min="1" class="form-control">
-                                <label class="form-label fw-bold">Anak</label>
-                                <input type="number" name="jml" value="1" min="1" class="form-control">
-                            </div>
-                        </div>
 
                         <button type="submit" class="btn btn-warning w-100 py-2 fw-bold">Book Now</button>
                     </form>

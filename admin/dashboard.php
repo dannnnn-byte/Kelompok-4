@@ -43,15 +43,32 @@ SELECT
     p.tgl_tour,
     p.jumlah_peserta,
     p.total_bayar,
-    p.status_bayar,
+    p.status_bayar AS status_bayar_pemesanan,
     COALESCE(p.tanggal_pesan, NOW()) AS tanggal_pesan,
+    COALESCE(pay.tanggal_bayar, p.tanggal_pesan) AS waktu_pesan_display,
     pk.nama_paket,
     k.nama_kota,
-    COALESCE(u.nama_lengkap, 'Guest') AS nama_pemesan
+    COALESCE(u.nama_lengkap, (
+        SELECT nama_lengkap FROM penumpang 
+        WHERE id_pemesanan = p.id_pemesanan 
+        ORDER BY id_penumpang ASC LIMIT 1
+    ), 'Guest') AS nama_pemesan,
+    pay.status_bayar AS status_bayar_pembayaran,
+    pay.tanggal_bayar,
+    pay.tanggal_konfirmasi
 FROM pemesanan p
 JOIN paket_wisata pk ON p.id_paket = pk.id_paket
 JOIN kota k ON pk.id_kota = k.id_kota
 LEFT JOIN users u ON p.id_user = u.id_user
+LEFT JOIN (
+    SELECT t.kode_booking, t.status_bayar, t.tanggal_bayar, t.tanggal_konfirmasi
+    FROM pembayaran t
+    JOIN (
+        SELECT kode_booking, MAX(tanggal_bayar) AS max_t
+        FROM pembayaran
+        GROUP BY kode_booking
+    ) m ON t.kode_booking = m.kode_booking AND t.tanggal_bayar = m.max_t
+) pay ON pay.kode_booking = p.kode_booking
 ORDER BY p.id_pemesanan DESC
 ";
 
@@ -79,6 +96,17 @@ $data_bromo = mysqli_query($conn, $query_bromo);
 ?>
 
 <div class="container py-5">
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> <?= htmlspecialchars($_SESSION['success_message']) ?>
+        </div>
+        <?php unset($_SESSION['success_message']); endif; ?>
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($_SESSION['error_message']) ?>
+        </div>
+        <?php unset($_SESSION['error_message']); endif; ?>
 
     <!-- ================= HEADER ================= -->
     <div class="d-flex align-items-center gap-3 mb-5">
@@ -152,24 +180,30 @@ $data_bromo = mysqli_query($conn, $query_bromo);
         </div>
     </div>
 
-    <!-- ================= TABEL PEMESANAN ================= -->
-    <h4 class="fw-bold mb-3">Riwayat Pemesanan Wisata</h4>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Kode Booking</th>
-                    <th>Nama Pemesan</th>
-                    <th>Paket</th>
-                    <th>Kota</th>
-                    <th>Tanggal Tour</th>
-                    <th>Peserta</th>
-                    <th>Total Bayar</th>
-                    <th>Status</th>
-                    <th>Waktu Pesan</th>
-                </tr>
-            </thead>
+    <!-- ================= TABEL PEMESANAN WISATA ================= -->
+    <div class="mb-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-map-fill" style="font-size: 1.5rem; color: #145C43;"></i>
+            <h4 class="fw-bold mb-0">Riwayat Pemesanan Paket Wisata</h4>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No</th>
+                        <th>Kode Booking</th>
+                        <th>Nama Pemesan</th>
+                        <th>Paket</th>
+                        <th>Kota</th>
+                        <th>Tanggal Tour</th>
+                        <th>Peserta</th>
+                        <th>Total Bayar</th>
+                        <th>Status</th>
+                        <th>Bukti Pembayaran</th>
+                        <th>Aksi</th>
+                        <th>Waktu Pesan</th>
+                    </tr>
+                </thead>
             <tbody>
             <?php if (mysqli_num_rows($data_pemesanan) > 0): ?>
                 <?php $no = 1; while ($row = mysqli_fetch_assoc($data_pemesanan)): ?>
@@ -186,17 +220,69 @@ $data_bromo = mysqli_query($conn, $query_bromo);
                         Rp <?= number_format($row['total_bayar'], 0, ',', '.') ?>
                     </td>
                     <td>
-                        <span class="badge 
-                            <?= $row['status_bayar'] == 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
-                            <?= ucfirst($row['status_bayar']) ?>
+                        <?php 
+                        $statusPemesanan = $row['status_bayar_pemesanan'];
+                        $statusPembayaran = $row['status_bayar_pembayaran'];
+                        $isLunas = ($statusPemesanan === 'lunas') || ($statusPembayaran === 'lunas');
+                        ?>
+                        <span class="badge <?= $isLunas ? 'bg-success' : 'bg-warning text-dark' ?>">
+                            <?= $isLunas ? '✓ Lunas' : ($statusPembayaran ?: ($statusPemesanan ?: 'pending')) ?>
                         </span>
                     </td>
-<td><?= date('d M Y H:i', strtotime($row['tanggal_pesan'])) ?></td>
+                    <td>
+                        <?php 
+                        // Query bukti pembayaran dari tabel pembayaran
+                        $proofQuery = "SELECT bukti_bayar FROM pembayaran WHERE kode_booking = ? LIMIT 1";
+                        $proofStmt = $conn->prepare($proofQuery);
+                        if ($proofStmt) {
+                            $proofStmt->bind_param('s', $row['kode_booking']);
+                            $proofStmt->execute();
+                            $proofRes = $proofStmt->get_result();
+                            $proofRow = $proofRes->fetch_assoc();
+                            $buktiFile = $proofRow['bukti_bayar'] ?? null;
+                            $proofStmt->close();
+                        }
+                        ?>
+                        <?php if ($buktiFile): ?>
+                            <a href="../uploads/bukti_bayar/<?= urlencode($buktiFile) ?>" 
+                               class="btn btn-sm btn-info" 
+                               target="_blank"
+                               title="Lihat Bukti Pembayaran">
+                                <i class="bi bi-image"></i> Lihat
+                            </a>
+                        <?php else: ?>
+                            <span class="text-muted text-center" style="display: inline-block; width: 100%;">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column gap-2">
+                            <?php if ($isLunas): ?>
+                                <a href="../payment_success.php?kode=<?= urlencode($row['kode_booking']) ?>" class="btn btn-sm btn-outline-success" title="Lihat Invoice Pembayaran">
+                                    <i class="bi bi-receipt"></i> Invoice
+                                </a>
+                                <?php if ($row['tanggal_konfirmasi']): ?>
+                                    <small class="text-success">
+                                        <i class="bi bi-calendar-check"></i> <?= date('d M Y', strtotime($row['tanggal_konfirmasi'])) ?>
+                                    </small>
+                                <?php endif; ?>
+                            <?php elseif (in_array(($statusPembayaran ?? 'pending'), ['menunggu_verifikasi','pending'])): ?>
+                                <form method="POST" action="verify_payment.php" class="d-inline">
+                                    <input type="hidden" name="kode_booking" value="<?= htmlspecialchars($row['kode_booking']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Verifikasi pembayaran untuk <?= htmlspecialchars($row['kode_booking']) ?>?')">
+                                        <i class="bi bi-check-circle"></i> Verifikasi
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <span class="text-muted">-</span>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+<td><?= date('d M Y H:i', strtotime($row['waktu_pesan_display'])) ?></td>
                 </tr>
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="10" class="text-center text-muted">
+                    <td colspan="12" class="text-center text-muted">
                         Belum ada pemesanan
                     </td>
                 </tr>
@@ -204,10 +290,14 @@ $data_bromo = mysqli_query($conn, $query_bromo);
             </tbody>
         </table>
     </div>
+    </div>
 
-</div>
-
-<h4 class="fw-bold mt-5 mb-3">Riwayat Pemesanan Gunung Bromo</h4>
+    <!-- ================= TABEL PEMESANAN BROMO ================= -->
+    <div class="mt-5">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-mountain" style="font-size: 1.5rem; color: #dc2626;"></i>
+            <h4 class="fw-bold mb-0">Riwayat Pemesanan Gunung Bromo</h4>
+        </div>
 
 <div class="table-responsive">
 <table class="table table-bordered table-striped align-middle">
@@ -261,6 +351,7 @@ $data_bromo = mysqli_query($conn, $query_bromo);
 </tbody>
 </table>
 </div>
+    </div>
 
 
 <!-- ================= CHART JS ================= -->
@@ -272,7 +363,7 @@ new Chart(document.getElementById('chartPemesanan'), {
         labels: ['Pemesanan'],
         datasets: [{
             data: [<?= $total_pemesanan ?>],
-            backgroundColor: ['#198754']
+            backgroundColor: ['#0d6efd']
         }]
     },
     options: {

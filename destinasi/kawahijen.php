@@ -173,20 +173,20 @@ Commenting out local sidebar styles to avoid conflicts
 
 /* Tombol menu (Hamburger) */
 .menu-icon {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #00b050, #38d39f); /* Warna hijau/teal */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  border-radius: 10px; /* Membuat sudut membulat seperti gambar */
-  cursor: pointer;
-  z-index: 1200;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00b050, #38d39f); /* Warna hijau/teal */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 10px; /* Membuat sudut membulat seperti gambar */
+  cursor: pointer;
+  z-index: 1200;
 }
 .menu-icon div { 
     width:22px; 

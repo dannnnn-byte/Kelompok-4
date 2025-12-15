@@ -1,17 +1,37 @@
 <?php
+// Buffer output to prevent stray whitespace from breaking JSON
+ob_start();
+
 session_start();
 include 'koneksi.php';
 
-// Enable error reporting untuk debugging
+// Enable error logging (hide display)
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
+// Return JSON even on fatal errors
+header('Content-Type: application/json');
+register_shutdown_function(function () {
+    $error = error_get_last();
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        // Clean any partial output and return JSON
+        if (function_exists('ob_get_level') && ob_get_level() > 0) {
+            ob_clean();
+        }
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => 'Terjadi kesalahan di server.',
+            'detail' => $error['message']
+        ]);
+    }
+});
+
 error_log("=== Payment Processor Called ===");
 error_log("Method: " . $_SERVER['REQUEST_METHOD']);
 error_log("POST Data: " . print_r($_POST, true));
-
-header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -48,7 +68,6 @@ if (!$pemesanan) {
 switch ($action) {
     case 'generate':
         $method = $_POST['method'] ?? '';
-        
         if ($method === 'qris') {
             generateQRIS($pemesanan, $conn);
         } elseif ($method === 'va') {
@@ -57,11 +76,11 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Metode pembayaran tidak valid']);
         }
         break;
-        
+
     case 'check_status':
         checkPaymentStatus($kode_booking, $conn);
         break;
-        
+
     default:
         echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
 }
@@ -102,7 +121,7 @@ function generateQRIS($pemesanan, $conn) {
             jumlah_bayar,
             qr_code,
             status_bayar,
-            tgl_bayar
+            tanggal_bayar
         ) VALUES (
             '$next_id',
             '{$pemesanan['id_pemesanan']}',
@@ -191,7 +210,7 @@ function generateVA($pemesanan, $conn) {
                 bank,
                 jumlah_bayar,
                 status_bayar,
-                tgl_bayar
+                tanggal_bayar
             ) VALUES (
                 '$base_id',
                 '{$pemesanan['id_pemesanan']}',
@@ -239,7 +258,14 @@ function generateQRCode($kode_booking, $amount) {
 }
 
 function generateVANumber() {
-    return str_pad(rand(0, 9999999999), 10, '0', STR_PAD_LEFT);
+    // Generate a 10-digit numeric string; fallback if random_int is unavailable
+    $digits = '';
+    $useRandomInt = function_exists('random_int');
+    for ($i = 0; $i < 10; $i++) {
+        $d = $useRandomInt ? random_int(0, 9) : mt_rand(0, 9);
+        $digits .= (string) $d;
+    }
+    return $digits;
 }
 
 function generateQRISHTML($payment, $pemesanan) {
@@ -585,7 +611,7 @@ function generateVAHTML($payment, $pemesanan) {
 
 function checkPaymentStatus($kode_booking, $conn) {
     $kode_booking = mysqli_real_escape_string($conn, $kode_booking);
-    $query = "SELECT status_bayar FROM pembayaran WHERE kode_booking = '$kode_booking' ORDER BY tgl_bayar DESC LIMIT 1";
+    $query = "SELECT status_bayar FROM pembayaran WHERE kode_booking = '$kode_booking' ORDER BY tanggal_bayar DESC LIMIT 1";
     $result = mysqli_query($conn, $query);
     
     if (mysqli_num_rows($result) > 0) {
@@ -601,4 +627,3 @@ function checkPaymentStatus($kode_booking, $conn) {
         ]);
     }
 }
-?>

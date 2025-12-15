@@ -85,8 +85,28 @@ $result_penumpang = mysqli_query($conn, $query_penumpang);
                         <i class="bi bi-hourglass-split"></i>
                         <div>
                             <p class="label">Status</p>
-                            <span class="status-badge menunggu_verifikasi">
-                                <i class="bi bi-clock-history"></i> Menunggu Verifikasi
+                            <?php 
+                                $status = strtolower($payment['status_bayar'] ?? ($pemesanan['status_bayar'] ?? 'pending'));
+                                if ($status === 'lunas') {
+                                    $badgeClass = 'lunas';
+                                    $iconClass = 'bi bi-check-circle';
+                                    $statusText = 'Lunas';
+                                } elseif ($status === 'menunggu_verifikasi') {
+                                    $badgeClass = 'menunggu_verifikasi';
+                                    $iconClass = 'bi bi-clock-history';
+                                    $statusText = 'Menunggu Verifikasi';
+                                } elseif ($status === 'dibatalkan') {
+                                    $badgeClass = 'menunggu_verifikasi';
+                                    $iconClass = 'bi bi-x-circle';
+                                    $statusText = 'Dibatalkan';
+                                } else {
+                                    $badgeClass = 'menunggu_verifikasi';
+                                    $iconClass = 'bi bi-clock-history';
+                                    $statusText = 'Pending';
+                                }
+                            ?>
+                            <span class="status-badge <?= $badgeClass ?>">
+                                <i class="<?= $iconClass ?>"></i> <?= $statusText ?>
                             </span>
                         </div>
                     </div>
@@ -166,7 +186,7 @@ $result_penumpang = mysqli_query($conn, $query_penumpang);
 /* Tambahkan CSS dari file lama yang sudah ada styling success page */
 </style>
 
-<?php include 'includes/footer.php'; ?>
+
 
 <script>
 // (JS preview yang sama — tidak berubah)
@@ -174,7 +194,6 @@ const fileInput = document.getElementById('bukti_bayar');
 // ... tetapkan semua JS yang Anda punya (untuk ringkas saya tidak ulang semuanya di sini)
 </script>
 
-<?php include 'includes/footer.php'; ?>
 <style>
 .success-wrapper {
     max-width: 900px;

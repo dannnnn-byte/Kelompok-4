@@ -257,39 +257,55 @@ function selectPayment(method) {
         </div>
     `;
 
-    // Load payment detail via AJAX
+    // Load payment detail via AJAX (robust handling)
+    const payload = new URLSearchParams({
+        action: 'generate',
+        method,
+        kode_booking: '<?= $kode_booking ?>'
+    }).toString();
+
     fetch('payment_processor.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `action=generate&method=${method}&kode_booking=<?= $kode_booking ?>`
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (method === 'qris') {
-                document.getElementById('paymentDetail').innerHTML = data.html;
-            } else {
-                document.getElementById('paymentDetail').innerHTML = data.html;
-            }
+    .then(async (response) => {
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+        }
+        // Try parsing JSON; if it fails, surface the raw text
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            throw new Error('Respon bukan JSON yang valid.\n' + text.slice(0, 200));
+        }
+    })
+    .then((data) => {
+        if (data && data.success) {
+            document.getElementById('paymentDetail').innerHTML = data.html;
             document.getElementById('btnConfirmPayment').style.display = 'block';
         } else {
+            const msg = (data && data.message) ? data.message : 'Terjadi kesalahan pada server.';
+            const detail = (data && data.detail) ? `<div class="error-detail">Detail: ${String(data.detail).slice(0, 300)}</div>` : '';
             document.getElementById('paymentDetail').innerHTML = `
                 <div class="alert alert-danger">
                     <i class="bi bi-exclamation-triangle"></i>
-                    ${data.message}
+                    ${msg}
+                    ${detail}
                 </div>
             `;
         }
     })
-    .catch(error => {
+    .catch((error) => {
         document.getElementById('paymentDetail').innerHTML = `
             <div class="alert alert-danger">
                 <i class="bi bi-exclamation-triangle"></i>
-                Terjadi kesalahan. Silakan coba lagi.
+                Terjadi kesalahan. ${error.message}
             </div>
         `;
+        console.error('Payment detail error:', error);
     });
 }
 

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 14 Des 2025 pada 20.32
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Generation Time: Dec 15, 2025 at 10:31 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `admins`
+-- Table structure for table `admins`
 --
 
 CREATE TABLE `admins` (
@@ -34,7 +34,7 @@ CREATE TABLE `admins` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `admins`
+-- Dumping data for table `admins`
 --
 
 INSERT INTO `admins` (`id`, `username`, `password`) VALUES
@@ -44,7 +44,7 @@ INSERT INTO `admins` (`id`, `username`, `password`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `booking_log`
+-- Table structure for table `booking_log`
 --
 
 CREATE TABLE `booking_log` (
@@ -56,17 +56,19 @@ CREATE TABLE `booking_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `booking_log`
+-- Dumping data for table `booking_log`
 --
 
 INSERT INTO `booking_log` (`id_log`, `id_pemesanan`, `aktivitas`, `keterangan`, `created_at`) VALUES
 (1, 'PMS1765740615', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT20251214936C', '2025-12-14 19:30:15'),
-(2, 'PMS1765740688', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT2025121434BA', '2025-12-14 19:31:28');
+(2, 'PMS1765740688', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT2025121434BA', '2025-12-14 19:31:28'),
+(3, 'PMS1765786370', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT20251215CABD', '2025-12-15 08:12:50'),
+(4, 'PMS1765787348', 'Pemesanan Dibuat', 'Booking baru dengan kode: JWT202512151371', '2025-12-15 08:29:08');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `destinasi`
+-- Table structure for table `destinasi`
 --
 
 CREATE TABLE `destinasi` (
@@ -76,7 +78,7 @@ CREATE TABLE `destinasi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `destinasi`
+-- Dumping data for table `destinasi`
 --
 
 INSERT INTO `destinasi` (`id`, `kota`, `gambar`) VALUES
@@ -85,7 +87,7 @@ INSERT INTO `destinasi` (`id`, `kota`, `gambar`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `hotel`
+-- Table structure for table `hotel`
 --
 
 CREATE TABLE `hotel` (
@@ -100,7 +102,7 @@ CREATE TABLE `hotel` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kota`
+-- Table structure for table `kota`
 --
 
 CREATE TABLE `kota` (
@@ -110,7 +112,7 @@ CREATE TABLE `kota` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `kota`
+-- Dumping data for table `kota`
 --
 
 INSERT INTO `kota` (`id_kota`, `nama_kota`, `gambar_kota`) VALUES
@@ -122,7 +124,7 @@ INSERT INTO `kota` (`id_kota`, `nama_kota`, `gambar_kota`) VALUES
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `master_hotel`
+-- Table structure for table `master_hotel`
 --
 
 CREATE TABLE `master_hotel` (
@@ -134,7 +136,7 @@ CREATE TABLE `master_hotel` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `master_hotel`
+-- Dumping data for table `master_hotel`
 --
 
 INSERT INTO `master_hotel` (`id_hotel`, `nama_hotel`, `bintang`, `lokasi`, `gambar_hotel`) VALUES
@@ -146,7 +148,7 @@ INSERT INTO `master_hotel` (`id_hotel`, `nama_hotel`, `bintang`, `lokasi`, `gamb
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `master_transport`
+-- Table structure for table `master_transport`
 --
 
 CREATE TABLE `master_transport` (
@@ -158,7 +160,7 @@ CREATE TABLE `master_transport` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `master_transport`
+-- Dumping data for table `master_transport`
 --
 
 INSERT INTO `master_transport` (`id_transport`, `jenis_kendaraan`, `kapasitas_kursi`, `fasilitas_mobil`, `gambar_transport`) VALUES
@@ -170,7 +172,7 @@ INSERT INTO `master_transport` (`id_transport`, `jenis_kendaraan`, `kapasitas_ku
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -183,7 +185,7 @@ CREATE TABLE `orders` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `paket_fasilitas`
+-- Table structure for table `paket_fasilitas`
 --
 
 CREATE TABLE `paket_fasilitas` (
@@ -194,7 +196,7 @@ CREATE TABLE `paket_fasilitas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `paket_fasilitas`
+-- Dumping data for table `paket_fasilitas`
 --
 
 INSERT INTO `paket_fasilitas` (`id_fasilitas`, `id_paket`, `jenis`, `item`) VALUES
@@ -207,7 +209,7 @@ INSERT INTO `paket_fasilitas` (`id_fasilitas`, `id_paket`, `jenis`, `item`) VALU
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `paket_itinerary`
+-- Table structure for table `paket_itinerary`
 --
 
 CREATE TABLE `paket_itinerary` (
@@ -219,7 +221,7 @@ CREATE TABLE `paket_itinerary` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `paket_itinerary`
+-- Dumping data for table `paket_itinerary`
 --
 
 INSERT INTO `paket_itinerary` (`id_itinerary`, `id_paket`, `hari_ke`, `jam`, `kegiatan`) VALUES
@@ -231,7 +233,7 @@ INSERT INTO `paket_itinerary` (`id_itinerary`, `id_paket`, `hari_ke`, `jam`, `ke
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `paket_wisata`
+-- Table structure for table `paket_wisata`
 --
 
 CREATE TABLE `paket_wisata` (
@@ -248,7 +250,7 @@ CREATE TABLE `paket_wisata` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `paket_wisata`
+-- Dumping data for table `paket_wisata`
 --
 
 INSERT INTO `paket_wisata` (`id_paket`, `nama_paket`, `harga_per_pax`, `durasi`, `id_hotel`, `id_transport`, `fasilitas_lain`, `gambar_paket`, `id_kota`, `deskripsi_wisata`) VALUES
@@ -261,23 +263,42 @@ INSERT INTO `paket_wisata` (`id_paket`, `nama_paket`, `harga_per_pax`, `durasi`,
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pembayaran`
+-- Table structure for table `pembayaran`
 --
 
 CREATE TABLE `pembayaran` (
-  `id_pembayaran` int(11) NOT NULL,
+  `id_pembayaran` varchar(50) NOT NULL,
   `id_pemesanan` varchar(20) NOT NULL,
-  `tgl_bayar` datetime DEFAULT current_timestamp(),
+  `kode_booking` varchar(50) DEFAULT NULL,
+  `metode_bayar` varchar(50) DEFAULT NULL,
+  `tanggal_bayar` datetime NOT NULL DEFAULT current_timestamp(),
   `jumlah_bayar` decimal(15,2) NOT NULL,
-  `bukti_transfer` varchar(255) DEFAULT NULL,
+  `no_va` varchar(50) DEFAULT NULL,
+  `bank` varchar(50) DEFAULT NULL,
+  `qr_code` text DEFAULT NULL,
+  `bukti_bayar` varchar(255) DEFAULT NULL,
   `bank_asal` varchar(50) DEFAULT NULL,
-  `nama_pengirim` varchar(100) DEFAULT NULL
+  `nama_pengirim` varchar(100) DEFAULT NULL,
+  `status_bayar` enum('pending','menunggu_verifikasi','lunas','dibatalkan') DEFAULT 'pending',
+  `catatan` text DEFAULT NULL,
+  `tanggal_konfirmasi` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pembayaran`
+--
+
+INSERT INTO `pembayaran` (`id_pembayaran`, `id_pemesanan`, `kode_booking`, `metode_bayar`, `tanggal_bayar`, `jumlah_bayar`, `no_va`, `bank`, `qr_code`, `bukti_bayar`, `bank_asal`, `nama_pengirim`, `status_bayar`, `catatan`, `tanggal_konfirmasi`) VALUES
+('1', 'PMS1765787348', 'JWT202512151371', 'qris', '2025-12-15 15:50:32', 450000.00, NULL, NULL, 'QRIS_JWT202512151371_450000.00', NULL, NULL, NULL, 'pending', NULL, NULL),
+('2', 'PMS1765787348', 'JWT202512151371', 'va_bca', '2025-12-15 15:50:37', 450000.00, '0143968597817', 'BCA', NULL, NULL, NULL, NULL, 'pending', NULL, NULL),
+('3', 'PMS1765787348', 'JWT202512151371', 'va_bni', '2025-12-15 15:50:37', 450000.00, '0093559988202', 'BNI', NULL, NULL, NULL, NULL, 'pending', NULL, NULL),
+('4', 'PMS1765787348', 'JWT202512151371', 'va_bri', '2025-12-15 15:50:37', 450000.00, '0020142663713', 'BRI', NULL, NULL, NULL, NULL, 'pending', NULL, NULL),
+('5', 'PMS1765787348', 'JWT202512151371', 'va_mandiri', '2025-12-15 15:50:37', 450000.00, '0080665575093', 'Mandiri', NULL, NULL, NULL, NULL, 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pemesanan`
+-- Table structure for table `pemesanan`
 --
 
 CREATE TABLE `pemesanan` (
@@ -298,17 +319,19 @@ CREATE TABLE `pemesanan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `pemesanan`
+-- Dumping data for table `pemesanan`
 --
 
 INSERT INTO `pemesanan` (`id_pemesanan`, `kode_booking`, `id_user`, `id_paket`, `tgl_tour`, `tanggal_keberangkatan`, `jumlah_peserta`, `jumlah_dewasa`, `jumlah_anak`, `total_bayar`, `total_harga`, `status_bayar`, `status`, `tanggal_pesan`) VALUES
 ('PMS1765740615', 'JWT20251214936C', NULL, 2, '2025-12-24', NULL, 1, 1, 0, 450000.00, 450000.00, 'pending', 'pending', '2025-12-14 20:30:15'),
-('PMS1765740688', 'JWT2025121434BA', NULL, 3, '2025-12-24', NULL, 1, 1, 0, 250000.00, 250000.00, 'pending', 'pending', '2025-12-14 20:31:28');
+('PMS1765740688', 'JWT2025121434BA', NULL, 3, '2025-12-24', NULL, 1, 1, 0, 250000.00, 250000.00, 'pending', 'pending', '2025-12-14 20:31:28'),
+('PMS1765786370', 'JWT20251215CABD', NULL, 1, '2025-12-16', NULL, 1, 1, 0, 350000.00, 350000.00, 'pending', 'pending', '2025-12-15 09:12:50'),
+('PMS1765787348', 'JWT202512151371', NULL, 2, '2025-12-25', NULL, 1, 1, 0, 450000.00, 450000.00, 'pending', 'pending', '2025-12-15 09:29:08');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `penumpang`
+-- Table structure for table `penumpang`
 --
 
 CREATE TABLE `penumpang` (
@@ -324,17 +347,19 @@ CREATE TABLE `penumpang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `penumpang`
+-- Dumping data for table `penumpang`
 --
 
 INSERT INTO `penumpang` (`id_penumpang`, `id_pemesanan`, `nama_lengkap`, `email`, `no_telepon`, `alamat`, `no_identitas`, `tipe_penumpang`, `created_at`) VALUES
 (1, 'PMS1765740615', 'huhu', 'asda@gyadyagdabda.com', '0812836178236', 'ajbsndjabdjas', '12312321312312321', 'Dewasa', '2025-12-14 19:30:15'),
-(2, 'PMS1765740688', 'riko tampati', 'Rikoboy@gmail.com', '0812836178236', 'smnuad', '1234567890123456', 'Dewasa', '2025-12-14 19:31:28');
+(2, 'PMS1765740688', 'riko tampati', 'Rikoboy@gmail.com', '0812836178236', 'smnuad', '1234567890123456', 'Dewasa', '2025-12-14 19:31:28'),
+(3, 'PMS1765786370', 'akska', 'alifbai@gmail.com', '0808012122323', 'jl.wownokoko', '242422121212121', 'Dewasa', '2025-12-15 08:12:50'),
+(4, 'PMS1765787348', 'alif bai', 'alifbai@gmail.com', '08080808232323', 'alskalkslakslkals', '24242424242422323', 'Dewasa', '2025-12-15 08:29:08');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `reviews`
+-- Table structure for table `reviews`
 --
 
 CREATE TABLE `reviews` (
@@ -349,7 +374,7 @@ CREATE TABLE `reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `reviews`
+-- Dumping data for table `reviews`
 --
 
 INSERT INTO `reviews` (`id`, `kota`, `nama`, `rating`, `komentar`, `created_at`, `tempat`, `balasan_admin`) VALUES
@@ -361,7 +386,7 @@ INSERT INTO `reviews` (`id`, `kota`, `nama`, `rating`, `komentar`, `created_at`,
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -374,7 +399,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `password`, `role`, `no_telepon`) VALUES
@@ -389,70 +414,70 @@ INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `password`, `role`, `no
 --
 
 --
--- Indeks untuk tabel `admins`
+-- Indexes for table `admins`
 --
 ALTER TABLE `admins`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- Indeks untuk tabel `booking_log`
+-- Indexes for table `booking_log`
 --
 ALTER TABLE `booking_log`
   ADD PRIMARY KEY (`id_log`);
 
 --
--- Indeks untuk tabel `destinasi`
+-- Indexes for table `destinasi`
 --
 ALTER TABLE `destinasi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `hotel`
+-- Indexes for table `hotel`
 --
 ALTER TABLE `hotel`
   ADD PRIMARY KEY (`id_hotel`);
 
 --
--- Indeks untuk tabel `kota`
+-- Indexes for table `kota`
 --
 ALTER TABLE `kota`
   ADD PRIMARY KEY (`id_kota`);
 
 --
--- Indeks untuk tabel `master_hotel`
+-- Indexes for table `master_hotel`
 --
 ALTER TABLE `master_hotel`
   ADD PRIMARY KEY (`id_hotel`);
 
 --
--- Indeks untuk tabel `master_transport`
+-- Indexes for table `master_transport`
 --
 ALTER TABLE `master_transport`
   ADD PRIMARY KEY (`id_transport`);
 
 --
--- Indeks untuk tabel `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `paket_fasilitas`
+-- Indexes for table `paket_fasilitas`
 --
 ALTER TABLE `paket_fasilitas`
   ADD PRIMARY KEY (`id_fasilitas`),
   ADD KEY `id_paket` (`id_paket`);
 
 --
--- Indeks untuk tabel `paket_itinerary`
+-- Indexes for table `paket_itinerary`
 --
 ALTER TABLE `paket_itinerary`
   ADD PRIMARY KEY (`id_itinerary`),
   ADD KEY `id_paket` (`id_paket`);
 
 --
--- Indeks untuk tabel `paket_wisata`
+-- Indexes for table `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
   ADD PRIMARY KEY (`id_paket`),
@@ -461,14 +486,16 @@ ALTER TABLE `paket_wisata`
   ADD KEY `fk_kota_paket` (`id_kota`);
 
 --
--- Indeks untuk tabel `pembayaran`
+-- Indexes for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD PRIMARY KEY (`id_pembayaran`),
-  ADD KEY `id_pemesanan` (`id_pemesanan`);
+  ADD KEY `id_pemesanan` (`id_pemesanan`),
+  ADD KEY `idx_kode_booking` (`kode_booking`),
+  ADD KEY `idx_status` (`status_bayar`);
 
 --
--- Indeks untuk tabel `pemesanan`
+-- Indexes for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
   ADD PRIMARY KEY (`id_pemesanan`),
@@ -476,136 +503,130 @@ ALTER TABLE `pemesanan`
   ADD KEY `id_paket` (`id_paket`);
 
 --
--- Indeks untuk tabel `penumpang`
+-- Indexes for table `penumpang`
 --
 ALTER TABLE `penumpang`
   ADD PRIMARY KEY (`id_penumpang`);
 
 --
--- Indeks untuk tabel `reviews`
+-- Indexes for table `reviews`
 --
 ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `admins`
+-- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT untuk tabel `booking_log`
+-- AUTO_INCREMENT for table `booking_log`
 --
 ALTER TABLE `booking_log`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `destinasi`
+-- AUTO_INCREMENT for table `destinasi`
 --
 ALTER TABLE `destinasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT untuk tabel `hotel`
+-- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
   MODIFY `id_hotel` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `kota`
+-- AUTO_INCREMENT for table `kota`
 --
 ALTER TABLE `kota`
   MODIFY `id_kota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `master_hotel`
+-- AUTO_INCREMENT for table `master_hotel`
 --
 ALTER TABLE `master_hotel`
   MODIFY `id_hotel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `master_transport`
+-- AUTO_INCREMENT for table `master_transport`
 --
 ALTER TABLE `master_transport`
   MODIFY `id_transport` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `paket_fasilitas`
+-- AUTO_INCREMENT for table `paket_fasilitas`
 --
 ALTER TABLE `paket_fasilitas`
   MODIFY `id_fasilitas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT untuk tabel `paket_itinerary`
+-- AUTO_INCREMENT for table `paket_itinerary`
 --
 ALTER TABLE `paket_itinerary`
   MODIFY `id_itinerary` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `paket_wisata`
+-- AUTO_INCREMENT for table `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
   MODIFY `id_paket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT untuk tabel `pembayaran`
---
-ALTER TABLE `pembayaran`
-  MODIFY `id_pembayaran` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `penumpang`
+-- AUTO_INCREMENT for table `penumpang`
 --
 ALTER TABLE `penumpang`
-  MODIFY `id_penumpang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_penumpang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT untuk tabel `reviews`
+-- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `paket_fasilitas`
+-- Constraints for table `paket_fasilitas`
 --
 ALTER TABLE `paket_fasilitas`
   ADD CONSTRAINT `paket_fasilitas_ibfk_1` FOREIGN KEY (`id_paket`) REFERENCES `paket_wisata` (`id_paket`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `paket_itinerary`
+-- Constraints for table `paket_itinerary`
 --
 ALTER TABLE `paket_itinerary`
   ADD CONSTRAINT `paket_itinerary_ibfk_1` FOREIGN KEY (`id_paket`) REFERENCES `paket_wisata` (`id_paket`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `paket_wisata`
+-- Constraints for table `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
   ADD CONSTRAINT `fk_kota_paket` FOREIGN KEY (`id_kota`) REFERENCES `kota` (`id_kota`) ON DELETE SET NULL,
@@ -613,13 +634,13 @@ ALTER TABLE `paket_wisata`
   ADD CONSTRAINT `paket_wisata_ibfk_2` FOREIGN KEY (`id_transport`) REFERENCES `master_transport` (`id_transport`) ON DELETE SET NULL;
 
 --
--- Ketidakleluasaan untuk tabel `pembayaran`
+-- Constraints for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD CONSTRAINT `pembayaran_ibfk_1` FOREIGN KEY (`id_pemesanan`) REFERENCES `pemesanan` (`id_pemesanan`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `pemesanan`
+-- Constraints for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
   ADD CONSTRAINT `pemesanan_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`),

@@ -51,6 +51,17 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
              href="<?= $basePath ?>pesan.php">Book Ticket</a>
         </li>
 
+        <?php if ($isLogin && !$isAdmin): ?>
+        <li class="nav-item position-relative mx-1">
+          <a class="nav-link text-white fw-semibold px-3 d-flex align-items-center gap-2"
+             href="<?= $basePath ?>wishlist.php">
+            <i class="bi bi-heart-fill"></i>
+            <span>Wishlist</span>
+            <span id="wishlistCountNav" class="badge bg-danger rounded-pill" style="display:none;">0</span>
+          </a>
+        </li>
+        <?php endif; ?>
+
           <?php if ($isLogin): ?>
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle text-white fw-semibold px-3"
@@ -129,3 +140,30 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
     </div>
   </div>
 </nav>
+<?php if ($isLogin && !$isAdmin): ?>
+<script>
+  (function(){
+    function updateWishlistCountNav(){
+      fetch('<?= $basePath ?>wishlist_handler.php?action=get_count')
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          var badge = document.getElementById('wishlistCountNav');
+          if (!badge) return;
+          var count = (data && data.count) ? parseInt(data.count) : 0;
+          if (count > 0){
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'inline-block';
+          } else {
+            badge.style.display = 'none';
+          }
+        })
+        .catch(function(){ /* ignore */ });
+    }
+    document.addEventListener('DOMContentLoaded', updateWishlistCountNav);
+    // Fallback if DOMContentLoaded already fired
+    setTimeout(updateWishlistCountNav, 500);
+    // Refresh periodically
+    setInterval(updateWishlistCountNav, 60000);
+  })();
+</script>
+<?php endif; ?>

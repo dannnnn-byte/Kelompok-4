@@ -264,4 +264,6 @@ function openTab(tabName) {
 }
 </script>
 
+<?php include 'includes/review_widget.php'; ?>
+
 <?php include 'includes/footer.php'; ?>

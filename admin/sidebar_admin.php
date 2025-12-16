@@ -23,6 +23,12 @@
         <li class="nav-item"><a href="dashboard.php" class="nav-link">
           <i class="bi bi-receipt"></i> Pemesanan
         </a></li>
+        <li class="nav-item"><a href="analytics.php" class="nav-link">
+          <i class="bi bi-graph-up"></i> Analytics
+        </a></li>
+        <li class="nav-item"><a href="promo_management.php" class="nav-link">
+          <i class="bi bi-gift"></i> Promo
+        </a></li>
         <li class="nav-item"><a href="logout.php" class="nav-link text-danger">
           <i class="bi bi-box-arrow-right"></i> Logout
         </a></li>

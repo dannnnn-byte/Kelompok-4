@@ -51,7 +51,15 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
              href="<?= $basePath ?>pesan.php">Book Ticket</a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link text-white fw-semibold px-3"
+             href="<?= $basePath ?>explore.php">Explore</a>
+        </li>
+
         <?php if ($isLogin && !$isAdmin): ?>
+        <li class="nav-item d-flex align-items-center mx-1">
+          <?php include $basePath . 'includes/notification_widget.php'; ?>
+        </li>
         <li class="nav-item position-relative mx-1">
           <a class="nav-link text-white fw-semibold px-3 d-flex align-items-center gap-2"
              href="<?= $basePath ?>wishlist.php">

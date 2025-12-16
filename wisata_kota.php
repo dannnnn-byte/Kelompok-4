@@ -4,6 +4,8 @@ include 'koneksi.php';
 include 'includes/header.php';
 include 'includes/navbar.php';
 include 'includes/dashboard_home.php';
+// Komponen wishlist (JS + CSS button)
+include 'includes/wishlist_button.php';
 
 // Ambil kota dari URL
 $kota_terpilih = isset($_GET['kota']) ? $_GET['kota'] : '';
@@ -56,6 +58,15 @@ $qPaket = mysqli_query($conn, "
                     <div class="card shadow-lg rounded-4 overflow-hidden h-100 position-relative" style="border: none; transition: transform 0.3s;">
                         <img src="img/<?= $p['gambar_paket']; ?>" class="card-img-top"
                              style="height:300px; object-fit:cover;">
+
+                        <!-- Wishlist Button -->
+                        <?php if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin'): ?>
+                        <button class="wishlist-btn" data-id="<?= $p['id_paket']; ?>"
+                                onclick="toggleWishlist(<?= $p['id_paket']; ?>, this)">
+                            <i class="bi bi-heart-fill"></i>
+                        </button>
+                        <script>checkWishlistStatus(<?= $p['id_paket']; ?>, document.currentScript.previousElementSibling);</script>
+                        <?php endif; ?>
 
                         <!-- ✅ Tombol CRUD untuk Admin -->
                         <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>

@@ -48,3 +48,9 @@
 
     <!-- Bootstrap JS (bundle includes Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <?php
+            // Tampilkan chat widget hanya untuk halaman non-admin
+            if (strpos($_SERVER['REQUEST_URI'], '/admin') === false) {
+                    include 'includes/chat_widget.php';
+            }
+        ?>

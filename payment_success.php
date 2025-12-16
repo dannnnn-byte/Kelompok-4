@@ -130,6 +130,9 @@ $result_penumpang = mysqli_query($conn, $query_penumpang);
 
             <!-- Action Buttons -->
             <div class="action-buttons-grid">
+                <a href="ticket_download.php?kode=<?= htmlspecialchars($kode_booking) ?>" class="btn-ticket">
+                    <i class="bi bi-ticket-perforated"></i> Cetak E-Ticket
+                </a>
                 <a href="index.php" class="btn-home">
                     <i class="bi bi-house"></i> Kembali ke Beranda
                 </a>
@@ -181,18 +184,6 @@ $result_penumpang = mysqli_query($conn, $query_penumpang);
         </div>
     </div>
 </div>
-
-<style>
-/* Tambahkan CSS dari file lama yang sudah ada styling success page */
-</style>
-
-
-
-<script>
-// (JS preview yang sama — tidak berubah)
-const fileInput = document.getElementById('bukti_bayar');
-// ... tetapkan semua JS yang Anda punya (untuk ringkas saya tidak ulang semuanya di sini)
-</script>
 
 <style>
 .success-wrapper {
@@ -447,7 +438,7 @@ const fileInput = document.getElementById('bukti_bayar');
     margin-bottom: 30px;
 }
 
-.btn-download, .btn-home {
+.btn-ticket, .btn-home {
     padding: 15px 30px;
     border-radius: 12px;
     font-weight: 600;
@@ -459,15 +450,15 @@ const fileInput = document.getElementById('bukti_bayar');
     transition: all 0.3s;
 }
 
-.btn-download {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+.btn-ticket {
+    background: linear-gradient(135deg, #145C43 0%, #10b981 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 4px 15px rgba(20, 92, 67, 0.3);
 }
 
-.btn-download:hover {
+.btn-ticket:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    box-shadow: 0 6px 20px rgba(20, 92, 67, 0.4);
 }
 
 .btn-home {

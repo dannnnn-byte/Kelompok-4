@@ -86,13 +86,16 @@ SELECT
     pb.total_harga,
     pb.status,
     pb.created_at,
-    COALESCE(u.nama_lengkap, 'User') AS nama_user
+    COALESCE(u.nama_lengkap, 'User') AS nama_user,
+    b.bukti_bayar
 FROM pemesanan_bromo pb
 LEFT JOIN users u ON pb.user_id = u.id_user
+LEFT JOIN pembayaran_bromo b ON pb.id = b.bromo_id
 ORDER BY pb.id DESC
 ";
 
 $data_bromo = mysqli_query($conn, $query_bromo);
+
 ?>
 
 <div class="container py-5">
@@ -439,66 +442,74 @@ $data_bromo = mysqli_query($conn, $query_bromo);
     <?php endwhile; ?>
     </div>
 
-    <!-- ================= TABEL PEMESANAN BROMO ================= -->
-    <div class="mt-5">
-        <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="bi bi-mountain" style="font-size: 1.5rem; color: #dc2626;"></i>
-            <h4 class="fw-bold mb-0">Riwayat Pemesanan Gunung Bromo</h4>
-        </div>
-
+  <!-- ================= TABEL PEMESANAN BROMO ================= -->
 <div class="table-responsive">
-<table class="table table-bordered table-striped align-middle">
-<thead class="table-dark">
-<tr>
-    <th>#</th>
-    <th>Nama User</th>
-    <th>Tanggal Kunjungan</th>
-    <th>Orang</th>
-    <th>Jeep</th>
-    <th>Trail</th>
-    <th>Total</th>
-    <th>Status</th>
-    <th>Waktu Pesan</th>
-</tr>
-</thead>
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Nama User</th>
+                <th>Tanggal Kunjungan</th>
+                <th>Orang</th>
+                <th>Jeep</th>
+                <th>Trail</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Bukti Pembayaran</th>
+                <th>Waktu Pesan</th>
+                <th>Aksi</th> <!-- Tambahan kolom aksi -->
+            </tr>
+        </thead>
+        <tbody>
+        <?php if (mysqli_num_rows($data_bromo) > 0): ?>
+            <?php $no = 1; while($b = mysqli_fetch_assoc($data_bromo)): ?>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td><?= htmlspecialchars($b['nama_user']) ?></td>
+                    <td><?= date('d M Y', strtotime($b['tanggal_kunjungan'])) ?></td>
+                    <td><?= $b['jumlah_orang'] ?> org</td>
+                    <td><?= $b['sewa_jeep'] === 'ya' ? 'Ya' : '-' ?></td>
+                    <td><?= $b['sewa_trail'] === 'ya' ? $b['jumlah_trail'].' unit' : '-' ?></td>
+                    <td>Rp <?= number_format($b['total_harga'], 0, ',', '.') ?></td>
+                    <td>
+                        <span class="badge <?= $b['status'] === 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
+                            <?= ucfirst($b['status']) ?>
+                        </span>
+                    </td>
+                    <td>
+                        <?php if (!empty($b['bukti_bayar'])): ?>
+                            <a href="../uploads/bukti_bromo/<?= htmlspecialchars(urlencode($b['bukti_bayar'])) ?>" 
+                               class="btn btn-sm btn-info" target="_blank" title="Lihat Bukti Pembayaran">
+                                <i class="bi bi-image"></i> Lihat
+                            </a>
+                        <?php else: ?>
+                            <span class="text-muted">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= date('d M Y H:i', strtotime($b['created_at'])) ?></td>
+                    <td>
+    <?php if($b['status'] !== 'paid'): ?>
+        <a href="../lunas_bromo.php?id=<?= $b['id'] ?>" 
+           class="btn btn-sm btn-success"
+           onclick="return confirm('Yakin ingin menandai sebagai Lunas?');">
+           Lunaskan
+        </a>
+    <?php else: ?>
+        <span class="text-success fw-bold">Sudah Lunas</span>
+    <?php endif; ?>
+</td>
 
-<tbody>
-<?php if (mysqli_num_rows($data_bromo) > 0): ?>
-<?php $no=1; while($b=mysqli_fetch_assoc($data_bromo)): ?>
-<tr>
-    <td><?= $no++ ?></td>
-    <td><?= htmlspecialchars($b['nama_user']) ?></td>
-    <td><?= date('d M Y', strtotime($b['tanggal_kunjungan'])) ?></td>
-    <td><?= $b['jumlah_orang'] ?> org</td>
-    <td><?= $b['sewa_jeep']=='ya' ? 'Ya' : '-' ?></td>
-    <td>
-        <?= $b['sewa_trail']=='ya'
-            ? $b['jumlah_trail'].' unit'
-            : '-' ?>
-    </td>
-    <td>
-        Rp <?= number_format($b['total_harga'],0,',','.') ?>
-    </td>
-    <td>
-        <span class="badge 
-        <?= $b['status']=='paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
-            <?= ucfirst($b['status']) ?>
-        </span>
-    </td>
-    <td><?= date('d M Y H:i', strtotime($b['created_at'])) ?></td>
-</tr>
-<?php endwhile; ?>
-<?php else: ?>
-<tr>
-    <td colspan="9" class="text-center text-muted">
-        Belum ada pemesanan Bromo
-    </td>
-</tr>
-<?php endif; ?>
-</tbody>
-</table>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="11" class="text-center text-muted">Belum ada pemesanan Bromo</td>
+            </tr>
+        <?php endif; ?>
+        </tbody>
+    </table>
 </div>
-    </div>
+
 
 
 <!-- ================= CHART JS ================= -->

@@ -189,7 +189,7 @@ if (isset($_POST['pesan_bromo'])) {
 
     echo "<script>
         alert('Pemesanan berhasil! Total: Rp ".number_format($total,0,',','.')."');
-        window.location='../riwayat.php';
+        window.location='../riwayat_bromo.php';
     </script>";
     exit;
 }
@@ -491,7 +491,7 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
   <div class="container">
 
     <a class="navbar-brand d-flex align-items-center text-white fs-4 ms-5"
-       href="<?= $basePath ?>index.php">
+       href="<?= $basePath ?>../index.php">
 
       <img src="<?= $basePath ?>../img/jawatrip1.png"
            alt="logo"
@@ -510,12 +510,12 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 
         <li class="nav-item">
           <a class="nav-link text-white fw-semibold px-3"
-             href="<?= $basePath ?>index.php">Home</a>
+             href="<?= $basePath ?>../index.php">Home</a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link text-white fw-semibold px-3"
-             href="<?= $basePath ?>pesan.php">Book Ticket</a>
+             href="<?= $basePath ?>../pesan.php">Book Ticket</a>
         </li>
 
           <?php if ($isLogin): ?>

@@ -90,6 +90,12 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
              Riwayat Pesanan
           </a>
         </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>riwayat_bromo.php">
+             Riwayat Pesanan Bromo
+          </a>
+        </li>
         <li><hr class="dropdown-divider"></li>
       <?php endif; ?>
 

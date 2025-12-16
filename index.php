@@ -2,7 +2,12 @@
 session_start();
 
 
-if (isset($_SESSION['login_success'])): ?>
+include 'koneksi.php';
+
+$role = $_SESSION['role'] ?? 'guest';
+?>
+
+<?php if (isset($_SESSION['login_success'])): ?>
 <div id="loginToast" class="login-toast show">
     <div class="toast-icon">✔</div>
     <div class="toast-text"><?= $_SESSION['login_success']; ?></div>
@@ -96,6 +101,67 @@ if (isset($_SESSION['login_success'])): ?>
               </div>
             </div>
           </a>
+
+ <?php
+$q = mysqli_query($conn,
+  "SELECT * FROM destinasi_populer WHERE aktif=1 ORDER BY id DESC");
+?>
+
+<div class="destination-wrapper">
+
+<?php while ($d = mysqli_fetch_assoc($q)) : ?>
+
+  <div class="dest-card-wrapper">
+
+    <!-- CARD DESTINASI -->
+    <a href="destinasi/<?= $d['slug'] ?>.php" class="promo-link">
+      <div class="dest-card">
+        <img src="uploads/destinasi/<?= $d['gambar'] ?>" alt="<?= $d['nama'] ?>">
+        <div class="dest-overlay">
+          <p class="dest-category">WISATA</p>
+          <h3 class="dest-title"><?= strtoupper($d['nama']) ?></h3>
+          <span class="dest-btn">LIHAT SELENGKAPNYA</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- TOMBOL HAPUS (ADMIN ONLY) -->
+    <?php if (($_SESSION['role'] ?? '') === 'admin') : ?>
+      <form action="admin/hapus_destinasi_populer.php"
+            method="POST"
+            class="delete-dest-form"
+            onsubmit="return confirm('Yakin ingin menghapus destinasi ini?');">
+        <input type="hidden" name="id" value="<?= $d['id'] ?>">
+        <button type="submit" class="btn-delete" title="Hapus Destinasi">
+          Hapus
+        </button>
+      </form>
+    <?php endif; ?>
+
+  </div>
+
+<?php endwhile; ?>
+
+<?php if (($_SESSION['role'] ?? '') === 'admin') : ?>
+  <!-- CARD TAMBAH DESTINASI -->
+  <a href="admin/tambah_destinasi_populer.php" class="promo-link">
+    <div class="dest-card add-dest">
+      <div class="add-icon">+</div>
+      <p>Tambah Destinasi</p>
+    </div>
+  </a>
+<?php endif; ?>
+
+</div>
+
+
+
+    </div>
+  </div>
+</section>
+
+          
+          
 
         </div>
       </div>
@@ -216,6 +282,89 @@ if (isset($_SESSION['login_success'])): ?>
     font-weight: 800;
     font-size: 20px;
 }
+
+.add-destination-card{
+  border:3px dashed #28a745;
+  background:rgba(255,255,255,0.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:260px;
+  transition:.3s;
+}
+.add-destination-card:hover{
+  background:rgba(40,167,69,.15);
+  transform:scale(1.03);
+}
+.add-destination-content{
+  text-align:center;
+  color:#28a745;
+  font-weight:800;
+}
+.add-icon{
+  font-size:64px;
+  line-height:1;
+}
+.login-toast{
+  position:fixed;
+  top:30px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#28a745;
+  color:#fff;
+  padding:15px 25px;
+  border-radius:10px;
+  z-index:9999;
+}
+
+.add-dest {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #28a745;
+  background: #f8fff8;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.add-dest:hover {
+  background: #eaffea;
+}
+
+.add-icon {
+  font-size: 60px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+
+.dest-card-wrapper {
+  position: relative;
+}
+
+.delete-dest-form {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+}
+
+.btn-delete {
+  background: rgba(0,0,0,0.65);
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.btn-delete:hover {
+  background: #dc3545;
+}
+
+
 </style>
 
    <div class="promo-container">
@@ -295,6 +444,7 @@ if (isset($_SESSION['login_success'])): ?>
             setTimeout(() => toast.remove(), 1000);
         }, 3000);
     }
+    
 </script>
 
 

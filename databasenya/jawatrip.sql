@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 16 Des 2025 pada 10.39
+-- Waktu pembuatan: 16 Des 2025 pada 12.39
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -84,6 +84,30 @@ CREATE TABLE `destinasi` (
 
 INSERT INTO `destinasi` (`id`, `kota`, `gambar`) VALUES
 (5, 'Sumenep', 'img/Sumenep1.jpeg');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `destinasi_populer`
+--
+
+CREATE TABLE `destinasi_populer` (
+  `id` int(11) NOT NULL,
+  `nama` varchar(150) DEFAULT NULL,
+  `slug` varchar(150) DEFAULT NULL,
+  `gambar` varchar(255) DEFAULT NULL,
+  `aktif` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `destinasi_populer`
+--
+
+INSERT INTO `destinasi_populer` (`id`, `nama`, `slug`, `gambar`, `aktif`, `created_at`) VALUES
+(1, 'pantai lombang', 'Pantai Lombang - Sampang', '1765883832-Pantai Lombang - Sampang.png', 0, '2025-12-16 11:17:12'),
+(2, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765884846-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:34:06'),
+(3, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765885037-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:37:17');
 
 -- --------------------------------------------------------
 
@@ -415,7 +439,7 @@ INSERT INTO `pemesanan_bromo` (`id`, `user_id`, `tanggal_kunjungan`, `jumlah_ora
 (26, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:40:29', NULL, NULL, NULL, NULL, '2025-12-16 16:03:25'),
 (27, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:42:05', NULL, NULL, NULL, NULL, '2025-12-16 15:50:52'),
 (28, 2, '2025-12-19', 5, 'ya', 'tidak', 1, 745000, 'paid', '2025-12-16 08:53:07', NULL, NULL, NULL, NULL, '2025-12-16 15:57:54'),
-(29, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'pending', '2025-12-16 09:21:46', NULL, NULL, NULL, NULL, NULL),
+(29, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'paid', '2025-12-16 09:21:46', NULL, NULL, NULL, NULL, NULL),
 (30, 2, '2025-12-19', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 09:29:09', NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -522,6 +546,12 @@ ALTER TABLE `booking_log`
 -- Indeks untuk tabel `destinasi`
 --
 ALTER TABLE `destinasi`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `destinasi_populer`
+--
+ALTER TABLE `destinasi_populer`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -648,6 +678,12 @@ ALTER TABLE `booking_log`
 --
 ALTER TABLE `destinasi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `destinasi_populer`
+--
+ALTER TABLE `destinasi_populer`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `hotel`

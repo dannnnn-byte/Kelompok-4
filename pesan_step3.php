@@ -89,7 +89,13 @@ $query_insert = "INSERT INTO pemesanan (
         }
         
         // Insert data penumpang
-        foreach ($penumpang as $p) {
+        foreach ($penumpang as $index => $p) {
+            // Skip jika tipe tidak didefinisikan
+            if (!isset($p['tipe'])) {
+                error_log("Warning: Penumpang index $index tidak memiliki tipe");
+                continue;
+            }
+            
             // Escape input untuk keamanan
             $nama = mysqli_real_escape_string($conn, $p['nama']);
             $email = mysqli_real_escape_string($conn, $p['email']);
@@ -97,6 +103,8 @@ $query_insert = "INSERT INTO pemesanan (
             $alamat = mysqli_real_escape_string($conn, $p['alamat']);
             $identitas = mysqli_real_escape_string($conn, $p['identitas']);
             $tipe = $p['tipe'];
+            
+            error_log("Insert Penumpang $index: Nama=$nama, Tipe=$tipe");
             
             $query_penumpang = "INSERT INTO penumpang (
                 id_pemesanan, 
@@ -117,7 +125,7 @@ $query_insert = "INSERT INTO pemesanan (
             )";
             
             if (!mysqli_query($conn, $query_penumpang)) {
-                throw new Exception("Error insert penumpang: " . mysqli_error($conn));
+                throw new Exception("Error insert penumpang $index: " . mysqli_error($conn));
             }
         }
         

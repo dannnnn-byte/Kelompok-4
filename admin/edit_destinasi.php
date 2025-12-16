@@ -7,17 +7,38 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$id = $_GET['id'];
-$data = mysqli_query($conn, "SELECT * FROM destinasi WHERE id=$id");
-$d = mysqli_fetch_assoc($data);
+// Support both ID dan nama kota
+$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$kota_name = isset($_GET['kota']) ? mysqli_real_escape_string($conn, $_GET['kota']) : null;
 
-if (isset($_POST['update'])) {
-    $kota   = $_POST['kota'];
-    $gambar = $_POST['gambar'];
-
-    mysqli_query($conn, "UPDATE destinasi SET kota='$kota', gambar='$gambar' WHERE id=$id");
+if ($id) {
+    $data = mysqli_query($conn, "SELECT * FROM destinasi WHERE id=$id");
+} else if ($kota_name) {
+    $data = mysqli_query($conn, "SELECT * FROM destinasi WHERE kota='$kota_name'");
+} else {
     header("Location: ../wisata.php");
     exit;
+}
+
+$d = mysqli_fetch_assoc($data);
+
+if (!$d) {
+    header("Location: ../wisata.php");
+    exit;
+}
+
+if (isset($_POST['update'])) {
+    $kota_baru = mysqli_real_escape_string($conn, $_POST['kota']);
+    $gambar = mysqli_real_escape_string($conn, $_POST['gambar']);
+
+    $query = "UPDATE destinasi SET kota='$kota_baru', gambar='$gambar' WHERE id=" . $d['id'];
+    if (mysqli_query($conn, $query)) {
+        $_SESSION['success_message'] = "Destinasi berhasil diperbarui";
+        header("Location: ../wisata.php");
+        exit;
+    } else {
+        $error = "Error: " . mysqli_error($conn);
+    }
 }
 ?>
 
@@ -26,25 +47,46 @@ if (isset($_POST['update'])) {
 <head>
 <title>Edit Destinasi</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
-<body class="container py-5">
+<body class="bg-light py-5">
 
-<h3 class="fw-bold mb-4">Edit Destinasi</h3>
+<div class="container" style="max-width: 600px;">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-pencil"></i> Edit Destinasi</h5>
+        </div>
+        <div class="card-body">
+            <?php if (isset($error)): ?>
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+            </div>
+            <?php endif; ?>
 
-<form method="POST">
-  <div class="mb-3">
-    <label class="form-label">Nama Kota</label>
-    <input type="text" name="kota" class="form-control" value="<?= $d['kota'] ?>" required>
-  </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Nama Kota <span class="text-danger">*</span></label>
+                    <input type="text" name="kota" class="form-control" value="<?= htmlspecialchars($d['kota']) ?>" required>
+                </div>
 
-  <div class="mb-3">
-    <label class="form-label">Path Gambar</label>
-    <input type="text" name="gambar" class="form-control" value="<?= $d['gambar'] ?>" required>
-  </div>
+                <div class="mb-3">
+                    <label class="form-label">Path Gambar <span class="text-danger">*</span></label>
+                    <input type="text" name="gambar" class="form-control" value="<?= htmlspecialchars($d['gambar']) ?>" placeholder="img/batu.webp" required>
+                    <small class="text-muted">Format: img/nama_file.ext</small>
+                </div>
 
-  <button name="update" class="btn btn-warning">Update</button>
-  <a href="../wisata.php" class="btn btn-secondary">Kembali</a>
-</form>
+                <div class="d-flex gap-2">
+                    <a href="../wisata.php" class="btn btn-secondary fw-bold" style="padding: 8px 16px; border-radius: 5px;">
+                        <i class="bi bi-arrow-left"></i> Batal
+                    </a>
+                    <button type="submit" name="update" class="btn btn-primary fw-bold" style="padding: 8px 16px; border-radius: 5px;">
+                        <i class="bi bi-check-circle-fill"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

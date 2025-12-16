@@ -48,11 +48,11 @@ SELECT
     COALESCE(pay.tanggal_bayar, p.tanggal_pesan) AS waktu_pesan_display,
     pk.nama_paket,
     k.nama_kota,
-    COALESCE(u.nama_lengkap, (
+    COALESCE((
         SELECT nama_lengkap FROM penumpang 
         WHERE id_pemesanan = p.id_pemesanan 
         ORDER BY id_penumpang ASC LIMIT 1
-    ), 'Guest') AS nama_pemesan,
+    ), u.nama_lengkap, 'Guest') AS nama_pemesan,
     pay.status_bayar AS status_bayar_pembayaran,
     pay.tanggal_bayar,
     pay.tanggal_konfirmasi
@@ -256,6 +256,15 @@ $data_bromo = mysqli_query($conn, $query_bromo);
                     </td>
                     <td>
                         <div class="d-flex flex-column gap-2">
+                            <!-- View Passengers Button -->
+                            <button type="button" 
+                                    class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#pesertaModal<?= $row['id_pemesanan'] ?>"
+                                    title="Lihat Daftar Peserta">
+                                <i class="bi bi-people"></i> Lihat Peserta
+                            </button>
+                            
                             <?php if ($isLunas): ?>
                                 <a href="../payment_success.php?kode=<?= urlencode($row['kode_booking']) ?>" class="btn btn-sm btn-outline-success" title="Lihat Invoice Pembayaran">
                                     <i class="bi bi-receipt"></i> Invoice
@@ -268,13 +277,32 @@ $data_bromo = mysqli_query($conn, $query_bromo);
                             <?php elseif (in_array(($statusPembayaran ?? 'pending'), ['menunggu_verifikasi','pending'])): ?>
                                 <form method="POST" action="verify_payment.php" class="d-inline">
                                     <input type="hidden" name="kode_booking" value="<?= htmlspecialchars($row['kode_booking']) ?>">
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Verifikasi pembayaran untuk <?= htmlspecialchars($row['kode_booking']) ?>?')">
-                                        <i class="bi bi-check-circle"></i> Verifikasi
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold" 
+                                            onclick="return confirm('Verifikasi pembayaran untuk <?= htmlspecialchars($row['kode_booking']) ?>?');"
+                                            style="padding: 6px 12px; border-radius: 5px;">
+                                        <i class="bi bi-check-circle-fill"></i> Verifikasi
                                     </button>
                                 </form>
                             <?php else: ?>
                                 <span class="text-muted">-</span>
                             <?php endif; ?>
+                            <!-- Edit & Delete Buttons -->
+                            <div class="d-flex gap-2" style="margin-top: 8px;">
+                                <a href="edit_pemesanan.php?id=<?= urlencode($row['id_pemesanan']) ?>" 
+                                   class="btn btn-sm btn-warning fw-bold" 
+                                   title="Edit Pemesanan"
+                                   style="padding: 6px 12px; border-radius: 5px;">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <form method="POST" action="delete_pemesanan.php" class="d-inline">
+                                    <input type="hidden" name="id_pemesanan" value="<?= htmlspecialchars($row['id_pemesanan']) ?>">
+                                    <button type="submit" class="btn btn-sm btn-danger fw-bold" 
+                                            onclick="return confirm('Yakin hapus pemesanan <?= htmlspecialchars($row['kode_booking']) ?>? Data penumpang juga akan terhapus.');"
+                                            style="padding: 6px 12px; border-radius: 5px;">
+                                        <i class="bi bi-trash-fill"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </td>
 <td><?= date('d M Y H:i', strtotime($row['waktu_pesan_display'])) ?></td>
@@ -290,6 +318,125 @@ $data_bromo = mysqli_query($conn, $query_bromo);
             </tbody>
         </table>
     </div>
+    
+    <!-- ================= MODALS PESERTA ================= -->
+    <?php 
+    // Reset pointer untuk query peserta
+    mysqli_data_seek($data_pemesanan, 0);
+    while ($row = mysqli_fetch_assoc($data_pemesanan)): 
+        $id_pemesanan = $row['id_pemesanan'];
+        
+        // Query peserta untuk booking ini
+        $query_peserta = "SELECT * FROM penumpang WHERE id_pemesanan = '$id_pemesanan' ORDER BY id_penumpang ASC";
+        $result_peserta = mysqli_query($conn, $query_peserta);
+    ?>
+    <div class="modal fade" id="pesertaModal<?= $id_pemesanan ?>" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-people"></i> Daftar Peserta Pemesanan
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p class="mb-2"><strong>Kode Booking:</strong> <?= htmlspecialchars($row['kode_booking']) ?></p>
+                        <p class="mb-2"><strong>Paket:</strong> <?= htmlspecialchars($row['nama_paket']) ?></p>
+                        <p class="mb-0"><strong>Tanggal Tour:</strong> <?= date('d M Y', strtotime($row['tgl_tour'])) ?></p>
+                    </div>
+                    
+                    <?php if (mysqli_num_rows($result_peserta) > 0): ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px;">No</th>
+                                    <th>Nama Lengkap</th>
+                                    <th>Email</th>
+                                    <th>No. Telepon</th>
+                                    <th>Tipe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $no = 1; while ($peserta = mysqli_fetch_assoc($result_peserta)): ?>
+                                <tr>
+                                    <td><?= $no++ ?></td>
+                                    <td><strong><?= htmlspecialchars($peserta['nama_lengkap']) ?></strong></td>
+                                    <td><?= htmlspecialchars($peserta['email']) ?></td>
+                                    <td><?= htmlspecialchars($peserta['no_telepon']) ?></td>
+                                    <td>
+                                        <span class="badge <?= $peserta['tipe_penumpang'] === 'Dewasa' ? 'bg-success' : 'bg-info' ?>">
+                                            <?= ucfirst($peserta['tipe_penumpang']) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Detail Peserta Lengkap -->
+                    <div class="mt-4">
+                        <h6 class="fw-bold mb-3">Detail Lengkap Peserta</h6>
+                        <?php 
+                        // Reset query untuk menampilkan detail lengkap
+                        mysqli_data_seek($result_peserta, 0);
+                        $no = 1;
+                        while ($peserta = mysqli_fetch_assoc($result_peserta)): 
+                        ?>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="bi bi-person-badge"></i> Peserta <?= $no ?> - 
+                                    <span class="badge <?= $peserta['tipe_penumpang'] === 'Dewasa' ? 'bg-success' : 'bg-info' ?>">
+                                        <?= ucfirst($peserta['tipe_penumpang']) ?>
+                                    </span>
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-2">
+                                            <strong>Nama:</strong><br>
+                                            <?= htmlspecialchars($peserta['nama_lengkap']) ?>
+                                        </p>
+                                        <p class="mb-2">
+                                            <strong>Email:</strong><br>
+                                            <?= htmlspecialchars($peserta['email']) ?>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-2">
+                                            <strong>No. Telepon:</strong><br>
+                                            <?= htmlspecialchars($peserta['no_telepon']) ?>
+                                        </p>
+                                        <p class="mb-2">
+                                            <strong>No. Identitas:</strong><br>
+                                            <?= htmlspecialchars($peserta['no_identitas']) ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="mb-0">
+                                    <strong>Alamat:</strong><br>
+                                    <small><?= htmlspecialchars($peserta['alamat']) ?></small>
+                                </p>
+                            </div>
+                        </div>
+                        <?php $no++; endwhile; ?>
+                    </div>
+                    
+                    <?php else: ?>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Tidak ada data peserta untuk pemesanan ini
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endwhile; ?>
     </div>
 
     <!-- ================= TABEL PEMESANAN BROMO ================= -->

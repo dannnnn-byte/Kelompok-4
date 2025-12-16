@@ -26,25 +26,45 @@ $paket = mysqli_fetch_assoc($result_paket);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_penumpang'])) {
     // Debug: Cek data yang diterima
     error_log("POST Data: " . print_r($_POST, true));
+    error_log("Total Penumpang Expected: " . $total_penumpang);
+    error_log("Total Penumpang Dikirim: " . count($_POST['penumpang']));
     
     // Validasi data penumpang
     $valid = true;
-    foreach ($_POST['penumpang'] as $index => $p) {
+    $missingCount = 0;
+    
+    // Periksa semua indeks dari 1 sampai total_penumpang
+    for ($i = 1; $i <= $total_penumpang; $i++) {
+        if (!isset($_POST['penumpang'][$i])) {
+            $valid = false;
+            $missingCount++;
+            error_log("Penumpang $i: TIDAK ADA");
+            continue;
+        }
+        
+        $p = $_POST['penumpang'][$i];
+        
         if (empty($p['nama']) || empty($p['email']) || empty($p['telepon']) || 
             empty($p['alamat']) || empty($p['identitas'])) {
             $valid = false;
-            $_SESSION['error'] = "Data penumpang $index tidak lengkap!";
+            error_log("Penumpang $i: Data tidak lengkap. Nama: {$p['nama']}, Email: {$p['email']}, Telepon: {$p['telepon']}, Alamat: {$p['alamat']}, Identitas: {$p['identitas']}");
+            $_SESSION['error'] = "Data penumpang ke-$i tidak lengkap!";
             break;
         }
+        error_log("Penumpang $i: OK");
     }
     
-    if ($valid) {
+    if ($valid && $missingCount == 0) {
         $_SESSION['penumpang'] = $_POST['penumpang'];
         header("Location: pesan_step3.php?id_paket=$id_paket");
         exit;
     } else {
         // Jangan redirect, tampilkan error
-        echo "<script>alert('Mohon lengkapi semua data penumpang!');</script>";
+        if ($missingCount > 0) {
+            echo "<script>alert('Ada $missingCount penumpang yang tidak memiliki data lengkap. Silakan isi semua form penumpang.');</script>";
+        } else {
+            echo "<script>alert('Mohon lengkapi semua data penumpang!');</script>";
+        }
     }
 }
 

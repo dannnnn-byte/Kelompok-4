@@ -307,8 +307,8 @@ document.getElementById('reviewModal')?.addEventListener('shown.bs.modal', funct
     setupReviewForm();
 });
 
-// Initial setup on page load
-setupReviewForm();
+function loadReviews() {
+    // Ambil daftar review + ringkasan rating
     fetch('review_system.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -316,44 +316,44 @@ setupReviewForm();
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            // Update rating overview
-            document.getElementById('avgRating').textContent = data.avg_rating || '0.0';
-            document.getElementById('totalReviews').textContent = data.total_reviews;
-            
-            // Update stars
-            const avgStars = document.getElementById('avgStars');
-            avgStars.innerHTML = '';
-            for (let i = 1; i <= 5; i++) {
-                avgStars.innerHTML += `<i class="bi bi-star${i <= Math.round(data.avg_rating) ? '-fill' : ''}"></i>`;
-            }
-            
-            // Display reviews
-            const list = document.getElementById('reviewsList');
-            if (data.reviews.length == 0) {
-                list.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-dots fs-1"></i><p class="mt-3">Belum ada review. Jadilah yang pertama!</p></div>';
-            } else {
-                list.innerHTML = data.reviews.map(r => `
-                    <div class="review-card">
-                        <div class="d-flex gap-3">
-                            <div class="avatar-circle">${r.nama_lengkap?.charAt(0) || 'U'}</div>
-                            <div class="flex-fill">
-                                <h6 class="fw-bold mb-1">${r.nama_lengkap || 'Anonymous'}</h6>
-                                <div class="stars mb-2">
-                                    ${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}
-                                    ${'<i class="bi bi-star"></i>'.repeat(5 - r.rating)}
-                                </div>
-                                <p class="mb-1">${r.review_text}</p>
-                                <small class="text-muted"><i class="bi bi-clock"></i> ${new Date(r.created_at).toLocaleDateString('id-ID')}</small>
+        if (!data.success) return;
+
+        document.getElementById('avgRating').textContent = data.avg_rating || '0.0';
+        document.getElementById('totalReviews').textContent = data.total_reviews;
+
+        const avgStars = document.getElementById('avgStars');
+        avgStars.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+            avgStars.innerHTML += `<i class="bi bi-star${i <= Math.round(data.avg_rating) ? '-fill' : ''}"></i>`;
+        }
+
+        const list = document.getElementById('reviewsList');
+        if (!data.reviews || data.reviews.length === 0) {
+            list.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-dots fs-1"></i><p class="mt-3">Belum ada review. Jadilah yang pertama!</p></div>';
+        } else {
+            list.innerHTML = data.reviews.map(r => `
+                <div class="review-card">
+                    <div class="d-flex gap-3">
+                        <div class="avatar-circle">${r.nama_lengkap?.charAt(0) || 'U'}</div>
+                        <div class="flex-fill">
+                            <h6 class="fw-bold mb-1">${r.nama_lengkap || 'Anonymous'}</h6>
+                            <div class="stars mb-2">
+                                ${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}
+                                ${'<i class="bi bi-star"></i>'.repeat(5 - r.rating)}
                             </div>
+                            <p class="mb-1">${r.review_text}</p>
+                            <small class="text-muted"><i class="bi bi-clock"></i> ${new Date(r.created_at).toLocaleDateString('id-ID')}</small>
                         </div>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
         }
+    })
+    .catch(err => {
+        console.error('Load reviews error:', err);
     });
-    
-    // Load stats
+
+    // Ambil statistik rating
     fetch('review_system.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -361,25 +361,29 @@ setupReviewForm();
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) {
-            const total = Object.values(data.stats).reduce((a, b) => a + b, 0);
-            const statsHtml = Object.keys(data.stats).sort((a, b) => b - a).map(star => {
-                const count = data.stats[star];
-                const percentage = total > 0 ? (count / total * 100) : 0;
-                return `
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <small class="text-nowrap">${star} <i class="bi bi-star-fill text-warning"></i></small>
-                        <div class="rating-bar flex-fill">
-                            <div class="rating-bar-fill" style="width: ${percentage}%"></div>
-                        </div>
-                        <small class="text-muted">${count}</small>
+        if (!data.success) return;
+        const total = Object.values(data.stats).reduce((a, b) => a + b, 0);
+        const statsHtml = Object.keys(data.stats).sort((a, b) => b - a).map(star => {
+            const count = data.stats[star];
+            const percentage = total > 0 ? (count / total * 100) : 0;
+            return `
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <small class="text-nowrap">${star} <i class="bi bi-star-fill text-warning"></i></small>
+                    <div class="rating-bar flex-fill">
+                        <div class="rating-bar-fill" style="width: ${percentage}%"></div>
                     </div>
-                `;
-            }).join('');
-            document.getElementById('ratingStats').innerHTML = statsHtml;
-        }
+                    <small class="text-muted">${count}</small>
+                </div>
+            `;
+        }).join('');
+        document.getElementById('ratingStats').innerHTML = statsHtml;
+    })
+    .catch(err => {
+        console.error('Load stats error:', err);
     });
+}
 
-// Initial load
+// Initial setup on page load
+setupReviewForm();
 loadReviews();
 </script>

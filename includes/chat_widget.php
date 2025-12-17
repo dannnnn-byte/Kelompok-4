@@ -10,12 +10,12 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     border: none;
     color: white;
     font-size: 1.8rem;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 20px rgba(20, 92, 67, 0.4);
     transition: all 0.3s;
     display: flex;
     align-items: center;
@@ -24,7 +24,7 @@
 }
 .chat-button:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+    box-shadow: 0 6px 30px rgba(20, 92, 67, 0.6);
 }
 .chat-button .badge-notification {
     position: absolute;
@@ -46,9 +46,9 @@
     position: absolute;
     bottom: 80px;
     right: 0;
-    width: 350px;
+    width: 420px;
     max-width: calc(100vw - 40px);
-    height: 500px;
+    height: 600px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
@@ -65,7 +65,7 @@
     to { transform: translateY(0); opacity: 1; }
 }
 .chat-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     color: white;
     padding: 20px;
     display: flex;
@@ -119,7 +119,7 @@
     border-bottom-left-radius: 4px;
 }
 .chat-message.sent .chat-message-bubble {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     color: white;
     border-bottom-right-radius: 4px;
 }
@@ -144,13 +144,13 @@
     outline: none;
 }
 .chat-input:focus {
-    border-color: #667eea;
+    border-color: #145C43;
 }
 .chat-send-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     border: none;
     color: white;
     cursor: pointer;
@@ -160,24 +160,31 @@
     transform: scale(1.1);
 }
 .chat-quick-replies {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
     border-top: 1px solid #eee;
+    max-height: 140px;
+    overflow-y: auto;
 }
 .quick-reply-btn {
-    background: white;
-    border: 1px solid #667eea;
-    color: #667eea;
-    padding: 8px 15px;
+    border: 1.5px solid #145C43;
+    color: #145C43;
+    padding: 10px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden
     cursor: pointer;
     transition: all 0.3s;
 }
 .quick-reply-btn:hover {
-    background: #667eea;
+    background: #145C43;
     color: white;
 }
 .typing-indicator {
@@ -241,6 +248,21 @@
             </button>
             <button class="quick-reply-btn" onclick="sendQuickReply('Kontak CS')">
                 📞 Kontak CS
+            </button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Destinasi apa saja?')">
+                🗺️ Destinasi
+            </button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Berapa durasi?')">
+                ⏱️ Durasi
+            </button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Fasilitas apa saja?')">
+                🎒 Fasilitas
+            </button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Tentang Wishlist')">
+                💝 Wishlist
+            </button>
+            <button class="quick-reply-btn" onclick="sendQuickReply('Metode pembayaran')">
+                💳 Pembayaran
             </button>
         </div>
 
@@ -342,19 +364,68 @@ function removeTyping() {
 function getBotResponse(message) {
     const msg = message.toLowerCase();
     
-    if (msg.includes('booking') || msg.includes('pesan')) {
+    // Booking & Pemesanan
+    if (msg.includes('booking') || msg.includes('pesan') || msg.includes('reservasi')) {
         return 'Untuk booking, pilih paket wisata yang diinginkan, lalu klik tombol "Book Now". Isi data lengkap dan ikuti instruksi pembayaran. 🎫';
-    } else if (msg.includes('harga') || msg.includes('biaya')) {
-        return 'Harga paket mulai dari Rp 250.000 per orang. Harga sudah termasuk transportasi, tiket masuk, dan guide. Cek halaman paket untuk detail lengkap! 💰';
-    } else if (msg.includes('kontak') || msg.includes('cs') || msg.includes('wa')) {
-        return 'Customer Service kami siap membantu! 📞\nWhatsApp: 0812-3456-7890\nEmail: info@jawatrip.com\nJam operasional: 08:00 - 20:00 WIB';
-    } else if (msg.includes('lokasi') || msg.includes('alamat')) {
-        return 'Kantor kami ada di Malang, Jawa Timur. Untuk meeting point setiap trip akan disesuaikan dengan paket yang dipilih. 📍';
-    } else if (msg.includes('pembayaran') || msg.includes('bayar')) {
-        return 'Pembayaran bisa via transfer bank (BCA, Mandiri, BNI) atau e-wallet (GoPay, OVO, Dana). Upload bukti transfer setelah pembayaran ya! 💳';
-    } else {
-        return 'Terima kasih atas pertanyaannya! Tim CS kami akan segera merespons. Atau hubungi WhatsApp kami di 0812-3456-7890 untuk respon lebih cepat. 😊';
     }
+    
+    // Harga & Paket
+    if (msg.includes('harga') || msg.includes('biaya') || msg.includes('paket') || msg.includes('promo')) {
+        return 'Harga paket mulai dari Rp 250.000 per orang. Harga sudah termasuk transportasi, tiket masuk, dan guide. Ada promo spesial setiap bulannya! 💰';
+    }
+    
+    // Kontak & Customer Service
+    if (msg.includes('kontak') || msg.includes('cs') || msg.includes('wa') || msg.includes('hubungi') || msg.includes('telepon')) {
+        return 'Customer Service kami siap membantu! 📞\nWhatsApp: 0812-3456-7890\nEmail: info@jawatrip.com\nJam operasional: 08:00 - 20:00 WIB';
+    }
+    
+    // Lokasi & Alamat
+    if (msg.includes('lokasi') || msg.includes('alamat') || msg.includes('mana') || msg.includes('dimana')) {
+        return 'Kantor kami ada di Malang, Jawa Timur. Untuk meeting point setiap trip akan disesuaikan dengan paket yang dipilih. 📍';
+    }
+    
+    // Pembayaran & Transaksi
+    if (msg.includes('pembayaran') || msg.includes('bayar') || msg.includes('transfer') || msg.includes('invoice')) {
+        return 'Pembayaran bisa via transfer bank (BCA, Mandiri, BNI) atau e-wallet (GoPay, OVO, Dana). Upload bukti transfer setelah pembayaran ya! 💳';
+    }
+    
+    // Destinasi & Wisata
+    if (msg.includes('destinasi') || msg.includes('wisata') || msg.includes('bromo') || msg.includes('malang') || msg.includes('batu')) {
+        return 'Kami menawarkan berbagai destinasi menarik di Jawa Timur mulai dari Bromo, Museum Angkut, Alun-Alun Batu, hingga pantai eksotis. Pilih sesuai minatmu! 🗺️';
+    }
+    
+    // Durasi & Waktu
+    if (msg.includes('durasi') || msg.includes('berapa hari') || msg.includes('berapa lama') || msg.includes('jam')) {
+        return 'Paket kami tersedia dengan berbagai durasi dari 1 hari, 2 hari, hingga paket custom sesuai kebutuhan. Cek detail paket untuk informasi lengkap! ⏱️';
+    }
+    
+    // Fasilitas & Layanan
+    if (msg.includes('fasilitas') || msg.includes('termasuk') || msg.includes('apa saja') || msg.includes('include')) {
+        return 'Setiap paket sudah termasuk: transportasi, tiket masuk, guide profesional, makan siang, dan asuransi perjalanan. Detail lengkap ada di halaman paket! 🎒';
+    }
+    
+    // Pembatalan & Refund
+    if (msg.includes('batal') || msg.includes('cancel') || msg.includes('refund') || msg.includes('ganti')) {
+        return 'Pembatalan bisa dilakukan hingga 7 hari sebelum keberangkatan dengan syarat dan ketentuan berlaku. Hubungi CS kami untuk detail lebih lanjut! 📋';
+    }
+    
+    // Rating & Review
+    if (msg.includes('review') || msg.includes('rating') || msg.includes('testimoni') || msg.includes('pengalaman')) {
+        return 'Kami senang dengan review positif dari ribuan pelanggan puas! Tulis review kamu di halaman detail paket untuk membantu traveler lain. Terima kasih! ⭐';
+    }
+    
+    // Grup & Rombongan
+    if (msg.includes('grup') || msg.includes('rombongan') || msg.includes('keluarga') || msg.includes('kerjasama')) {
+        return 'Untuk grup atau rombongan, kami tawarkan harga spesial dan paket custom. Hubungi CS kami untuk penawaran terbaik! 👥';
+    }
+    
+    // Favorit & Wishlist
+    if (msg.includes('favorit') || msg.includes('wishlist') || msg.includes('simpan') || msg.includes('bookmark')) {
+        return 'Fitur Wishlist memudahkanmu menyimpan destinasi favorit! Klik tombol ❤️ di setiap paket untuk menambahnya ke daftar favoritmu. 💝';
+    }
+    
+    // Default response
+    return 'Terima kasih atas pertanyaannya! 😊 Untuk respon lebih cepat, hubungi WhatsApp CS kami di 0812-3456-7890. Ada juga tim support email: info@jawatrip.com';
 }
 
 // Show badge notification on first visit

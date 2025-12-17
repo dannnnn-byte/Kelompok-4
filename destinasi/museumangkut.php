@@ -55,7 +55,7 @@ if (isset($_POST['submit_review'])) {
 
     echo "<script>
         alert('Terima kasih! Ulasan Anda berhasil dikirim.');
-        window.location='bromo.php';
+        window.location='museumangkut.php';
     </script>";
     exit;
 }
@@ -128,7 +128,7 @@ if (isset($_POST['reply_admin']) && $isAdmin) {
     $stmt->bind_param("si", $balasan, $review_id);
     $stmt->execute();
 
-    echo "<script>alert('Balasan admin berhasil dikirim'); window.location='bromo.php';</script>";
+    echo "<script>alert('Balasan admin berhasil dikirim'); window.location='.php';</script>";
     exit;
 }
 ?>
@@ -360,12 +360,12 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 
         <li class="nav-item">
           <a class="nav-link text-white fw-semibold px-3"
-             href="<?= $basePath ?>index.php">Home</a>
+             href="<?= $basePath ?>../index.php">Home</a>
         </li>
 
         <li class="nav-item">
           <a class="nav-link text-white fw-semibold px-3"
-             href="<?= $basePath ?>pesan.php">Book Ticket</a>
+             href="<?= $basePath ?>../pesan.php">Book Ticket</a>
         </li>
 
           <?php if ($isLogin): ?>
@@ -740,14 +740,6 @@ function openEditModal(id, rating, komentar){
     modal.show();
 }
 
-function openEditModal(id, rating, komentar) {
-    document.getElementById('edit_review_id').value = id;
-    document.getElementById('edit_rating').value = rating;
-    document.getElementById('edit_komentar').value = komentar;
-
-    var modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-}
 </script>
 
 <!-- MODAL EDIT REVIEW -->

@@ -10,6 +10,8 @@ if (!isset($_SESSION['login']) || $_SESSION['login'] !== true || $_SESSION['role
 include '../koneksi.php';
 include '../includes/header.php';
 include '../includes/navbar.php';
+include '../includes/dashboard_home.php';
+
 
 /* ================= NAMA ADMIN ================= */
 $nama_admin = $_SESSION['nama'] ?? $_SESSION['email'] ?? 'Admin';
@@ -508,6 +510,7 @@ $data_bromo = mysqli_query($conn, $query_bromo);
         <?php endif; ?>
         </tbody>
     </table>
+</div>
 </div>
 
 

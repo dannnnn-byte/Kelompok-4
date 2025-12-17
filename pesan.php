@@ -4,6 +4,7 @@ include 'auth_check.php';
 include 'koneksi.php';
 include 'includes/header.php';
 include 'includes/navbar.php';
+include 'includes/dashboard_home.php';
 
 
 // Ambil data dari URL

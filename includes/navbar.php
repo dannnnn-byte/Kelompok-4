@@ -3,6 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+
 $isLogin = isset($_SESSION['user_id']) || isset($_SESSION['admin_id']);
 
 $isAdmin = (

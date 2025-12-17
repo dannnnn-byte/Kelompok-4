@@ -1,171 +1,111 @@
 <?php
 session_start();
-
-
 include 'koneksi.php';
 
-$role = $_SESSION['role'] ?? 'guest';
-?>
+$role    = $_SESSION['role'] ?? 'guest';
+$isAdmin = ($role === 'admin');
 
+/* ================= AMBIL DESTINASI POPULER ================= */
+$destinasi = $conn->query(
+  "SELECT * FROM destinasi_populer 
+   WHERE aktif = 1 
+   ORDER BY id ASC"
+);
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>JawaTrip - Wisata Jawa Timur</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <?php include 'includes/header.php'; ?>
+  <link rel="stylesheet" href="assets/wisataPic.css">
+</head>
+<body>
+
+<?php include 'includes/navbar.php'; ?>
+<?php include 'includes/dashboard_home.php'; ?>
+
+<!-- ================= TOAST LOGIN ================= -->
 <?php if (isset($_SESSION['login_success'])): ?>
 <div id="loginToast" class="login-toast show">
-    <div class="toast-icon">✔</div>
-    <div class="toast-text"><?= $_SESSION['login_success']; ?></div>
+  <div class="toast-icon">✔</div>
+  <div class="toast-text"><?= $_SESSION['login_success']; ?></div>
 </div>
 <?php unset($_SESSION['login_success']); ?>
 <?php endif; ?>
 
-
-
-
-<?php include 'includes/header.php'; ?>
-<?php include 'includes/dashboard_home.php'; ?>
-
-
-<div class="main-content">
-
-    <?php include 'includes/navbar.php'; ?>
-
-    <section class="hero">
-      <div class="hero-overlay">
-        <div class="hero-content text-center text-white">
-          <h1 class="display-4 fw-bold">Paket Wisata Terbaik <span class="text-warning">JawaTrip</span></h1>
-          <p class="lead mt-3">
-            Nikmati liburan tak terlupakan di berbagai destinasi wisata terbaik Jawa Timur bersama kami!
-            Liburan asik tanpa harus mikirin ini-itu karena travel wisata Jawa Timur JawaTrip.id
-            sudah punya paket wisata komplit biar hari liburmu beneran jadi liburan asyik dengan tour planner dan guide terbaik. 
-          </p>
-          <a href="wisata.php" class="btn btn-success btn-lg mt-3 fw-semibold">Lihat Paket</a>
-        </div>
-      </div>
-    </section>
-
-    <link rel="stylesheet" href="assets/wisataPic.css">
-    <section class="destination-section">
-      <div class="container py-5">
-        <h2 class="text-center fw-bold text-success mb-5">Rekomendasi Destinasi Populer di Jawa Timur</h2>
-
-        <div class="destination-wrapper">
-
-          <a href="destinasi/bromo.php" class="promo-link">
-            <div class="dest-card">
-              <img src="img/bromo4.jpg" alt="bromo">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title">BROMO - LUMAJANG</h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="destinasi/tumpaksewu.php" class="promo-link">
-            <div class="dest-card">
-              <img src="img/tumpaksewu.jpg" alt="tumpaksewu">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title">TUMPAK SEWU - LUMAJANG</h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="destinasi/kawahijen.php" class="promo-link">
-            <div class="dest-card">
-              <img src="img/ijen2.jpg" alt="kawahijen">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title">KAWAH IJEN - BANYUWANGI</h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="destinasi/museumangkut.php" class="promo-link">
-            <div class="dest-card">
-              <img src="img/angkut.webp" alt="angkut">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title">MUSEUM ANGKUT - MALANG</h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
-
-          <a href="destinasi/wbl.php" class="promo-link">
-            <div class="dest-card">
-              <img src="img/wbl.jpg" alt="wbl">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title">WISATA BAHARI LAMONGAN - LAMONGAN</h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
-
- <?php
-$q = mysqli_query($conn,
-  "SELECT * FROM destinasi_populer WHERE aktif=1 ORDER BY id DESC");
-?>
-
-<div class="destination-wrapper">
-
-<?php while ($d = mysqli_fetch_assoc($q)) : ?>
-
-  <div class="dest-card-wrapper">
-
-    <!-- CARD DESTINASI -->
-    <a href="destinasi/<?= $d['slug'] ?>.php" class="promo-link">
-      <div class="dest-card">
-        <img src="uploads/destinasi/<?= $d['gambar'] ?>" alt="<?= $d['nama'] ?>">
-        <div class="dest-overlay">
-          <p class="dest-category">WISATA</p>
-          <h3 class="dest-title"><?= strtoupper($d['nama']) ?></h3>
-          <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-        </div>
-      </div>
-    </a>
-
-    <!-- TOMBOL HAPUS (ADMIN ONLY) -->
-    <?php if (($_SESSION['role'] ?? '') === 'admin') : ?>
-      <form action="admin/hapus_destinasi_populer.php"
-            method="POST"
-            class="delete-dest-form"
-            onsubmit="return confirm('Yakin ingin menghapus destinasi ini?');">
-        <input type="hidden" name="id" value="<?= $d['id'] ?>">
-        <button type="submit" class="btn-delete" title="Hapus Destinasi">
-          Hapus
-        </button>
-      </form>
-    <?php endif; ?>
-
-  </div>
-
-<?php endwhile; ?>
-
-<?php if (($_SESSION['role'] ?? '') === 'admin') : ?>
-  <!-- CARD TAMBAH DESTINASI -->
-  <a href="admin/tambah_destinasi_populer.php" class="promo-link">
-    <div class="dest-card add-dest">
-      <div class="add-icon">+</div>
-      <p>Tambah Destinasi</p>
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-overlay">
+    <div class="hero-content text-center text-white">
+      <h1 class="display-4 fw-bold">
+        Paket Wisata Terbaik <span class="text-warning">JawaTrip</span>
+      </h1>
+      <p class="lead mt-3">
+        Nikmati liburan tak terlupakan di berbagai destinasi wisata terbaik
+        Jawa Timur bersama tour planner dan guide profesional.
+      </p>
+      <a href="wisata.php" class="btn btn-success btn-lg mt-3 fw-semibold">
+        Lihat Paket
+      </a>
     </div>
-  </a>
-<?php endif; ?>
+  </div>
+</section>
 
-</div>
+<!-- ================= DESTINASI POPULER ================= -->
+<section class="destination-section">
+  <div class="container py-5">
 
+    <h2 class="text-center fw-bold text-success mb-5">
+      Rekomendasi Destinasi Populer di Jawa Timur
+    </h2>
 
+    <div class="destination-wrapper">
+
+      <?php while ($d = $destinasi->fetch_assoc()): ?>
+        <div class="dest-card-wrapper">
+
+          <a href="destinasi/<?= $d['slug']; ?>.php" class="promo-link">
+            <div class="dest-card">
+              <img src="<?= $d['gambar']; ?>" alt="<?= htmlspecialchars($d['nama']); ?>">
+              <div class="dest-overlay">
+                <p class="dest-category">WISATA</p>
+                <h3 class="dest-title"><?= strtoupper($d['nama']); ?></h3>
+                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
+              </div>
+            </div>
+          </a>
+
+          <!-- HAPUS (ADMIN ONLY) -->
+          <?php if ($isAdmin): ?>
+            <form action="admin/hapus_destinasi_populer.php"
+                  method="POST"
+                  class="delete-dest-form"
+                  onsubmit="return confirm('Nonaktifkan destinasi ini?');">
+              <input type="hidden" name="id" value="<?= $d['id']; ?>">
+              <button type="submit" class="btn-delete">✖</button>
+            </form>
+          <?php endif; ?>
+
+        </div>
+      <?php endwhile; ?>
+
+      <!-- TAMBAH DESTINASI -->
+      <?php if ($isAdmin): ?>
+        <a href="admin/tambah_destinasi_populer.php" class="promo-link">
+          <div class="dest-card add-dest">
+            <div class="add-icon">+</div>
+            <p>Tambah Destinasi</p>
+          </div>
+        </a>
+      <?php endif; ?>
 
     </div>
   </div>
 </section>
 
-          
-          
-
-        </div>
-      </div>
-    </section>
 
    <style>
 .promo-section { padding: 50px 0; }

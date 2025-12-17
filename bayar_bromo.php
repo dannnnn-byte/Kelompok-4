@@ -52,6 +52,12 @@ $query_bayar = "SELECT * FROM pembayaran_bromo WHERE bromo_id={$pemesanan['id']}
 $res_bayar = mysqli_query($conn, $query_bayar);
 $bukti = mysqli_fetch_assoc($res_bayar);
 $sudah_upload = !empty($bukti['bukti_bayar']);
+
+// ================= QRIS =================
+$qr_text  = "PEMBAYARAN|BROMO|ID:{$pemesanan['id']}|TOTAL:{$pemesanan['total_harga']}";
+$qr_image = "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" . urlencode($qr_text);
+
+
 ?>
 
 <link rel="stylesheet" href="assets/payment-style.css">
@@ -128,38 +134,46 @@ $sudah_upload = !empty($bukti['bukti_bayar']);
                     <div class="alert alert-danger">Pembayaran sudah melewati batas waktu.</div>
                 <?php else: ?>
                     <!-- QRIS -->
-                    <div class="payment-option" onclick="selectPayment('qris')">
-                        <div class="option-radio">
-                            <input type="radio" name="payment_method" id="qris" value="qris">
-                            <label for="qris"></label>
-                        </div>
-                        <div class="option-content">
-                            <img src="img/qris-logo.png" class="payment-logo">
-                            <div class="option-info">
-                                <h4>QRIS</h4>
-                                <p>Scan QR Code dengan aplikasi e-wallet</p>
-                            </div>
-                        </div>
-                        <i class="bi bi-chevron-right option-arrow"></i>
-                    </div>
+                 <div class="payment-option" onclick="selectPayment('qris')">
+    <div class="option-radio">
+        <input type="radio" name="payment_method" id="qris" value="qris">
+        <label for="qris"></label>
+    </div>
 
-                    <!-- Virtual Account -->
-                    <div class="payment-option" onclick="selectPayment('va')">
-                        <div class="option-radio">
-                            <input type="radio" name="payment_method" id="va" value="va">
-                            <label for="va"></label>
-                        </div>
-                        <div class="option-content">
-                            <img src="../assets/img/bank-logo.png" class="payment-logo">
-                            <div class="option-info">
-                                <h4>Virtual Account</h4>
-                                <p>Transfer via ATM / Mobile / Internet Banking</p>
-                            </div>
-                        </div>
-                        <i class="bi bi-chevron-right option-arrow"></i>
-                    </div>
+    <div class="option-content">
+        <img src="<?= $qr_image ?>" 
 
-                    <div id="paymentDetail" class="payment-detail" style="display:none;"></div>
+             alt="QR Code Pembayaran"
+             class="qr-code-image">
+
+        <div class="option-info">
+            <h4>QRIS</h4>
+            <p>Scan QR Code dengan aplikasi e-wallet</p>
+        </div>
+    </div>
+
+    <i class="bi bi-chevron-right option-arrow"></i>
+</div>
+
+                   <!-- Virtual Account -->
+<div class="payment-option" onclick="selectPayment('va')">
+    <div class="option-radio">
+        <input type="radio" name="payment_method" id="va" value="va">
+        <label for="va"></label>
+    </div>
+
+        <div class="option-info">
+            <h4>Virtual Account</h4>
+            <p>Transfer via ATM / Mobile / Internet Banking</p>
+        </div>
+    </div>
+
+    <i class="bi bi-chevron-right option-arrow"></i>
+</div>
+
+<!-- DETAIL PEMBAYARAN -->
+<div id="paymentDetail" class="payment-detail" style="display:none;"></div>
+
 
                 
 
@@ -216,6 +230,50 @@ document.getElementById('btnConfirmPayment').addEventListener('click', function(
         window.location.href='payment_confirmation.php?id=<?= $pemesanan['id'] ?>';
     }
 });
+
+function selectPayment(method) {
+    document.getElementById(method).checked = true;
+
+    const detail = document.getElementById('paymentDetail');
+    detail.style.display = 'block';
+
+    if (method === 'va') {
+        detail.innerHTML = `
+            <div class="alert alert-info mt-3">
+                <h5>Instruksi Virtual Account</h5>
+                <ol>
+                    <li>Pilih salah satu bank di bawah</li>
+                    <li>Salin nomor Virtual Account</li>
+                    <li>Lakukan transfer sesuai total pembayaran</li>
+                </ol>
+
+                <div class="va-box">
+                    <strong>BANK BCA</strong><br>
+                    <span class="va-number">1234 5678 9012 3456</span>
+                </div>
+
+                <div class="va-box">
+                    <strong>BANK BRI</strong><br>
+                    <span class="va-number">8888 9999 0000 1111</span>
+                </div>
+
+                <div class="va-box">
+                    <strong>BANK MANDIRI</strong><br>
+                    <span class="va-number">7001 2345 6789</span>
+                </div>
+            </div>
+        `;
+    }
+
+    if (method === 'qris') {
+        detail.innerHTML = `
+            <div class="alert alert-success mt-3">
+                Silakan scan QR Code di atas menggunakan e-wallet Anda.
+            </div>
+        `;
+    }
+}
+
 </script>
 
 <?php include 'includes/footer.php'; ?>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 16 Des 2025 pada 12.39
+-- Waktu pembuatan: 17 Des 2025 pada 04.23
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -69,6 +69,20 @@ INSERT INTO `booking_log` (`id_log`, `id_pemesanan`, `aktivitas`, `keterangan`, 
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `chat_messages`
+--
+
+CREATE TABLE `chat_messages` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) DEFAULT NULL,
+  `message` text NOT NULL,
+  `sender` enum('user','admin') NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `destinasi`
 --
 
@@ -107,7 +121,13 @@ CREATE TABLE `destinasi_populer` (
 INSERT INTO `destinasi_populer` (`id`, `nama`, `slug`, `gambar`, `aktif`, `created_at`) VALUES
 (1, 'pantai lombang', 'Pantai Lombang - Sampang', '1765883832-Pantai Lombang - Sampang.png', 0, '2025-12-16 11:17:12'),
 (2, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765884846-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:34:06'),
-(3, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765885037-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:37:17');
+(3, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765885037-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:37:17'),
+(4, 'Bromo - Lumajang', 'bromo', 'img/bromo4.jpg', 1, '2025-12-17 02:37:50'),
+(5, 'Tumpak Sewu - Lumajang', 'tumpaksewu', 'img/tumpaksewu.jpg', 1, '2025-12-17 02:37:50'),
+(6, 'Kawah Ijen - Banyuwangi', 'kawahijen', 'img/ijen2.jpg', 1, '2025-12-17 02:37:50'),
+(7, 'Museum Angkut - Malang', 'museumangkut', 'img/angkut.webp', 1, '2025-12-17 02:37:50'),
+(8, 'Wisata Bahari Lamongan - Lamongan', 'wbl', 'img/wbl.jpg', 1, '2025-12-17 02:37:50'),
+(9, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765941247-Pantai Lombang - Sumenep.jpg', 0, '2025-12-17 03:14:07');
 
 -- --------------------------------------------------------
 
@@ -258,6 +278,21 @@ INSERT INTO `paket_itinerary` (`id_itinerary`, `id_paket`, `hari_ke`, `jam`, `ke
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `paket_reviews`
+--
+
+CREATE TABLE `paket_reviews` (
+  `id` int(11) NOT NULL,
+  `id_paket` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `rating` tinyint(1) NOT NULL,
+  `review_text` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `paket_wisata`
 --
 
@@ -346,7 +381,8 @@ INSERT INTO `pembayaran_bromo` (`id`, `bromo_id`, `user_id`, `bukti_bayar`, `sta
 (1, 27, NULL, 'bukti_27_1765874535.png', 'pending', '2025-12-16 15:42:15', NULL, '2025-12-16 08:42:15', '2025-12-16 08:42:15'),
 (2, 28, NULL, 'bukti_28_1765875396.png', 'pending', '2025-12-16 15:56:36', NULL, '2025-12-16 08:56:36', '2025-12-16 08:56:36'),
 (3, 29, NULL, '1765876944_form java.png', 'menunggu_verifikasi', '2025-12-16 16:22:24', NULL, '2025-12-16 09:22:24', '2025-12-16 09:22:24'),
-(4, 30, NULL, '1765877390_ERD.png', 'menunggu_verifikasi', '2025-12-16 16:29:50', NULL, '2025-12-16 09:29:50', '2025-12-16 09:29:50');
+(4, 30, NULL, '1765877390_ERD.png', 'menunggu_verifikasi', '2025-12-16 16:29:50', NULL, '2025-12-16 09:29:50', '2025-12-16 09:29:50'),
+(5, 32, NULL, '1765941157_form java.png', 'menunggu_verifikasi', '2025-12-17 10:12:37', NULL, '2025-12-17 03:12:37', '2025-12-17 03:12:37');
 
 -- --------------------------------------------------------
 
@@ -406,42 +442,6 @@ CREATE TABLE `pemesanan_bromo` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data untuk tabel `pemesanan_bromo`
---
-
-INSERT INTO `pemesanan_bromo` (`id`, `user_id`, `tanggal_kunjungan`, `jumlah_orang`, `sewa_jeep`, `sewa_trail`, `jumlah_trail`, `total_harga`, `status`, `created_at`, `bukti_transfer`, `waktu_bayar`, `alasan_batal`, `waktu_batal`, `updated_at`) VALUES
-(1, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:02:37', NULL, NULL, NULL, '2025-12-15 19:26:18', NULL),
-(2, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:04:31', NULL, NULL, NULL, '2025-12-15 19:26:20', NULL),
-(3, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:04:52', NULL, NULL, NULL, '2025-12-15 19:26:22', NULL),
-(4, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:15:03', NULL, NULL, NULL, '2025-12-15 19:26:24', NULL),
-(5, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:15:30', NULL, NULL, NULL, '2025-12-15 19:26:25', NULL),
-(6, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'cancelled', '2025-12-15 12:18:01', NULL, NULL, NULL, '2025-12-15 19:26:28', NULL),
-(7, 2, '2025-12-17', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-15 12:23:26', '1765802099_form.png', NULL, NULL, NULL, NULL),
-(8, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'cancelled', '2025-12-15 12:48:38', NULL, NULL, NULL, '2025-12-15 19:48:54', NULL),
-(9, 2, '2025-12-17', 1, 'tidak', 'tidak', 1, 29000, 'cancelled', '2025-12-15 12:50:36', NULL, NULL, NULL, '2025-12-15 19:50:42', NULL),
-(10, 2, '2025-12-17', 1, 'tidak', 'ya', 1, 279000, 'cancelled', '2025-12-16 08:11:32', NULL, NULL, NULL, '2025-12-16 15:26:37', NULL),
-(11, 2, '2025-12-17', 1, 'tidak', 'ya', 1, 279000, 'cancelled', '2025-12-16 08:14:25', NULL, NULL, NULL, '2025-12-16 15:27:36', NULL),
-(12, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'cancelled', '2025-12-16 08:17:50', NULL, NULL, NULL, '2025-12-16 15:27:39', NULL),
-(13, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:19:07', NULL, NULL, NULL, NULL, NULL),
-(14, 2, '2025-02-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:19:39', NULL, NULL, NULL, NULL, NULL),
-(15, 2, '2025-02-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:20:04', NULL, NULL, NULL, NULL, NULL),
-(16, 2, '2025-02-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:20:37', NULL, NULL, NULL, NULL, NULL),
-(17, 2, '2026-02-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:20:53', NULL, NULL, NULL, NULL, NULL),
-(18, 2, '2026-02-18', 1, 'tidak', 'ya', 1, 279000, 'pending', '2025-12-16 08:23:07', NULL, NULL, NULL, NULL, NULL),
-(19, 2, '2025-12-20', 1, 'tidak', 'ya', 1, 284000, 'pending', '2025-12-16 08:23:20', NULL, NULL, NULL, NULL, NULL),
-(20, 2, '2025-12-20', 1, 'tidak', 'ya', 1, 284000, 'pending', '2025-12-16 08:23:37', NULL, NULL, NULL, NULL, NULL),
-(21, 2, '2025-12-20', 1, 'tidak', 'ya', 1, 284000, 'pending', '2025-12-16 08:23:46', NULL, NULL, NULL, NULL, NULL),
-(22, 2, '2025-12-20', 1, 'tidak', 'ya', 1, 284000, 'paid', '2025-12-16 08:26:28', NULL, NULL, NULL, NULL, NULL),
-(23, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:29:46', NULL, NULL, NULL, NULL, NULL),
-(24, 2, '2025-12-17', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:38:46', NULL, NULL, NULL, NULL, NULL),
-(25, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:39:34', NULL, NULL, NULL, NULL, NULL),
-(26, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:40:29', NULL, NULL, NULL, NULL, '2025-12-16 16:03:25'),
-(27, 2, '2025-12-18', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 08:42:05', NULL, NULL, NULL, NULL, '2025-12-16 15:50:52'),
-(28, 2, '2025-12-19', 5, 'ya', 'tidak', 1, 745000, 'paid', '2025-12-16 08:53:07', NULL, NULL, NULL, NULL, '2025-12-16 15:57:54'),
-(29, 2, '2025-12-17', 1, 'ya', 'tidak', 1, 629000, 'paid', '2025-12-16 09:21:46', NULL, NULL, NULL, NULL, NULL),
-(30, 2, '2025-12-19', 1, 'tidak', 'ya', 1, 279000, 'paid', '2025-12-16 09:29:09', NULL, NULL, NULL, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -474,6 +474,37 @@ INSERT INTO `penumpang` (`id_penumpang`, `id_pemesanan`, `nama_lengkap`, `email`
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `promo_diskon`
+--
+
+CREATE TABLE `promo_diskon` (
+  `id` int(11) NOT NULL,
+  `kode_promo` varchar(50) NOT NULL,
+  `nama_promo` varchar(200) NOT NULL,
+  `jenis_diskon` enum('percentage','fixed') NOT NULL DEFAULT 'percentage',
+  `nilai_diskon` decimal(15,2) NOT NULL,
+  `min_transaksi` decimal(15,2) DEFAULT 0.00,
+  `max_diskon` decimal(15,2) DEFAULT 0.00,
+  `kuota` int(11) NOT NULL DEFAULT 0,
+  `terpakai` int(11) DEFAULT 0,
+  `tanggal_mulai` datetime NOT NULL,
+  `tanggal_selesai` datetime NOT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `promo_diskon`
+--
+
+INSERT INTO `promo_diskon` (`id`, `kode_promo`, `nama_promo`, `jenis_diskon`, `nilai_diskon`, `min_transaksi`, `max_diskon`, `kuota`, `terpakai`, `tanggal_mulai`, `tanggal_selesai`, `status`, `created_at`) VALUES
+(1, 'TAHUNBARU2026', 'Diskon Tahun Baru 2026', 'percentage', 20.00, 500000.00, 200000.00, 100, 0, '2025-12-20 00:00:00', '2026-01-10 23:59:59', 'active', '2025-12-17 03:04:32'),
+(2, 'HEMAT50K', 'Potongan Langsung 50K', 'fixed', 50000.00, 300000.00, 0.00, 50, 0, '2025-12-16 00:00:00', '2025-12-31 23:59:59', 'active', '2025-12-17 03:04:32'),
+(3, 'LIBURAN15', 'Diskon Liburan 15%', 'percentage', 15.00, 750000.00, 150000.00, 75, 0, '2025-12-16 00:00:00', '2026-01-31 23:59:59', 'active', '2025-12-17 03:04:32');
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `reviews`
 --
 
@@ -496,7 +527,9 @@ INSERT INTO `reviews` (`id`, `kota`, `nama`, `rating`, `komentar`, `created_at`,
 (4, '', 'Dani ', 5, 'Mantap', '2025-12-05 02:02:00', 'bromo', 'terimakasi kak'),
 (5, '', 'dani', 4, 'mantap', '2025-12-05 02:05:52', 'tumpak_sewu', NULL),
 (6, '', 'M. ARIF', 5, 'manatp\r\n', '2025-12-05 07:31:13', 'Museum Angkut', NULL),
-(7, '', 'Arif', 4, 'seruuuu!!!!!', '2025-12-05 08:50:34', 'bromo', 'acc');
+(7, '', 'Arif', 4, 'seruuuu!!!!!', '2025-12-05 08:50:34', 'bromo', 'acc'),
+(10, '', 'Budi Santoso', 5, 'Mantap Broomoo', '2025-12-16 12:40:39', 'tumpak sewu', NULL),
+(11, '', 'Budi Santoso', 5, 'mangaoo', '2025-12-17 02:27:16', 'bromo', NULL);
 
 -- --------------------------------------------------------
 
@@ -525,6 +558,19 @@ INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `alamat`, `password`, `
 (4, 'Andi Pratama', 'andi@outlook.com', NULL, '12345', 'user', 2147483647),
 (6, 'sasa', 'sasa@gmail.com', NULL, '$2y$10$RyjnqfocF3TvdgRW7m5m4O4WgoIu3.k4VPG9dKZnmpJHIiDntKQYC', 'user', NULL);
 
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `wishlist`
+--
+
+CREATE TABLE `wishlist` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_paket` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -541,6 +587,13 @@ ALTER TABLE `admins`
 --
 ALTER TABLE `booking_log`
   ADD PRIMARY KEY (`id_log`);
+
+--
+-- Indeks untuk tabel `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_user` (`id_user`);
 
 --
 -- Indeks untuk tabel `destinasi`
@@ -599,6 +652,15 @@ ALTER TABLE `paket_itinerary`
   ADD KEY `id_paket` (`id_paket`);
 
 --
+-- Indeks untuk tabel `paket_reviews`
+--
+ALTER TABLE `paket_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_paket_review` (`id_paket`,`id_user`),
+  ADD KEY `idx_paket_reviews_paket` (`id_paket`),
+  ADD KEY `idx_paket_reviews_user` (`id_user`);
+
+--
 -- Indeks untuk tabel `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
@@ -645,6 +707,13 @@ ALTER TABLE `penumpang`
   ADD PRIMARY KEY (`id_penumpang`);
 
 --
+-- Indeks untuk tabel `promo_diskon`
+--
+ALTER TABLE `promo_diskon`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `kode_promo` (`kode_promo`);
+
+--
 -- Indeks untuk tabel `reviews`
 --
 ALTER TABLE `reviews`
@@ -656,6 +725,15 @@ ALTER TABLE `reviews`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`),
   ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indeks untuk tabel `wishlist`
+--
+ALTER TABLE `wishlist`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_wishlist` (`id_user`,`id_paket`),
+  ADD KEY `id_user` (`id_user`),
+  ADD KEY `id_paket` (`id_paket`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -674,6 +752,12 @@ ALTER TABLE `booking_log`
   MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT untuk tabel `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `destinasi`
 --
 ALTER TABLE `destinasi`
@@ -683,7 +767,7 @@ ALTER TABLE `destinasi`
 -- AUTO_INCREMENT untuk tabel `destinasi_populer`
 --
 ALTER TABLE `destinasi_populer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT untuk tabel `hotel`
@@ -728,6 +812,12 @@ ALTER TABLE `paket_itinerary`
   MODIFY `id_itinerary` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT untuk tabel `paket_reviews`
+--
+ALTER TABLE `paket_reviews`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT untuk tabel `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
@@ -737,13 +827,13 @@ ALTER TABLE `paket_wisata`
 -- AUTO_INCREMENT untuk tabel `pembayaran_bromo`
 --
 ALTER TABLE `pembayaran_bromo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `pemesanan_bromo`
 --
 ALTER TABLE `pemesanan_bromo`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT untuk tabel `penumpang`
@@ -752,16 +842,28 @@ ALTER TABLE `penumpang`
   MODIFY `id_penumpang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT untuk tabel `promo_diskon`
+--
+ALTER TABLE `promo_diskon`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT untuk tabel `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
   MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT untuk tabel `wishlist`
+--
+ALTER TABLE `wishlist`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

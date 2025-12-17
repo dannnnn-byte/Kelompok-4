@@ -974,15 +974,6 @@ function openEditModal(id, rating, komentar){
     modal.show();
 }
 
-function openEditModal(id, rating, komentar) {
-    document.getElementById('edit_review_id').value = id;
-    document.getElementById('edit_rating').value = rating;
-    document.getElementById('edit_komentar').value = komentar;
-
-    var modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-}
-
 function toggleTrail(val) {
     document.getElementById('trailBox').style.display =
         (val === 'ya') ? 'block' : 'none';

@@ -1,0 +1,135 @@
+/* =========================
+   MODERN FOOTER – JAWATRIP
+   ========================= */
+
+.modern-footer {
+    background: #0bb14c;
+    color: #ffffff;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Container utama */
+.footer-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 50px 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+}
+
+/* ================= BRAND ================= */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer-logo {
+    width: 70px;
+    height: auto;
+}
+
+.footer-brand h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.footer-brand p {
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+/* ================= LINKS ================= */
+.footer-links h4,
+.footer-contact h4,
+.footer-members h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.footer-links a {
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.footer-links a:hover {
+    padding-left: 6px;
+    opacity: 0.85;
+}
+
+/* ================= CONTACT ================= */
+.footer-contact p {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-contact i {
+    font-size: 16px;
+}
+
+/* ================= MEMBERS ================= */
+.members-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    font-size: 14px;
+}
+
+.members-grid div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.members-grid i {
+    font-size: 15px;
+}
+
+/* ================= BOTTOM ================= */
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 18px 10px;
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .footer-brand,
+    .footer-contact,
+    .footer-links,
+    .footer-members {
+        align-items: center;
+    }
+
+    .footer-contact p,
+    .members-grid div {
+        justify-content: center;
+    }
+}

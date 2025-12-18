@@ -2,16 +2,26 @@
 session_start();
 include 'koneksi.php';
 
+// ==== CEK KONEKSI ====
+if (!isset($conn) || !$conn) {
+    die('Koneksi database gagal');
+}
+
 $role    = $_SESSION['role'] ?? 'guest';
 $isAdmin = ($role === 'admin');
 
 /* ================= AMBIL DESTINASI POPULER ================= */
-$destinasi = $conn->query(
-  "SELECT * FROM destinasi_populer 
-   WHERE aktif = 1 
-   ORDER BY id ASC"
-);
+$sql = "SELECT * FROM destinasi_populer 
+        WHERE aktif = 1 
+        ORDER BY id ASC";
+
+$destinasi = mysqli_query($conn, $sql);
+
+if (!$destinasi) {
+    die("Query error: " . mysqli_error($conn));
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -64,33 +74,49 @@ $destinasi = $conn->query(
 
     <div class="destination-wrapper">
 
-      <?php while ($d = $destinasi->fetch_assoc()): ?>
-        <div class="dest-card-wrapper">
+      <?php while ($d = mysqli_fetch_assoc($destinasi)): ?>
 
-          <a href="destinasi/<?= $d['slug']; ?>.php" class="promo-link">
-            <div class="dest-card">
-              <img src="<?= $d['gambar']; ?>" alt="<?= htmlspecialchars($d['nama']); ?>">
-              <div class="dest-overlay">
-                <p class="dest-category">WISATA</p>
-                <h3 class="dest-title"><?= strtoupper($d['nama']); ?></h3>
-                <span class="dest-btn">LIHAT SELENGKAPNYA</span>
-              </div>
-            </div>
-          </a>
+<?php
+  // ===== PATH GAMBAR =====
+  $gambar = $d['gambar'];
+  if (!str_starts_with($gambar, 'img/') && !str_starts_with($gambar, 'uploads/')) {
+      $gambar = 'uploads/destinasi/' . $gambar;
+  }
+?>
 
-          <!-- HAPUS (ADMIN ONLY) -->
-          <?php if ($isAdmin): ?>
-            <form action="admin/hapus_destinasi_populer.php"
-                  method="POST"
-                  class="delete-dest-form"
-                  onsubmit="return confirm('Nonaktifkan destinasi ini?');">
-              <input type="hidden" name="id" value="<?= $d['id']; ?>">
-              <button type="submit" class="btn-delete">✖</button>
-            </form>
-          <?php endif; ?>
+<div class="dest-card-wrapper">
 
-        </div>
-      <?php endwhile; ?>
+  <a href="destinasi/<?= htmlspecialchars($d['slug']); ?>.php" class="promo-link">
+    <div class="dest-card">
+      <img src="<?= htmlspecialchars($gambar); ?>" 
+           alt="<?= htmlspecialchars($d['nama']); ?>">
+
+      <div class="dest-overlay">
+        <p class="dest-category">WISATA</p>
+       <h3 class="dest-title">
+  <?= strtoupper(htmlspecialchars($d['nama'] ?? 'DESTINASI')); ?>
+</h3>
+
+        <span class="dest-btn">LIHAT SELENGKAPNYA</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- HAPUS (ADMIN ONLY) -->
+  <?php if ($isAdmin): ?>
+    <form action="admin/hapus_destinasi_populer.php"
+          method="POST"
+          class="delete-dest-form"
+          onsubmit="return confirm('Nonaktifkan destinasi ini?');">
+      <input type="hidden" name="id" value="<?= (int)$d['id']; ?>">
+      <button type="submit" class="btn-delete">✖</button>
+    </form>
+  <?php endif; ?>
+
+</div>
+
+<?php endwhile; ?>
+
 
       <!-- TAMBAH DESTINASI -->
       <?php if ($isAdmin): ?>

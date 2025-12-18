@@ -1,17 +1,97 @@
 <?php
 session_start();
 include '../koneksi.php';
-include '../includes/header.php';
-include '../includes/navbar.php';
 
-// Proteksi admin
+/* ================= PROTEKSI ADMIN ================= */
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../../index.php");
+    header("Location: ../index.php");
     exit;
 }
 
-$alert = "";
+if (isset($_POST['simpan'])) {
+
+    /* ================= VALIDASI ================= */
+    $nama = trim($_POST['nama'] ?? '');
+    $file = trim($_POST['file_tujuan'] ?? '');
+
+    if ($nama === '' || $file === '') {
+        echo "<script>alert('Nama destinasi & nama file wajib diisi'); window.history.back();</script>";
+        exit;
+    }
+
+    /* ================= NORMALISASI FILE ================= */
+    $slug = strtolower(preg_replace('/[^a-z0-9]/', '', $file));
+
+    if ($slug === '') {
+        echo "<script>alert('Nama file tidak valid'); window.history.back();</script>";
+        exit;
+    }
+
+    /* ================= VALIDASI GAMBAR ================= */
+    if (!isset($_FILES['gambar']) || $_FILES['gambar']['error'] !== 0) {
+        echo "<script>alert('Gambar tidak terupload'); window.history.back();</script>";
+        exit;
+    }
+
+    $gambar = $_FILES['gambar'];
+    $ext = strtolower(pathinfo($gambar['name'], PATHINFO_EXTENSION));
+    $allowed = ['jpg','jpeg','png','webp'];
+
+    if (!in_array($ext, $allowed)) {
+        echo "<script>alert('Format gambar tidak valid'); window.history.back();</script>";
+        exit;
+    }
+
+    if ($gambar['size'] > 2 * 1024 * 1024) {
+        echo "<script>alert('Ukuran gambar maksimal 2MB'); window.history.back();</script>";
+        exit;
+    }
+
+    /* ================= UPLOAD ================= */
+    $namaFileGambar = time() . '-' . $slug . '.' . $ext;
+    $folder = "../uploads/destinasi/";
+
+    if (!is_dir($folder)) {
+        mkdir($folder, 0777, true);
+    }
+
+    move_uploaded_file($gambar['tmp_name'], $folder . $namaFileGambar);
+
+    /* ================= SIMPAN DB ================= */
+    mysqli_query($conn, "
+        INSERT INTO destinasi_populer (nama, slug, gambar, aktif)
+        VALUES ('$nama', '$slug', '$namaFileGambar', 1)
+    ");
+
+    header("Location: ../index.php");
+    exit;
+}
 ?>
+
+
+
+<?php
+include '../includes/header.php';
+include '../includes/navbar.php';
+include '../includes/dashboard_home.php';
+?>
+
+<style>
+.bg-light {
+    min-height: 100vh;
+    background: 
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.45)
+        ),
+        url("../img/ijen4.jpg") no-repeat center center / cover;
+}
+
+.bg-light .card {
+    backdrop-filter: blur(2px);
+    border-radius: 16px;
+}
+</style>
 
 <!DOCTYPE html>
 <html lang="id">
@@ -36,7 +116,6 @@ $alert = "";
 
         <div class="card-body p-4">
 
-          <?= $alert ?>
 
           <form method="POST" enctype="multipart/form-data">
 
@@ -46,23 +125,25 @@ $alert = "";
               <input type="text"
                      name="nama"
                      class="form-control"
-                     placeholder="Contoh: Pantai Papuma"
+
                      required>
             </div>
 
-            <!-- Slug -->
-            <div class="mb-3">
-              <label class="form-label fw-semibold">
-                Slug <small class="text-muted">(opsional)</small>
-              </label>
-              <input type="text"
-                     name="slug"
-                     class="form-control"
-                     placeholder="pantai-papuma">
-              <small class="text-muted">
-                Jika kosong, slug akan dibuat otomatis.
-              </small>
-            </div>
+           <!-- Nama File Tujuan -->
+<div class="mb-3">
+  <label class="form-label fw-semibold">
+    Nama File Tujuan <span class="text-danger">*</span>
+  </label>
+
+  <input type="text"
+         name="file_tujuan"
+         class="form-control">
+
+  <small class="text-muted">
+    Contoh: <b>destinasi(php)
+  </small>
+</div>
+
 
             <!-- Upload Gambar -->
             <div class="mb-4">

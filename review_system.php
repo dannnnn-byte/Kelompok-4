@@ -97,4 +97,135 @@ elseif ($action == 'get_stats') {
     
     echo json_encode(['success' => true, 'stats' => $stats]);
 }
+
+// ================= EDIT REVIEW =================
+elseif ($action == 'edit_review') {
+    $review_id = isset($_POST['review_id']) ? (int)$_POST['review_id'] : 0;
+    $rating = isset($_POST['rating']) ? (int)$_POST['rating'] : 0;
+    $review_text = isset($_POST['review']) ? mysqli_real_escape_string($conn, trim($_POST['review'])) : '';
+    
+    $id_user = $_SESSION['user_id'] ?? $_SESSION['id_user'] ?? null;
+    
+    if (!$id_user) {
+        echo json_encode(['success' => false, 'message' => 'Anda harus login terlebih dahulu']);
+        exit;
+    }
+    
+    if ($rating < 1 || $rating > 5) {
+        echo json_encode(['success' => false, 'message' => 'Rating harus antara 1-5']);
+        exit;
+    }
+    
+    if (empty($review_text)) {
+        echo json_encode(['success' => false, 'message' => 'Review tidak boleh kosong']);
+        exit;
+    }
+    
+    // Verify ownership
+    $check = mysqli_query($conn, "SELECT id FROM paket_reviews WHERE id = '$review_id' AND id_user = '$id_user'");
+    if (mysqli_num_rows($check) == 0) {
+        echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki akses untuk mengedit review ini']);
+        exit;
+    }
+    
+    $query = "UPDATE paket_reviews SET rating = '$rating', review_text = '$review_text', updated_at = NOW() 
+              WHERE id = '$review_id' AND id_user = '$id_user'";
+    
+    if (mysqli_query($conn, $query)) {
+        echo json_encode(['success' => true, 'message' => 'Review berhasil diupdate!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Gagal mengupdate review']);
+    }
+}
+
+// ================= DELETE REVIEW =================
+elseif ($action == 'delete_review') {
+    $review_id = isset($_POST['review_id']) ? (int)$_POST['review_id'] : 0;
+    $id_user = $_SESSION['user_id'] ?? $_SESSION['id_user'] ?? null;
+    
+    if (!$id_user) {
+        echo json_encode(['success' => false, 'message' => 'Anda harus login terlebih dahulu']);
+        exit;
+    }
+    
+    // Verify ownership
+    $check = mysqli_query($conn, "SELECT id FROM paket_reviews WHERE id = '$review_id' AND id_user = '$id_user'");
+    if (mysqli_num_rows($check) == 0) {
+        echo json_encode(['success' => false, 'message' => 'Anda tidak memiliki akses untuk menghapus review ini']);
+        exit;
+    }
+    
+    $query = "DELETE FROM paket_reviews WHERE id = '$review_id' AND id_user = '$id_user'";
+    
+    if (mysqli_query($conn, $query)) {
+        echo json_encode(['success' => true, 'message' => 'Review berhasil dihapus!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Gagal menghapus review']);
+    }
+}
+
+// ================= SUBMIT ADMIN REPLY =================
+elseif ($action == 'submit_reply') {
+    $review_id = isset($_POST['review_id']) ? (int)$_POST['review_id'] : 0;
+    $reply_text = isset($_POST['reply']) ? mysqli_real_escape_string($conn, trim($_POST['reply'])) : '';
+    
+    // Check if user is admin
+    $is_admin = ($_SESSION['role'] ?? '') === 'admin';
+    $admin_id = $_SESSION['admin_id'] ?? $_SESSION['user_id'] ?? null;
+    
+    if (!$is_admin || !$admin_id) {
+        echo json_encode(['success' => false, 'message' => 'Hanya admin yang bisa membalas review']);
+        exit;
+    }
+    
+    if (empty($reply_text)) {
+        echo json_encode(['success' => false, 'message' => 'Reply tidak boleh kosong']);
+        exit;
+    }
+    
+    // Check if review exists
+    $check = mysqli_query($conn, "SELECT id FROM paket_reviews WHERE id = '$review_id'");
+    if (mysqli_num_rows($check) == 0) {
+        echo json_encode(['success' => false, 'message' => 'Review tidak ditemukan']);
+        exit;
+    }
+    
+    // Check if admin already replied
+    $check_reply = mysqli_query($conn, "SELECT id FROM review_replies WHERE review_id = '$review_id'");
+    
+    if (mysqli_num_rows($check_reply) > 0) {
+        // Update existing reply
+        $query = "UPDATE review_replies SET reply_text = '$reply_text', updated_at = NOW() 
+                  WHERE review_id = '$review_id'";
+    } else {
+        // Insert new reply
+        $query = "INSERT INTO review_replies (review_id, admin_id, reply_text, created_at) 
+                  VALUES ('$review_id', '$admin_id', '$reply_text', NOW())";
+    }
+    
+    if (mysqli_query($conn, $query)) {
+        echo json_encode(['success' => true, 'message' => 'Reply berhasil dikirim!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Gagal mengirim reply']);
+    }
+}
+
+// ================= GET ADMIN REPLY =================
+elseif ($action == 'get_reply') {
+    $review_id = isset($_POST['review_id']) ? (int)$_POST['review_id'] : 0;
+    
+    $query = "SELECT rr.*, 'Admin JawaTrip' as admin_name 
+              FROM review_replies rr 
+              WHERE rr.review_id = '$review_id' 
+              LIMIT 1";
+    
+    $result = mysqli_query($conn, $query);
+    
+    if ($result && mysqli_num_rows($result) > 0) {
+        $reply = mysqli_fetch_assoc($result);
+        echo json_encode(['success' => true, 'reply' => $reply]);
+    } else {
+        echo json_encode(['success' => true, 'reply' => null]);
+    }
+}
 ?>

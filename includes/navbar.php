@@ -49,7 +49,7 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
 
         <li class="nav-item">
           <a class="nav-link text-white fw-semibold px-3"
-             href="<?= $basePath ?>pesan.php">Book Ticket</a>
+             href="<?= $basePath ?>wisata.php">Book Packet</a>
         </li>
 
         <li class="nav-item">

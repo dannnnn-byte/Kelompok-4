@@ -44,7 +44,7 @@
     font-size: 1.2rem;
 }
 .btn-review {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     color: white;
     border: none;
     border-radius: 50px;
@@ -54,7 +54,7 @@
 }
 .btn-review:hover {
     transform: scale(1.05);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 20px rgba(20, 92, 67, 0.4);
 }
 .star-rating {
     display: flex;
@@ -88,13 +88,115 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
     font-size: 1.2rem;
+}
+.review-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+.btn-edit-review, .btn-delete-review {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+.btn-edit-review {
+    background: #145C43;
+    color: white;
+}
+.btn-edit-review:hover {
+    background: #0d3d2a;
+    transform: scale(1.05);
+}
+.btn-delete-review {
+    background: #ff1744;
+    color: white;
+}
+.btn-delete-review:hover {
+    background: #c41235;
+    transform: scale(1.05);
+}
+.admin-reply {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(20, 92, 67, 0.05) 0%, rgba(205, 170, 125, 0.05) 100%);
+    border-left: 4px solid #145C43;
+    border-radius: 8px;
+}
+.admin-reply-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.admin-badge {
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.admin-reply-text {
+    color: #333;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+.reply-form {
+    margin-top: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+.reply-form textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+.btn-send-reply {
+    background: #145C43;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.btn-send-reply:hover {
+    background: #0d3d2a;
+    transform: scale(1.05);
+}
+.btn-reply-toggle {
+    background: transparent;
+    color: #145C43;
+    border: 1px solid #145C43;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+.btn-reply-toggle:hover {
+    background: #145C43;
+    color: white;
 }
 </style>
 
@@ -180,6 +282,42 @@
     </div>
 </div>
 
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">✏️ Edit Review Anda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editReviewForm">
+                    <input type="hidden" id="editReviewId" value="0">
+                    <div class="text-center mb-4">
+                        <label class="form-label fw-semibold">Rating Anda:</label>
+                        <div class="star-rating" id="editStarRating">
+                            <i class="bi bi-star-fill" data-rating="1"></i>
+                            <i class="bi bi-star-fill" data-rating="2"></i>
+                            <i class="bi bi-star-fill" data-rating="3"></i>
+                            <i class="bi bi-star-fill" data-rating="4"></i>
+                            <i class="bi bi-star-fill" data-rating="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="editRatingInput" value="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Review:</label>
+                        <textarea class="form-control" id="editReviewText" name="review" rows="5" 
+                                  placeholder="Ceritakan pengalaman Anda..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-review w-100">
+                        <i class="bi bi-check-circle"></i> Update Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 const idPaket = <?= $id_paket ?? 1 ?>;
 
@@ -237,6 +375,56 @@ function setupStarRating() {
 setupStarRating();
 document.getElementById('reviewModal')?.addEventListener('shown.bs.modal', function() {
     setupStarRating();
+});
+
+// Setup edit modal star rating
+function setupEditStarRating() {
+    const starElements = document.querySelectorAll('#editStarRating i');
+    const ratingInput = document.getElementById('editRatingInput');
+    
+    starElements.forEach((star, index) => {
+        star.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const rating = index + 1;
+            ratingInput.value = rating;
+            
+            starElements.forEach((s, idx) => {
+                if (idx < rating) {
+                    s.classList.add('active');
+                    s.style.color = '#FFD700';
+                } else {
+                    s.classList.remove('active');
+                    s.style.color = '#ddd';
+                }
+            });
+        });
+        
+        star.addEventListener('mouseenter', function() {
+            const hoverRating = index + 1;
+            starElements.forEach((s, idx) => {
+                if (idx < hoverRating) {
+                    s.style.color = '#FFD700';
+                } else {
+                    s.style.color = '#ddd';
+                }
+            });
+        });
+    });
+    
+    document.getElementById('editStarRating')?.addEventListener('mouseleave', function() {
+        const currentRating = parseInt(ratingInput.value) || 0;
+        starElements.forEach((s, idx) => {
+            if (idx < currentRating) {
+                s.style.color = '#FFD700';
+            } else {
+                s.style.color = '#ddd';
+            }
+        });
+    });
+}
+
+document.getElementById('editReviewModal')?.addEventListener('shown.bs.modal', function() {
+    setupEditStarRating();
 });
 
 // Submit Review - Setup listener
@@ -328,10 +516,41 @@ function loadReviews() {
         }
 
         const list = document.getElementById('reviewsList');
+        const currentUserId = <?= $_SESSION['user_id'] ?? $_SESSION['id_user'] ?? 0 ?>;
+        const isAdmin = <?= ($_SESSION['role'] ?? '') === 'admin' ? 'true' : 'false' ?>;
+        
         if (!data.reviews || data.reviews.length === 0) {
             list.innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-dots fs-1"></i><p class="mt-3">Belum ada review. Jadilah yang pertama!</p></div>';
         } else {
-            list.innerHTML = data.reviews.map(r => `
+            list.innerHTML = data.reviews.map(r => {
+                const isOwner = currentUserId && (r.id_user == currentUserId);
+                const actionButtons = isOwner ? `
+                    <div class="review-actions">
+                        <button class="btn-edit-review" onclick="openEditModal(${r.id}, ${r.rating}, '${r.review_text.replace(/'/g, "\\'")}')️">
+                            <i class="bi bi-pencil"></i> Edit
+                        </button>
+                        <button class="btn-delete-review" onclick="deleteReview(${r.id})">
+                            <i class="bi bi-trash"></i> Hapus
+                        </button>
+                    </div>
+                ` : '';
+                
+                const replySection = `
+                    <div id="reply-${r.id}"></div>
+                    ${isAdmin ? `
+                        <button class="btn-reply-toggle" onclick="toggleReplyForm(${r.id})">
+                            <i class="bi bi-reply"></i> Balas Review
+                        </button>
+                        <div id="reply-form-${r.id}" class="reply-form" style="display: none;">
+                            <textarea id="reply-text-${r.id}" rows="3" placeholder="Tulis balasan Anda..."></textarea>
+                            <button class="btn-send-reply" onclick="submitReply(${r.id})">
+                                <i class="bi bi-send"></i> Kirim Balasan
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                return `
                 <div class="review-card">
                     <div class="d-flex gap-3">
                         <div class="avatar-circle">${r.nama_lengkap?.charAt(0) || 'U'}</div>
@@ -343,10 +562,16 @@ function loadReviews() {
                             </div>
                             <p class="mb-1">${r.review_text}</p>
                             <small class="text-muted"><i class="bi bi-clock"></i> ${new Date(r.created_at).toLocaleDateString('id-ID')}</small>
+                            ${actionButtons}
+                            ${replySection}
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
+            
+            // Load replies for each review
+            data.reviews.forEach(r => loadReply(r.id));
         }
     })
     .catch(err => {
@@ -386,4 +611,176 @@ function loadReviews() {
 // Initial setup on page load
 setupReviewForm();
 loadReviews();
+
+// Open Edit Modal
+function openEditModal(reviewId, rating, reviewText) {
+    document.getElementById('editReviewId').value = reviewId;
+    document.getElementById('editRatingInput').value = rating;
+    document.getElementById('editReviewText').value = reviewText;
+    
+    // Set stars visual
+    const stars = document.querySelectorAll('#editStarRating i');
+    stars.forEach((s, idx) => {
+        if (idx < rating) {
+            s.classList.add('active');
+            s.style.color = '#FFD700';
+        } else {
+            s.classList.remove('active');
+            s.style.color = '#ddd';
+        }
+    });
+    
+    const modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+    modal.show();
+}
+
+// Delete Review
+function deleteReview(reviewId) {
+    if (!confirm('Yakin ingin menghapus review ini?')) return;
+    
+    const params = new URLSearchParams();
+    params.append('action', 'delete_review');
+    params.append('review_id', reviewId);
+    
+    fetch('review_system.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Review berhasil dihapus!');
+            loadReviews();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan saat menghapus review');
+    });
+}
+
+// Edit Review Form Submit
+document.getElementById('editReviewForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const reviewId = document.getElementById('editReviewId').value;
+    const rating = document.getElementById('editRatingInput').value;
+    const reviewText = document.getElementById('editReviewText').value;
+    
+    if (!rating || parseInt(rating) == 0) {
+        alert('Pilih rating terlebih dahulu!');
+        return;
+    }
+    
+    if (!reviewText.trim()) {
+        alert('Tulis review terlebih dahulu!');
+        return;
+    }
+    
+    const params = new URLSearchParams();
+    params.append('action', 'edit_review');
+    params.append('review_id', reviewId);
+    params.append('rating', parseInt(rating));
+    params.append('review', reviewText);
+    
+    fetch('review_system.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Review berhasil diupdate!');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editReviewModal'));
+            modal.hide();
+            loadReviews();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan saat mengupdate review');
+    });
+});
+
+// Toggle Reply Form
+function toggleReplyForm(reviewId) {
+    const form = document.getElementById(`reply-form-${reviewId}`);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+// Submit Admin Reply
+function submitReply(reviewId) {
+    const replyText = document.getElementById(`reply-text-${reviewId}`).value.trim();
+    
+    if (!replyText) {
+        alert('Tulis balasan terlebih dahulu!');
+        return;
+    }
+    
+    const params = new URLSearchParams();
+    params.append('action', 'submit_reply');
+    params.append('review_id', reviewId);
+    params.append('reply', replyText);
+    
+    fetch('review_system.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('Balasan berhasil dikirim!');
+            document.getElementById(`reply-text-${reviewId}`).value = '';
+            document.getElementById(`reply-form-${reviewId}`).style.display = 'none';
+            loadReply(reviewId);
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan saat mengirim balasan');
+    });
+}
+
+// Load Reply for a Review
+function loadReply(reviewId) {
+    const params = new URLSearchParams();
+    params.append('action', 'get_reply');
+    params.append('review_id', reviewId);
+    
+    fetch('review_system.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: params.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        const replyContainer = document.getElementById(`reply-${reviewId}`);
+        if (data.success && data.reply) {
+            const reply = data.reply;
+            replyContainer.innerHTML = `
+                <div class="admin-reply">
+                    <div class="admin-reply-header">
+                        <span class="admin-badge"><i class="bi bi-shield-check"></i> Admin JawaTrip</span>
+                        <small class="text-muted">${new Date(reply.created_at).toLocaleDateString('id-ID')}</small>
+                    </div>
+                    <div class="admin-reply-text">${reply.reply_text}</div>
+                </div>
+            `;
+        } else {
+            replyContainer.innerHTML = '';
+        }
+    })
+    .catch(err => {
+        console.error('Error loading reply:', err);
+    });
+}
 </script>

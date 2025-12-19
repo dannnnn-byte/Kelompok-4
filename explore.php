@@ -8,7 +8,7 @@ include 'includes/dashboard_home.php';
 
 <style>
 .filter-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     padding: 80px 0 120px 0;
     color: white;
     position: relative;
@@ -50,7 +50,7 @@ include 'includes/dashboard_home.php';
     background: #e0e0e0;
 }
 .filter-chip.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     color: white;
     border-color: transparent;
 }
@@ -78,7 +78,7 @@ include 'includes/dashboard_home.php';
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     color: white;
     border: none;
     width: 45px;

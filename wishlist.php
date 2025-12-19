@@ -13,7 +13,7 @@ if (!isset($_SESSION['login']) || !$_SESSION['login']) {
 
 <style>
 .wishlist-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     padding: 60px 0;
     color: white;
 }
@@ -43,14 +43,14 @@ if (!isset($_SESSION['login']) || !$_SESSION['login']) {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    color: #dc3545;
+    color: #ff1744;
     font-size: 1.2rem;
     cursor: pointer;
     transition: all 0.3s;
     z-index: 10;
 }
 .remove-btn:hover {
-    background: #dc3545;
+    background: #ff1744;
     color: white;
     transform: rotate(90deg);
 }

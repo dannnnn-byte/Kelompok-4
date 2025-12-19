@@ -5,7 +5,7 @@ include 'koneksi.php';
 header('Content-Type: application/json');
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
-$id_user = $_SESSION['id_user'] ?? null;
+$id_user = $_SESSION['user_id'] ?? $_SESSION['id_user'] ?? null;
 $is_admin = ($_SESSION['role'] ?? '') === 'admin';
 
 // ================= GET NOTIFICATIONS =================
@@ -24,7 +24,7 @@ if ($action == 'get_notifications') {
                   ORDER BY p.tanggal_pesan DESC
                   LIMIT 10";
     } elseif ($id_user) {
-        // User notifications
+        // User notifications - show user's bookings
         $query = "SELECT 
                     'booking' as type,
                     id_pemesanan as ref_id,
@@ -32,7 +32,7 @@ if ($action == 'get_notifications') {
                     tanggal_pesan as created_at,
                     status_bayar as status
                   FROM pemesanan
-                  WHERE id_user = '$id_user'
+                  WHERE id_user = " . (int)$id_user . "
                   ORDER BY tanggal_pesan DESC
                   LIMIT 10";
     } else {
@@ -43,8 +43,14 @@ if ($action == 'get_notifications') {
     $result = mysqli_query($conn, $query);
     $notifications = [];
     
-    while ($row = mysqli_fetch_assoc($result)) {
-        $notifications[] = $row;
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            // Convert datetime to ISO 8601 format for JavaScript
+            if (isset($row['created_at'])) {
+                $row['created_at'] = date('c', strtotime($row['created_at']));
+            }
+            $notifications[] = $row;
+        }
     }
     
     echo json_encode(['success' => true, 'notifications' => $notifications]);
@@ -53,13 +59,17 @@ if ($action == 'get_notifications') {
 // ================= GET UNREAD COUNT =================
 elseif ($action == 'get_unread_count') {
     if ($is_admin) {
-        $count = mysqli_fetch_assoc(mysqli_query($conn, 
+        $result = mysqli_query($conn, 
             "SELECT COUNT(*) as total FROM pemesanan 
-             WHERE tanggal_pesan >= DATE_SUB(NOW(), INTERVAL 24 HOUR)"))['total'];
+             WHERE tanggal_pesan >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+        $row = mysqli_fetch_assoc($result);
+        $count = $row['total'] ?? 0;
     } elseif ($id_user) {
-        $count = mysqli_fetch_assoc(mysqli_query($conn,
+        $result = mysqli_query($conn,
             "SELECT COUNT(*) as total FROM pemesanan 
-             WHERE id_user = '$id_user' AND tanggal_pesan >= DATE_SUB(NOW(), INTERVAL 24 HOUR)"))['total'];
+             WHERE id_user = " . (int)$id_user . " AND tanggal_pesan >= DATE_SUB(NOW(), INTERVAL 24 HOUR)");
+        $row = mysqli_fetch_assoc($result);
+        $count = $row['total'] ?? 0;
     } else {
         $count = 0;
     }

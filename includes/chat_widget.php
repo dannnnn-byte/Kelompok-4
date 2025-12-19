@@ -179,7 +179,7 @@
     font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
-    overflow: hidden
+    overflow: hidden;
     cursor: pointer;
     transition: all 0.3s;
 }

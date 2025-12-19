@@ -1,3 +1,7 @@
+<?php
+ob_start();
+?>
+<?php ob_start(); ?>
 <!-- Notification Bell Widget -->
 <style>
 .notification-bell {
@@ -267,7 +271,19 @@ function getNotificationIcon(type, status) {
 
 function getTimeAgo(datetime) {
     const now = new Date();
-    const past = new Date(datetime);
+    // Parse datetime and ensure it's interpreted as UTC from server
+    const past = new Date(datetime + ' UTC');
+    
+    // If parsing fails, try alternative format
+    if (isNaN(past.getTime())) {
+        // Try parsing as ISO format
+        const parsed = new Date(datetime.replace(' ', 'T'));
+        if (!isNaN(parsed.getTime())) {
+            return getTimeAgo(parsed.toISOString());
+        }
+        return 'Waktu tidak valid';
+    }
+    
     const diffMs = now - past;
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
@@ -297,3 +313,4 @@ setInterval(updateNotificationCount, 30000);
 // Initial load
 updateNotificationCount();
 </script>
+<?php ob_end_flush(); ?>

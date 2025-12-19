@@ -11,6 +11,7 @@ include '../koneksi.php';
 include '../includes/header.php';
 include '../includes/navbar.php';
 include '../includes/dashboard_home.php';
+include 'sidebar_admin.php';
 
 
 /* ================= NAMA ADMIN ================= */

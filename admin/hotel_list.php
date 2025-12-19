@@ -16,7 +16,7 @@ $q_count = mysqli_query($conn, "SELECT COUNT(*) total FROM hotel");
 $total_hotel = mysqli_fetch_assoc($q_count)['total'] ?? 0;
 
 /* ================= QUERY DATA HOTEL ================= */
-$query = "SELECT * FROM hotel ORDER BY id DESC";
+$query = "SELECT * FROM hotel ORDER BY id_hotel DESC";
 $data_hotel = mysqli_query($conn, $query);
 ?>
 

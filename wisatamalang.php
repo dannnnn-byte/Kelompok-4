@@ -34,13 +34,22 @@ while($row = mysqli_fetch_assoc($result_fasilitas)) {
     else $excludes[] = $row['item'];
 }
 
-// Data Dummy Gambar Destinasi (Karena tabel destinasi belum ada, pakai array dulu sesuai kodemu)
-$destinasi_list = [
-    ["nama" => "Jawa Timur Park 1", "img" => "img/" . $data_paket['gambar_paket']],
-    ["nama" => "Musium Angkut", "img" => "img/angkut.webp"], // Ganti dengan gambar lain yang ada
-    ["nama" => "Alun-Alun Batu", "img" => "img/batu.webp"],
-    ["nama" => "Coban Rondo", "img" => "img/cobanrondo1.webp"],
-];
+// Ambil Destinasi dari Database
+$query_destinasi = "SELECT dw.id_destinasi, dw.nama_destinasi, dw.gambar, dw.deskripsi_destinasi 
+                    FROM paket_destinasi pd 
+                    JOIN destinasi_wisata dw ON pd.id_destinasi = dw.id_destinasi 
+                    WHERE pd.id_paket = '$id_paket' 
+                    ORDER BY pd.urutan ASC";
+$result_destinasi = mysqli_query($conn, $query_destinasi);
+$destinasi_list = [];
+while($row = mysqli_fetch_assoc($result_destinasi)) {
+    $destinasi_list[] = [
+        "id" => $row['id_destinasi'],
+        "nama" => $row['nama_destinasi'],
+        "img" => "img/" . $row['gambar'],
+        "deskripsi" => $row['deskripsi_destinasi']
+    ];
+}
 
 ?>
 
@@ -177,26 +186,28 @@ $destinasi_list = [
 <div class="container mb-5">
     
     <div id="content-destination" class="tab-content-area active">
+        <div class="mt-5">
+            <h4 class="fw-bold">Description</h4>
+            <p class="text-muted"><?= $data_paket['deskripsi_wisata']; ?></p>
+        </div>
         <h3 class="fw-bold mb-4">Galeri Destinasi</h3>
         <div class="row g-4">
             <?php foreach($destinasi_list as $item): ?>
             <div class="col-md-6">
                 <div class="card border-0 rounded-4 overflow-hidden shadow-sm h-100">
                     <img src="<?= $item['img']; ?>" class="img-fluid w-100" style="height: 300px; object-fit: cover;">
-                    <div class="card-body d-flex justify-content-between align-items-center" style="background: #145C43; color: white;">
-                        <h5 class="fw-bold m-0"><?= $item['nama']; ?></h5>
-                        <a href="#" class="text-decoration-none">
-                            <span class="btn-overview fw-bold" style="white-space: nowrap;">Overview ➜</span>
-                        </a>
+                    <div class="card-body" style="background: #145C43; color: white;">
+                        <h5 class="fw-bold mb-2"><?= $item['nama']; ?></h5>
+                        <p class="small mb-3"><?= substr($item['deskripsi'], 0, 100); ?>...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="destinasi_detail.php?id=<?= $item['id']; ?>" class="text-decoration-none">
+                                <span class="btn-overview fw-bold">Overview ➜</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
-        </div>
-        
-        <div class="mt-5">
-            <h4 class="fw-bold">Description</h4>
-            <p class="text-muted"><?= $data_paket['deskripsi_wisata']; ?></p>
         </div>
     </div>
 

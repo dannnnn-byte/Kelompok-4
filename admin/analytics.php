@@ -12,6 +12,13 @@ include '../includes/navbar.php';
 
 $nama_admin = $_SESSION['nama'] ?? $_SESSION['email'] ?? 'Admin';
 
+// Include CSS yang diperlukan
+?>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../assets/footer2.css">
+<?php
+
 // ================= STATISTICS =================
 $stats = [
     'total_pemesanan' => mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM pemesanan"))['total'],

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 19, 2025 at 09:42 AM
+-- Generation Time: Dec 19, 2025 at 06:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -129,6 +129,51 @@ INSERT INTO `destinasi_populer` (`id`, `nama`, `slug`, `gambar`, `aktif`, `creat
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `destinasi_wisata`
+--
+
+CREATE TABLE `destinasi_wisata` (
+  `id_destinasi` int(11) NOT NULL,
+  `nama_destinasi` varchar(255) NOT NULL,
+  `gambar` varchar(255) DEFAULT NULL,
+  `lokasi` varchar(255) DEFAULT NULL,
+  `jam_buka` varchar(50) DEFAULT NULL,
+  `jam_tutup` varchar(50) DEFAULT NULL,
+  `harga_tiket` varchar(100) DEFAULT NULL,
+  `kontak` varchar(20) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `rating` decimal(3,2) DEFAULT 4.80,
+  `deskripsi_destinasi` text DEFAULT NULL,
+  `deskripsi_lengkap` longtext DEFAULT NULL,
+  `fasilitas` text DEFAULT NULL,
+  `tips_kunjungan` text DEFAULT NULL,
+  `gambar_gallery` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`gambar_gallery`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `destinasi_wisata`
+--
+
+INSERT INTO `destinasi_wisata` (`id_destinasi`, `nama_destinasi`, `gambar`, `lokasi`, `jam_buka`, `jam_tutup`, `harga_tiket`, `kontak`, `website`, `rating`, `deskripsi_destinasi`, `deskripsi_lengkap`, `fasilitas`, `tips_kunjungan`, `gambar_gallery`, `created_at`) VALUES
+(1, 'Jawa Timur Park 1', 'jtp1.png', 'Jl. Taman Hiburan, Batu, Malang', '10:00', '18:00', 'Rp 150.000 - Rp 250.000', '0341-321111', 'www.jtpark.co.id', 4.70, 'Taman hiburan terbesar di Jawa Timur dengan wahana permainan yang seru untuk segala usia', 'Jawa Timur Park 1 adalah taman hiburan terbesar dan terpopuler di Jawa Timur dengan berbagai wahana permainan yang menarik untuk segala usia. Dilengkapi dengan teknologi terkini dan standar keselamatan internasional, taman ini menjadi destinasi wisata keluarga yang sempurna.', 'Wahana Permainan|Restoran & Cafe|Toilet Bersih|Tempat Parkir Luas|First Aid|Information Center|ATM|Area Bermain Anak', 'Datang di hari kerja untuk menghindari keramaian. Bawa uang tunai karena tidak semua wahana menerima kartu kredit. Gunakan sunscreen untuk melindungi dari sinar matahari. Jangan lupa mengambil foto di spot-spot menarik.', '[\"jtp1g1.webp\", \"jtp1g2.webp\", \"jtp1g3.jpg\"]', '2025-12-19 15:37:57'),
+(2, 'Jawa Timur Park 2', 'bsz.jpg', 'Jl. Raya Ngujung, Gondanglegi, Malang', '09:00', '17:00', 'Rp 120.000 - Rp 180.000', '0341-411155', 'www.jtpark2.co.id', 4.60, 'Taman tematik dengan berbagai zona bermain edukatif dan menghibur', 'Jawa Timur Park 2 menghadirkan konsep taman bermain tematik dengan berbagai zone menarik yang edukatif sekaligus menghibur. Setiap zona dirancang untuk memberikan pengalaman unik dan tak terlupakan bagi pengunjung.', 'Zona Tematik|Wahana Modern|Pertunjukan Hidup|Kuliner Internasional|Free WiFi|Mushola|Lactation Room|Wheelchair Access', 'Pesan tiket online untuk mendapatkan harga lebih murah. Tiap zona memiliki daya tarik berbeda, jangan sampai ada yang terlewat. Sebaiknya datang pagi untuk menghindari antrian panjang. Pakai sepatu yang nyaman.', '[\"jtp2.jpg\", \"jtp2.jpg\", \"jtp2.jpg\"]', '2025-12-19 15:37:57'),
+(3, 'Musium Angkut', 'angkut.webp', 'Jl. Besar Tembuku, Malang', '09:00', '17:00', 'Rp 80.000 - Rp 100.000', '0341-908080', 'www.museumangkut.com', 4.80, 'Museum transportasi dengan koleksi kendaraan klasik dari berbagai era', 'Museum Angkut adalah museum transportasi unik yang memamerkan koleksi kendaraan klasik dari berbagai era dan negara. Dengan konsep museum interaktif, pengunjung dapat merasakan pengalaman berkendara melalui teknologi VR dan foto interaktif.', 'Koleksi Kendaraan Klasik|VR Experience|Studio Foto|Food Court|Gift Shop|Toilet Modern|Parkir Gratis|Guided Tour', 'Ikuti guided tour untuk mendapatkan informasi lengkap tentang setiap kendaraan. Ambil foto di berbagai spot yang tersedia. Jangan lewatkan zona VR untuk pengalaman yang tak terlupakan. Waktu kunjungan minimal 2-3 jam.', '[\"angkut.webp\", \"angkut.webp\", \"angkut.webp\"]', '2025-12-19 15:37:57'),
+(4, 'Alun-Alun Batu', 'batu.webp', 'Alun-alun Kota Batu, Malang', '24 Jam (Public Space)', '24 Jam (Public Space)', 'Gratis', '0341-771111', '', 4.50, 'Alun-alun pusat kota dengan suasana tradisional dan modern', 'Alun-alun Batu adalah pusat kota Batu yang menjadi landmark penting dengan kombinasi sempurna antara suasana tradisional dan modern. Tempat ini menjadi pusat kegiatan sosial, wisata, dan kuliner masyarakat lokal.', 'Lapangan Luas|Taman Hijauan|Vendor Kuliner|Parkir|Toilet Umum|WiFi Gratis|Photo Spot|Jogging Track', 'Kunjungi saat sore/malam hari untuk suasana yang lebih ramai dan sejuk. Coba makanan lokal di sekitar alun-alun. Tempat yang bagus untuk berfoto dengan latar belakang kota. Cocok untuk keluarga dan anak-anak.', '[\"batu.webp\", \"batu.webp\", \"batu.webp\"]', '2025-12-19 15:37:57'),
+(5, 'Coban Rondo', 'cobanrondo1.webp', 'Desa Gombang, Pujon, Malang', '07:00', '18:00', 'Rp 50.000 - Rp 100.000', '081-234567890', '', 4.70, 'Air terjun indah yang dikelilingi pemandangan alam yang eksotis', 'Coban Rondo adalah air terjun yang berlokasi di tengah hutan dengan pemandangan alam yang menakjubkan. Air terjun ini memiliki ketinggian sekitar 70 meter dan dikelilingi tebing batu yang indah serta vegetasi hijau yang lebat.', 'Akses Air Terjun|Area Istirahat|Warung Makan|Toilet|Tempat Parkir|Guide Lokal|Safety Equipment|Spot Foto', 'Gunakan alas kaki yang tidak licin untuk keselamatan. Bawa air minum yang cukup karena perjalanan menuju air terjun cukup jauh. Datang saat musim kemarau untuk air yang jernih. Jangan sampai lupa membawa kamera untuk dokumentasi.', '[\"cobanrondo1.webp\", \"cobanrondo1.webp\", \"cobanrondo1.webp\"]', '2025-12-19 15:37:57'),
+(6, 'Kawah Ijen', 'ijen1.jpg', 'Ijen, Banyuwangi, Jawa Timur', '00:00', '11:00', 'Rp 125.000', '0333-426759', 'www.ijen.info', 4.90, 'Kawah vulkanik dengan danau berwarna biru yang menakjubkan', 'Kawah Ijen adalah kawah vulkanik yang terkenal dengan danau berwarna biru kehijauan yang spektakuler. Dengan ketinggian 2.368 meter di atas permukaan laut, Kawah Ijen menawarkan pemandangan alam yang luar biasa dan sunrise yang tak terlupakan.', 'Trail Hiking|Base Camp|Warung Makanan|Toilet|Parkir|Porter Service|Mountain Guide|Merchandise', 'Berangkat dari base camp sekitar jam 00:30 pagi untuk melihat sunrise. Bawa jaket karena cuaca di atas sangat dingin. Gunakan masker untuk melindungi dari asap belerang. Physical fitness yang baik diperlukan untuk pendakian ini. Waktu tempuh 2-3 jam.', '[\"ijen1.jpg\", \"ijen1.jpg\", \"ijen1.jpg\"]', '2025-12-19 15:37:57'),
+(7, 'Bromo', 'bromo.webp', 'Probolinggo, Lumajang, Malang', '06:00', '16:00', 'Rp 100.000', '0335-421107', 'www.bromoindonesia.com', 4.80, 'Gunung berapi terkenal dengan pemandangan sunrise yang spektakuler', 'Bromo adalah gunung berapi yang paling ikonik di Indonesia dengan pemandangan sunrise yang spektakuler. Terletak di Taman Nasional Bromo-Tengger-Semeru, gunung ini menawarkan pengalaman mendaki yang tak terlupakan dengan pemandangan alam yang menakjubkan.', 'Jeep Tour|Horse Rental|Mountain Trail|Base Camp|Warung Lokal|Toilet|Parkir Luas|Photography Spot', 'Paket wisata biasanya dimulai tengah malam untuk melihat sunrise. Bawa jaket tebal dan masker untuk melindungi dari debu vulkan. Fisik yang prima diperlukan karena trek menanjak. Sewa jeep untuk pengalaman yang lebih menyenangkan. Jangan lewatkan pasir berbisik di lembah Bromo.', '[\"bromo.webp\", \"bromo.webp\", \"bromo.webp\"]', '2025-12-19 15:37:57'),
+(8, 'Tumpak Sewu', 'tumpaksewu.webp', 'Jumog, Lumajang, Jawa Timur', '06:00', '17:00', 'Rp 80.000', '0334-887766', '', 4.70, 'Air terjun berlapis dengan tebing batu yang memukau', 'Tumpak Sewu adalah air terjun berlapis yang memiliki ketinggian sekitar 120 meter dengan tebing batu yang spektakuler. Pemandangan air terjun yang berjatuhan dalam berbagai tingkat menciptakan pemandangan yang sangat memukau dan Instagram-worthy.', 'Akses Air Terjun|Trail Trekking|Area Istirahat|Warung Makanan|Toilet|Parkir|Local Guide|Photography Point', 'Air terjun paling indah saat musim penghujan dengan debit air yang deras. Gunakan alas kaki yang cocok untuk medan licin. Hati-hati saat turun ke area air terjun. Bawa perlengkapan mandi jika ingin berenang. Waktu terbaik kunjungan pagi hari.', '[\"tumpaksewu.webp\", \"tumpaksewu.webp\", \"tumpaksewu.webp\"]', '2025-12-19 15:37:57'),
+(9, 'Museum Surabaya', 'museum.webp', NULL, NULL, NULL, NULL, NULL, NULL, 4.80, 'Museum bersejarah yang menyimpan koleksi benda peninggalan', NULL, NULL, NULL, NULL, '2025-12-19 15:37:57'),
+(10, 'Taman Tropis', 'taman.webp', NULL, NULL, NULL, NULL, NULL, NULL, 4.80, 'Taman dengan koleksi tanaman tropis yang indah', NULL, NULL, NULL, NULL, '2025-12-19 15:37:57'),
+(11, 'Pantai Ombak Putih', 'pantai.webp', NULL, NULL, NULL, NULL, NULL, NULL, 4.80, 'Pantai dengan pasir putih dan ombak yang indah', NULL, NULL, NULL, NULL, '2025-12-19 15:37:57'),
+(12, 'WBL (Wendit Blahbatuh Lake)', 'wbl.webp', NULL, NULL, NULL, NULL, NULL, NULL, 4.80, 'Danau buatan dengan pemandangan alam yang asri', NULL, NULL, NULL, NULL, '2025-12-19 15:37:57'),
+(13, 'Candi Brahu', 'brahu.jpeg', 'Jl. Trowulan, Jatirejo, Temon, Kec. Trowulan, Mojokerto, Jawa Timur 61362.', '08.00', '16.00', 'Rp 10.000', '123456789', NULL, 4.90, 'Candi Brahu terletak di sisi kanan jalan kecil tersebut, sekitar 1,8 km dari jalan raya. Nama candi ini, yaitu \'brahu\', diduga berasal dari kata wanaru atau warahu. Nama ini didapat dari sebutan sebuah bangunan suci yang disebut dalam Prasasti Alasantan. Prasasti tersebut ditemukan tak jauh dari Candi Brahu.', 'Candi Brahu terletak di sisi kanan jalan kecil tersebut, sekitar 1,8 km dari jalan raya. Nama candi ini, yaitu \'brahu\', diduga berasal dari kata wanaru atau warahu. Nama ini didapat dari sebutan sebuah bangunan suci yang disebut dalam Prasasti Alasantan. Prasasti tersebut ditemukan tak jauh dari Candi Brahu.', NULL, NULL, NULL, '2025-12-19 16:38:32'),
+(14, 'Gili Labak', 'sumenep.webp', NULL, '08.00', '17.00', 'Rp 10.000', '0341-411155', NULL, 4.80, 'Gili Labak merupakan salah satu obyek wisata populer di Madura.', 'Gili Labak merupakan salah satu obyek wisata populer di Madura. Pulau kecil ini berada di sebelah tenggara Pulau Madura, yang secara administratif berada di Desa Kombang, Kabupaten Sumenep. Mencermati Landskap Ekonomi Digital Indonesia 2025 dan Prospeknya pada 2026 Artikel Kompas.id Daya tarik pantai di Gili Labak adalah pasir putih serta air laut berwarna biru kehijauan. Selain itu, Gili Labak punya panorama bawah laut yang indah, mulai dari biota laut maupun karang, sehingga menjadi spot snorkeling favorit wisatawan. Berdasarkan informasi dari Kompas.com (6/10/2022), pulau ini hanya dihuni sekitar 38 kepala keluarga (KK). Pulau seluas 5 hektare ini sudah dilengkapi fasilitas penunjang wisata seperti homestay, restoran, dan sebagainya.', NULL, NULL, '[\"sumenep.webp\", \"sumenep.webp\", \"sumenep.webp\"]', '2025-12-19 16:48:48');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `hotel`
 --
 
@@ -223,6 +268,45 @@ CREATE TABLE `orders` (
   `destinasi` varchar(100) DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `paket_destinasi`
+--
+
+CREATE TABLE `paket_destinasi` (
+  `id` int(11) NOT NULL,
+  `id_paket` int(11) NOT NULL,
+  `id_destinasi` int(11) NOT NULL,
+  `urutan` int(11) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `paket_destinasi`
+--
+
+INSERT INTO `paket_destinasi` (`id`, `id_paket`, `id_destinasi`, `urutan`, `created_at`) VALUES
+(1, 1, 1, 1, '2025-12-19 15:38:12'),
+(2, 1, 3, 2, '2025-12-19 15:38:12'),
+(3, 1, 4, 3, '2025-12-19 15:38:12'),
+(4, 2, 2, 1, '2025-12-19 15:38:12'),
+(5, 2, 3, 2, '2025-12-19 15:38:12'),
+(6, 2, 4, 3, '2025-12-19 15:38:12'),
+(7, 3, 1, 1, '2025-12-19 15:38:12'),
+(8, 3, 2, 2, '2025-12-19 15:38:12'),
+(9, 3, 3, 3, '2025-12-19 15:38:12'),
+(10, 3, 4, 4, '2025-12-19 15:38:12'),
+(11, 4, 7, 1, '2025-12-19 15:38:12'),
+(12, 4, 8, 2, '2025-12-19 15:38:12'),
+(13, 4, 6, 3, '2025-12-19 15:38:12'),
+(14, 4, 3, 4, '2025-12-19 15:38:12'),
+(15, 4, 5, 5, '2025-12-19 15:38:12'),
+(16, 5, 14, 1, '2025-12-19 15:38:12'),
+(19, 1, 5, 1, '2025-12-19 15:48:55'),
+(20, 6, 13, 1, '2025-12-19 16:40:50'),
+(21, 7, 6, 1, '2025-12-19 17:00:01');
 
 -- --------------------------------------------------------
 
@@ -322,7 +406,9 @@ INSERT INTO `paket_wisata` (`id_paket`, `nama_paket`, `harga_per_pax`, `durasi`,
 (2, 'Batu 3 Hari 2 Malam', 450000.00, '3 Hari 2 Malam', 2, 1, '<li>Jatim Park 2</li>Dokumentasi<li></li><li>Makan 2x</li>', 'bsz.jpg', 1, NULL),
 (3, 'Batu City Tour', 250000.00, '1 Hari 1 Malam', 4, 4, '<li>Tiket Terusan Wisata Kota</li><li>Makan 2x</li><li>Souvenir</li>', 'pelangi.webp', 1, NULL),
 (4, 'Wisata Alam Batu', 300000.00, '1 Hari 1 Malam', 4, 4, '<li>Tiket Pantai</li><li>Dinner Romantis</li><li>Guide Sejarah</li>', 'alambatu1.jpg', 1, NULL),
-(5, 'Gili Labak', 750000.00, NULL, NULL, NULL, NULL, 'sumenep1.jpeg', 3, NULL);
+(5, 'Gili Labak', 750000.00, '2 Hari 1 Malam', 3, 3, '<li>Tiket Pantai</li><li>Dinner Romantis</li><li>Guide Sejarah</li>', 'sumenep.webp', 3, NULL),
+(6, 'Spirit of Majapahit', 300000.00, '2 Hari 1 Malam', 2, 3, '<li>Tiket Candi</li><li>3x Makan</li><li>Guide Sejarah</li>', 'brahu.jpeg', 2, 'Candi Brahu terletak di sisi kanan jalan kecil tersebut, sekitar 1,8 km dari jalan raya. Nama candi ini, yaitu \'brahu\', diduga berasal dari kata wanaru atau warahu. Nama ini didapat dari sebutan sebuah bangunan suci yang disebut dalam Prasasti Alasantan. Prasasti tersebut ditemukan tak jauh dari Candi Brahu.'),
+(7, 'Alam Banyuwangi', 1000000.00, '4 Hari 3 Malam', 1, 2, '<li>Tiket Ijen</li><li>3x Makan Sehari</li><li>Guide Privat</li>', 'ijen1.jpg', 4, 'Kawah Ijen: Terkenal dengan fenomena api biru sulfur di malam hari dan danau kawah hijau yang eksotis.');
 
 -- --------------------------------------------------------
 
@@ -642,7 +728,8 @@ CREATE TABLE `wishlist` (
 --
 
 INSERT INTO `wishlist` (`id`, `id_user`, `id_paket`, `created_at`) VALUES
-(5, 2, 1, '2025-12-19 07:25:41');
+(5, 2, 1, '2025-12-19 07:25:41'),
+(6, 2, 7, '2025-12-19 17:04:20');
 
 --
 -- Indexes for dumped tables
@@ -681,6 +768,12 @@ ALTER TABLE `destinasi_populer`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `destinasi_wisata`
+--
+ALTER TABLE `destinasi_wisata`
+  ADD PRIMARY KEY (`id_destinasi`);
+
+--
 -- Indexes for table `hotel`
 --
 ALTER TABLE `hotel`
@@ -709,6 +802,14 @@ ALTER TABLE `master_transport`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `paket_destinasi`
+--
+ALTER TABLE `paket_destinasi`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_paket` (`id_paket`),
+  ADD KEY `fk_destinasi` (`id_destinasi`);
 
 --
 -- Indexes for table `paket_fasilitas`
@@ -850,6 +951,12 @@ ALTER TABLE `destinasi_populer`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `destinasi_wisata`
+--
+ALTER TABLE `destinasi_wisata`
+  MODIFY `id_destinasi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
 -- AUTO_INCREMENT for table `hotel`
 --
 ALTER TABLE `hotel`
@@ -880,6 +987,12 @@ ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `paket_destinasi`
+--
+ALTER TABLE `paket_destinasi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
 -- AUTO_INCREMENT for table `paket_fasilitas`
 --
 ALTER TABLE `paket_fasilitas`
@@ -901,7 +1014,7 @@ ALTER TABLE `paket_reviews`
 -- AUTO_INCREMENT for table `paket_wisata`
 --
 ALTER TABLE `paket_wisata`
-  MODIFY `id_paket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_paket` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `pembayaran_bromo`
@@ -949,11 +1062,18 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlist`
 --
 ALTER TABLE `wishlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `paket_destinasi`
+--
+ALTER TABLE `paket_destinasi`
+  ADD CONSTRAINT `fk_destinasi_paket` FOREIGN KEY (`id_destinasi`) REFERENCES `destinasi_wisata` (`id_destinasi`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_paket_destinasi` FOREIGN KEY (`id_paket`) REFERENCES `paket_wisata` (`id_paket`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `paket_fasilitas`

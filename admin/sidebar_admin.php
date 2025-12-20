@@ -31,8 +31,8 @@
         <li class="nav-item"><a href="hotel_list.php" class="nav-link">
           <i class="bi bi-building"></i> Hotel
         </a></li>
-        <li class="nav-item"><a href="dashboard.php" class="nav-link">
-          <i class="bi bi-receipt"></i> Pemesanan
+        <li class="nav-item"><a href="transportasi_list.php" class="nav-link">
+          <i class="bi bi-truck"></i> Transportasi
         </a></li>
         <li class="nav-item"><a href="analytics.php" class="nav-link">
           <i class="bi bi-graph-up"></i> Analytics

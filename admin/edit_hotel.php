@@ -18,7 +18,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id_hotel = mysqli_real_escape_string($conn, $_GET['id']);
-$query = "SELECT * FROM hotel WHERE id = '$id_hotel'";
+$query = "SELECT * FROM master_hotel WHERE id_hotel = '$id_hotel'";
 $result = mysqli_query($conn, $query);
 $hotel = mysqli_fetch_assoc($result);
 
@@ -30,39 +30,53 @@ if (!$hotel) {
 
 /* ================= PROSES UPDATE ================= */
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_hotel'])) {
-    $nama = mysqli_real_escape_string($conn, $_POST['nama']);
+    $nama = mysqli_real_escape_string($conn, $_POST['nama_hotel']);
     $lokasi = mysqli_real_escape_string($conn, $_POST['lokasi']);
-    $harga = (int)$_POST['harga'];
-    
+    $bintang = isset($_POST['bintang']) && $_POST['bintang'] !== '' ? (int)$_POST['bintang'] : null;
+
+    $uploadDir = __DIR__ . '/../uploads/hotel/';
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+
     // Handle gambar
-    $gambar = $hotel['gambar']; // Default ke gambar lama
-    if (!empty($_FILES['gambar']['name'])) {
-        $target_dir = "../img/";
-        $gambar_file = basename($_FILES['gambar']['name']);
-        $target_file = $target_dir . $gambar_file;
-        
-        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
-            $gambar = "img/" . $gambar_file;
+    $gambar = $hotel['gambar_hotel']; // Default ke gambar lama
+    if (!empty($_FILES['gambar_hotel']['name'])) {
+        $ext = strtolower(pathinfo($_FILES['gambar_hotel']['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg','jpeg','png','webp'];
+        if (!in_array($ext, $allowed)) {
+            $error = "Format gambar harus JPG/PNG/WebP";
         } else {
-            $error = "Gagal mengupload gambar";
+            $newName = 'hotel_' . time() . '_' . rand(1000,9999) . '.' . $ext;
+            $target_file = $uploadDir . $newName;
+            if (move_uploaded_file($_FILES['gambar_hotel']['tmp_name'], $target_file)) {
+                if (!empty($gambar) && file_exists($uploadDir . $gambar)) {
+                    @unlink($uploadDir . $gambar);
+                }
+                $gambar = $newName;
+            } else {
+                $error = "Gagal mengupload gambar";
+            }
         }
     }
     
     if (!isset($error)) {
-        $query_update = "UPDATE hotel SET 
-            nama = '$nama',
-            lokasi = '$lokasi',
-            harga = $harga,
-            gambar = '$gambar'
-        WHERE id = '$id_hotel'";
-        
-        if (mysqli_query($conn, $query_update)) {
+        $query_update = "UPDATE master_hotel SET 
+            nama_hotel = ?,
+            lokasi = ?,
+            bintang = ?,
+            gambar_hotel = ?
+        WHERE id_hotel = ?";
+        $stmt = $conn->prepare($query_update);
+        $stmt->bind_param('sissi', $nama, $lokasi, $bintang, $gambar, $id_hotel);
+        if ($stmt->execute()) {
             $_SESSION['success_message'] = "Hotel berhasil diperbarui";
             header("Location: hotel_list.php");
             exit;
         } else {
-            $error = "Error: " . mysqli_error($conn);
+            $error = "Error: " . $stmt->error;
         }
+        $stmt->close();
     }
 }
 ?>
@@ -86,40 +100,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_hotel'])) {
                     <label class="form-label">Nama Hotel <span class="text-danger">*</span></label>
                     <input type="text" 
                            class="form-control" 
-                           name="nama" 
-                           value="<?= htmlspecialchars($hotel['nama']) ?>"
+                           name="nama_hotel" 
+                           value="<?= htmlspecialchars($hotel['nama_hotel']) ?>"
                            required>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Lokasi <span class="text-danger">*</span></label>
+                    <label class="form-label">Lokasi</label>
                     <input type="text" 
                            class="form-control" 
                            name="lokasi" 
-                           value="<?= htmlspecialchars($hotel['lokasi']) ?>"
-                           required>
+                           value="<?= htmlspecialchars($hotel['lokasi']) ?>">
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Harga <span class="text-danger">*</span></label>
+                    <label class="form-label">Bintang</label>
                     <input type="number" 
                            class="form-control" 
-                           name="harga" 
-                           value="<?= $hotel['harga'] ?>"
-                           required>
+                           name="bintang" 
+                           min="1" max="5"
+                           value="<?= htmlspecialchars($hotel['bintang']) ?>">
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Gambar</label>
-                    <?php if (!empty($hotel['gambar'])): ?>
+                    <?php if (!empty($hotel['gambar_hotel'])): ?>
                     <div class="mb-2">
-                        <img src="../<?= htmlspecialchars($hotel['gambar']) ?>" style="max-width: 200px;" class="rounded">
+                        <img src="../uploads/hotel/<?= htmlspecialchars($hotel['gambar_hotel']) ?>" style="max-width: 200px;" class="rounded">
                         <p class="text-muted small">Gambar saat ini</p>
                     </div>
                     <?php endif; ?>
                     <input type="file" 
                            class="form-control" 
-                           name="gambar"
+                           name="gambar_hotel"
                            accept="image/*">
                     <small class="text-muted">Biarkan kosong jika tidak ingin mengubah gambar</small>
                 </div>

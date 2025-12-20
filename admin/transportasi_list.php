@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-/* ================= PROTEKSI ADMIN ================= */
+// Proteksi admin
 if (!isset($_SESSION['login']) || $_SESSION['login'] !== true || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
@@ -11,13 +11,12 @@ include '../koneksi.php';
 include '../includes/header.php';
 include '../includes/navbar.php';
 
-/* ================= STATISTIK ================= */
-$q_count = mysqli_query($conn, "SELECT COUNT(*) total FROM master_hotel");
-$total_hotel = mysqli_fetch_assoc($q_count)['total'] ?? 0;
+// Hitung total transportasi
+$q_count = mysqli_query($conn, "SELECT COUNT(*) AS total FROM master_transport");
+$total_transport = mysqli_fetch_assoc($q_count)['total'] ?? 0;
 
-/* ================= QUERY DATA HOTEL ================= */
-$query = "SELECT * FROM master_hotel ORDER BY id_hotel DESC";
-$data_hotel = mysqli_query($conn, $query);
+// Ambil data transport
+$data_transport = mysqli_query($conn, "SELECT * FROM master_transport ORDER BY id_transport DESC");
 ?>
 
 <div class="container py-5">
@@ -33,65 +32,57 @@ $data_hotel = mysqli_query($conn, $query);
         </div>
         <?php unset($_SESSION['error_message']); endif; ?>
 
-    <!-- ================= HEADER ================= -->
-    <div class="d-flex align-items-center justify-content-between mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="fw-bold mb-0">Kelola Hotel</h2>
-            <p class="text-muted mb-0">Total Hotel: <strong><?= $total_hotel ?></strong></p>
+            <h2 class="fw-bold mb-0">Kelola Transportasi</h2>
+            <p class="text-muted mb-0">Total armada: <strong><?= $total_transport ?></strong></p>
         </div>
-        <a href="tambah_hotel.php" class="btn btn-success">
-            <i class="bi bi-plus-lg"></i> Tambah Hotel
+        <a href="tambah_transportasi.php" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i> Tambah Transportasi
         </a>
     </div>
 
-    <!-- ================= TABEL HOTEL ================= -->
     <div class="card shadow">
         <div class="card-body">
-            <?php if (mysqli_num_rows($data_hotel) > 0): ?>
+            <?php if (mysqli_num_rows($data_transport) > 0): ?>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark">
                         <tr>
                             <th style="width: 50px;">No</th>
-                            <th>Nama Hotel</th>
-                            <th>Lokasi</th>
-                            <th>Bintang</th>
+                            <th>Jenis Kendaraan</th>
+                            <th>Kapasitas</th>
+                            <th>Fasilitas</th>
                             <th>Gambar</th>
                             <th style="width: 170px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $no = 1; while ($row = mysqli_fetch_assoc($data_hotel)): ?>
+                        <?php $no = 1; while ($row = mysqli_fetch_assoc($data_transport)): ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><strong><?= htmlspecialchars($row['nama_hotel']) ?></strong></td>
-                            <td><?= htmlspecialchars($row['lokasi']) ?></td>
+                            <td><strong><?= htmlspecialchars($row['jenis_kendaraan']) ?></strong></td>
+                            <td><?= $row['kapasitas_kursi'] ? intval($row['kapasitas_kursi']) . ' kursi' : '-' ?></td>
+                            <td><?= $row['fasilitas_mobil'] ? nl2br(htmlspecialchars($row['fasilitas_mobil'])) : '-' ?></td>
                             <td>
-                                <?php if ($row['bintang']): ?>
-                                    <?= str_repeat('<i class="bi bi-star-fill text-warning"></i>', (int)$row['bintang']) ?>
-                                <?php else: ?>
-                                    <span class="text-muted">-</span>
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <?php if (!empty($row['gambar_hotel'])): ?>
-                                    <img src="../uploads/hotel/<?= urlencode($row['gambar_hotel']) ?>" alt="gambar" style="width:80px; height:60px; object-fit:cover; border-radius:6px;">
+                                <?php if (!empty($row['gambar_transport'])): ?>
+                                    <img src="../uploads/transport/<?= urlencode($row['gambar_transport']) ?>" alt="gambar" style="width:80px; height:60px; object-fit:cover; border-radius:6px;">
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>
                             </td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="edit_hotel.php?id=<?= $row['id_hotel'] ?>" 
+                                    <a href="edit_transportasi.php?id=<?= $row['id_transport'] ?>" 
                                        class="btn btn-sm btn-warning fw-bold"
-                                       title="Edit Hotel"
+                                       title="Edit Transportasi"
                                        style="padding: 6px 12px; border-radius: 5px;">
                                         <i class="bi bi-pencil-square"></i> Edit
                                     </a>
-                                    <form method="POST" action="delete_hotel.php" class="d-inline">
-                                        <input type="hidden" name="id_hotel" value="<?= $row['id_hotel'] ?>">
+                                    <form method="POST" action="delete_transportasi.php" class="d-inline">
+                                        <input type="hidden" name="id_transport" value="<?= $row['id_transport'] ?>">
                                         <button type="submit" class="btn btn-sm btn-danger fw-bold"
-                                                onclick="return confirm('Yakin hapus hotel ini?');"
+                                                onclick="return confirm('Yakin hapus transportasi ini?');"
                                                 style="padding: 6px 12px; border-radius: 5px;">
                                             <i class="bi bi-trash-fill"></i> Hapus
                                         </button>
@@ -105,7 +96,7 @@ $data_hotel = mysqli_query($conn, $query);
             </div>
             <?php else: ?>
             <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> Belum ada data hotel. <a href="tambah_hotel.php">Tambah hotel baru</a>
+                <i class="bi bi-info-circle"></i> Belum ada data transportasi. <a href="tambah_transportasi.php">Tambah transportasi baru</a>
             </div>
             <?php endif; ?>
         </div>

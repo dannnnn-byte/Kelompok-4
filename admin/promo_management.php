@@ -30,6 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: promo_management.php");
         exit;
     }
+
+    if ($action == 'update') {
+        $id = (int)($_POST['id'] ?? 0);
+        $kode = mysqli_real_escape_string($conn, $_POST['kode_promo']);
+        $nama = mysqli_real_escape_string($conn, $_POST['nama_promo']);
+        $jenis = $_POST['jenis_diskon'];
+        $nilai = $_POST['nilai_diskon'];
+        $min_transaksi = $_POST['min_transaksi'];
+        $max_diskon = $_POST['max_diskon'] ?? 0;
+        $kuota = $_POST['kuota'];
+        $tgl_mulai = $_POST['tanggal_mulai'];
+        $tgl_selesai = $_POST['tanggal_selesai'];
+
+        $stmt = $conn->prepare("UPDATE promo_diskon SET kode_promo=?, nama_promo=?, jenis_diskon=?, nilai_diskon=?, min_transaksi=?, max_diskon=?, kuota=?, tanggal_mulai=?, tanggal_selesai=? WHERE id=?");
+        if ($stmt) {
+            $stmt->bind_param('sssddiissi', $kode, $nama, $jenis, $nilai, $min_transaksi, $max_diskon, $kuota, $tgl_mulai, $tgl_selesai, $id);
+            $stmt->execute();
+            $stmt->close();
+            $_SESSION['success'] = "Promo berhasil diperbarui!";
+        } else {
+            $_SESSION['success'] = "Gagal memperbarui promo: " . $conn->error;
+        }
+        header("Location: promo_management.php");
+        exit;
+    }
     
     if ($action == 'delete') {
         $id = $_POST['id'];
@@ -257,7 +282,19 @@ input:checked + .toggle-slider:before {
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">
+                    <button class="btn btn-sm btn-outline-primary flex-fill"
+                            type="button"
+                            data-id="<?= $promo['id'] ?>"
+                            data-kode="<?= htmlspecialchars($promo['kode_promo']) ?>"
+                            data-nama="<?= htmlspecialchars($promo['nama_promo']) ?>"
+                            data-jenis="<?= $promo['jenis_diskon'] ?>"
+                            data-nilai="<?= $promo['nilai_diskon'] ?>"
+                            data-min="<?= $promo['min_transaksi'] ?>"
+                            data-max="<?= $promo['max_diskon'] ?>"
+                            data-kuota="<?= $promo['kuota'] ?>"
+                            data-mulai="<?= $promo['tanggal_mulai'] ?>"
+                            data-selesai="<?= $promo['tanggal_selesai'] ?>"
+                            onclick="openEditModal(this)">
                         <i class="bi bi-pencil"></i> Edit
                     </button>
                     <button class="btn btn-sm btn-outline-danger" onclick="deletePromo(<?= $promo['id'] ?>)">
@@ -342,7 +379,99 @@ input:checked + .toggle-slider:before {
     </div>
 </div>
 
+        <!-- Edit Promo Modal -->
+        <div class="modal fade" id="editPromoModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold">✏️ Edit Promo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" id="edit_id">
+                    
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Kode Promo *</label>
+                                    <input type="text" class="form-control" name="kode_promo" id="edit_kode" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Nama Promo *</label>
+                                    <input type="text" class="form-control" name="nama_promo" id="edit_nama" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Jenis Diskon *</label>
+                                    <select class="form-select" name="jenis_diskon" id="edit_jenis" required>
+                                        <option value="percentage">Persentase (%)</option>
+                                        <option value="fixed">Nominal (Rp)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Nilai Diskon *</label>
+                                    <input type="number" class="form-control" name="nilai_diskon" id="edit_nilai" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Min. Transaksi</label>
+                                    <input type="number" class="form-control" name="min_transaksi" id="edit_min" value="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">Max. Diskon (opsional)</label>
+                                    <input type="number" class="form-control" name="max_diskon" id="edit_max" value="0">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-semibold">Kuota *</label>
+                                    <input type="number" class="form-control" name="kuota" id="edit_kuota" value="100" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-semibold">Tanggal Mulai *</label>
+                                    <input type="datetime-local" class="form-control" name="tanggal_mulai" id="edit_mulai" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label fw-semibold">Tanggal Selesai *</label>
+                                    <input type="datetime-local" class="form-control" name="tanggal_selesai" id="edit_selesai" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">
+                                <i class="bi bi-save"></i> Simpan Perubahan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 <script>
+function openEditModal(btn) {
+    const d = btn.dataset;
+    document.getElementById('edit_id').value = d.id;
+    document.getElementById('edit_kode').value = d.kode;
+    document.getElementById('edit_nama').value = d.nama;
+    document.getElementById('edit_jenis').value = d.jenis;
+    document.getElementById('edit_nilai').value = d.nilai;
+    document.getElementById('edit_min').value = d.min;
+    document.getElementById('edit_max').value = d.max;
+    document.getElementById('edit_kuota').value = d.kuota;
+    // Pastikan format datetime-local: YYYY-MM-DDTHH:MM
+    const fmt = (val) => val ? val.replace(' ', 'T').substring(0,16) : '';
+    document.getElementById('edit_mulai').value = fmt(d.mulai);
+    document.getElementById('edit_selesai').value = fmt(d.selesai);
+
+    const modal = new bootstrap.Modal(document.getElementById('editPromoModal'));
+    modal.show();
+}
+
 // Countdown Timers
 document.querySelectorAll('.countdown-timer').forEach(timer => {
     const endDate = new Date(timer.dataset.end);

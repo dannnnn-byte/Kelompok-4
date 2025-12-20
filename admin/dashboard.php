@@ -37,6 +37,33 @@ $q_bromo_pendapatan = mysqli_query($conn, "
 $total_pendapatan_bromo =
     mysqli_fetch_assoc($q_bromo_pendapatan)['total'] ?? 0;
 
+/* ================= GRAFIK PEMESANAN BULANAN (TAHUN BERJALAN) ================= */
+$year = date('Y');
+$monthly_labels = [];
+$monthly_counts = [];
+
+$sql_monthly = "SELECT DATE_FORMAT(tanggal_pesan, '%Y-%m') AS ym, COUNT(*) AS total
+                FROM pemesanan
+                WHERE YEAR(tanggal_pesan) = '$year'
+                GROUP BY ym
+                ORDER BY ym";
+$res_monthly = mysqli_query($conn, $sql_monthly);
+
+$map_counts = [];
+if ($res_monthly) {
+    while ($r = mysqli_fetch_assoc($res_monthly)) {
+        $map_counts[$r['ym']] = (int)$r['total'];
+    }
+}
+
+// Build labels for Jan-Dec of current year, fill zero if missing
+for ($m = 1; $m <= 12; $m++) {
+    $label = date('M', mktime(0,0,0,$m,1)) . ' ' . $year;
+    $key = sprintf('%s-%02d', $year, $m);
+    $monthly_labels[] = $label;
+    $monthly_counts[] = $map_counts[$key] ?? 0;
+}
+
 
 /* ================= DATA PEMESANAN ================= */
 $query = "
@@ -520,17 +547,24 @@ $data_bromo = mysqli_query($conn, $query_bromo);
 <!-- ================= CHART JS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+const labels = <?= json_encode($monthly_labels) ?>;
+const dataCounts = <?= json_encode($monthly_counts) ?>;
+
 new Chart(document.getElementById('chartPemesanan'), {
     type: 'bar',
     data: {
-        labels: ['Pemesanan'],
+        labels: labels,
         datasets: [{
-            data: [<?= $total_pemesanan ?>],
-            backgroundColor: ['#0d6efd']
+            label: 'Pemesanan per bulan (<?= $year ?>)',
+            data: dataCounts,
+            backgroundColor: '#0d6efd'
         }]
     },
     options: {
-        plugins: { legend: { display: false } }
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
     }
 });
 </script>

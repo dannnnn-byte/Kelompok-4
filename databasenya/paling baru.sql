@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 19, 2025 at 06:05 PM
+-- Generation Time: Dec 20, 2025 at 05:59 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -124,7 +124,12 @@ CREATE TABLE `destinasi_populer` (
 INSERT INTO `destinasi_populer` (`id`, `nama`, `slug`, `gambar`, `aktif`, `created_at`) VALUES
 (1, 'pantai lombang', 'Pantai Lombang - Sampang', '1765883832-Pantai Lombang - Sampang.png', 0, '2025-12-16 11:17:12'),
 (2, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765884846-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:34:06'),
-(3, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765885037-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:37:17');
+(3, 'Pantai Lombang', 'Pantai Lombang - Sumenep', '1765885037-Pantai Lombang - Sumenep.jpg', 0, '2025-12-16 11:37:17'),
+(4, 'Bromo - Lumajang', 'bromo', 'img/bromo4.jpg', 1, '2025-12-20 04:58:58'),
+(5, 'Tumpak Sewu - Lumajang', 'tumpaksewu', 'img/tumpaksewu.jpg', 1, '2025-12-20 04:58:58'),
+(6, 'Kawah Ijen - Banyuwangi', 'kawahijen', 'img/ijen2.jpg', 1, '2025-12-20 04:58:58'),
+(7, 'Museum Angkut - Malang', 'museumangkut', 'img/angkut.webp', 1, '2025-12-20 04:58:58'),
+(8, 'Wisata Bahari Lamongan - Lamongan', 'wbl', 'img/wbl.jpg', 1, '2025-12-20 04:58:58');
 
 -- --------------------------------------------------------
 
@@ -948,7 +953,7 @@ ALTER TABLE `destinasi`
 -- AUTO_INCREMENT for table `destinasi_populer`
 --
 ALTER TABLE `destinasi_populer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `destinasi_wisata`

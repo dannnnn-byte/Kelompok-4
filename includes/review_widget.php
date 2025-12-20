@@ -524,9 +524,10 @@ function loadReviews() {
         } else {
             list.innerHTML = data.reviews.map(r => {
                 const isOwner = currentUserId && (r.id_user == currentUserId);
+                const safeReviewText = encodeURIComponent(r.review_text || '');
                 const actionButtons = isOwner ? `
                     <div class="review-actions">
-                        <button class="btn-edit-review" onclick="openEditModal(${r.id}, ${r.rating}, '${r.review_text.replace(/'/g, "\\'")}')️">
+                        <button class="btn-edit-review" onclick="openEditModal(${r.id}, ${r.rating}, decodeURIComponent('${safeReviewText}'))">
                             <i class="bi bi-pencil"></i> Edit
                         </button>
                         <button class="btn-delete-review" onclick="deleteReview(${r.id})">

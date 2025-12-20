@@ -17,5 +17,9 @@
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/kelompok-4/img/jawatrip1.png">
+  <style>
+    /* Ensure top navbar dropdown overlays admin sidebar */
+    .navbar .dropdown-menu { z-index: 2000; }
+  </style>
 </head>
 <body>

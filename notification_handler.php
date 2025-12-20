@@ -28,9 +28,9 @@ if ($action == 'get_notifications') {
         $query = "SELECT 
                     'booking' as type,
                     id_pemesanan as ref_id,
-                    CONCAT('Status booking ', kode_booking, ': ', status_bayar) as message,
+                    CONCAT('Status booking ', kode_booking, ': ', status) as message,
                     tanggal_pesan as created_at,
-                    status_bayar as status
+                    status
                   FROM pemesanan
                   WHERE id_user = " . (int)$id_user . "
                   ORDER BY tanggal_pesan DESC

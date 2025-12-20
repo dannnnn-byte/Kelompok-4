@@ -58,13 +58,14 @@ SELECT
     ), u.nama_lengkap, 'Guest') AS nama_pemesan,
     pay.status_bayar AS status_bayar_pembayaran,
     pay.tanggal_bayar,
-    pay.tanggal_konfirmasi
+    pay.tanggal_konfirmasi,
+    COALESCE(pay.jumlah_bayar, p.total_bayar) AS total_bayar_display
 FROM pemesanan p
 JOIN paket_wisata pk ON p.id_paket = pk.id_paket
 JOIN kota k ON pk.id_kota = k.id_kota
 LEFT JOIN users u ON p.id_user = u.id_user
 LEFT JOIN (
-    SELECT t.kode_booking, t.status_bayar, t.tanggal_bayar, t.tanggal_konfirmasi
+    SELECT t.kode_booking, t.status_bayar, t.tanggal_bayar, t.tanggal_konfirmasi, t.jumlah_bayar
     FROM pembayaran t
     JOIN (
         SELECT kode_booking, MAX(tanggal_bayar) AS max_t
@@ -223,7 +224,7 @@ $data_bromo = mysqli_query($conn, $query_bromo);
                     <td><?= date('d M Y', strtotime($row['tgl_tour'])) ?></td>
                     <td><?= $row['jumlah_peserta'] ?> Orang</td>
                     <td>
-                        Rp <?= number_format($row['total_bayar'], 0, ',', '.') ?>
+                        Rp <?= number_format($row['total_bayar_display'], 0, ',', '.') ?>
                     </td>
                     <td>
                         <?php 

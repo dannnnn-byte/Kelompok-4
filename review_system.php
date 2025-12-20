@@ -128,7 +128,7 @@ elseif ($action == 'edit_review') {
         exit;
     }
     
-    $query = "UPDATE paket_reviews SET rating = '$rating', review_text = '$review_text', updated_at = NOW() 
+    $query = "UPDATE paket_reviews SET rating = '$rating', review_text = '$review_text' 
               WHERE id = '$review_id' AND id_user = '$id_user'";
     
     if (mysqli_query($conn, $query)) {

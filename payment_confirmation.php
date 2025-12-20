@@ -31,6 +31,13 @@ $query_payment = "SELECT * FROM pembayaran WHERE kode_booking = '$kode_booking' 
 $result_payment = mysqli_query($conn, $query_payment);
 $payment = mysqli_fetch_assoc($result_payment);
 
+// Tentukan total yang ditampilkan (prioritaskan jumlah_bayar yang sudah diskon)
+$display_total = (isset($payment['jumlah_bayar']) && is_numeric($payment['jumlah_bayar']))
+    ? (float)$payment['jumlah_bayar']
+    : ((isset($_SESSION['promo'][$kode_booking]['final_total']) && is_numeric($_SESSION['promo'][$kode_booking]['final_total']))
+        ? (float)$_SESSION['promo'][$kode_booking]['final_total']
+        : (float)$pemesanan['total_harga']);
+
 // ===== PROSES UPLOAD =====
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
@@ -133,7 +140,7 @@ include 'includes/navbar.php';
                 </div>
                 <div class="info-row">
                     <span class="label">Total Pembayaran:</span>
-                    <strong class="price">Rp <?= number_format($pemesanan['total_harga'], 0, ',', '.') ?></strong>
+                    <strong class="price">Rp <?= number_format($display_total, 0, ',', '.') ?></strong>
                 </div>
                 <div class="info-row">
                     <span class="label">Metode Pembayaran:</span>

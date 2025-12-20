@@ -1,4 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<style>
+  /* Ensure admin sidebar sits below top navbar dropdown */
+  .admin-sidebar-navbar { position: relative; z-index: 100; }
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark admin-sidebar-navbar">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="dashboard.php">
       <i class="bi bi-speedometer2"></i> Admin JawaTrip
@@ -11,6 +15,13 @@
         <li class="nav-item"><a href="dashboard.php" class="nav-link">
           <i class="bi bi-house"></i> Dashboard
         </a></li>
+        <li class="nav-item">
+          <a class="nav-link"
+              href="<?= $basePath ?>admin/user_list.php">
+              <i class="bi bi-people"></i>
+              Manajemen Pengguna
+          </a>
+        </li>
         <li class="nav-item"><a href="wisata_list.php" class="nav-link">
           <i class="bi bi-map"></i> Paket Wisata
         </a></li>

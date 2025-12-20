@@ -7,13 +7,13 @@
     z-index: 9999;
 }
 .chat-button {
-    width: 60px;
-    height: 60px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
     background: linear-gradient(135deg, #145C43 0%, #0d3d2a 100%);
     border: none;
     color: white;
-    font-size: 1.8rem;
+    font-size: 2rem;
     cursor: pointer;
     box-shadow: 0 4px 20px rgba(20, 92, 67, 0.4);
     transition: all 0.3s;
@@ -171,12 +171,13 @@
 .quick-reply-btn {
     border: 1.5px solid #145C43;
     color: #145C43;
-    padding: 10px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    padding: 12px 14px;
+    border-radius: 22px;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s;
     font-weight: 600;
+    min-height: 46px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

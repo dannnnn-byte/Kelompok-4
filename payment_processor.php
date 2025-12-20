@@ -81,6 +81,16 @@ switch ($action) {
         checkPaymentStatus($kode_booking, $conn);
         break;
 
+    case 'apply_promo':
+        $promo_code = trim($_POST['promo_code'] ?? '');
+        applyPromo($pemesanan, $conn, $promo_code);
+        break;
+
+    case 'clear_promo':
+        unset($_SESSION['promo'][$kode_booking]);
+        echo json_encode(['success' => true, 'message' => 'Promo dibatalkan']);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
 }
@@ -89,6 +99,9 @@ function generateQRIS($pemesanan, $conn) {
     error_log("GenerateQRIS called");
     
     $kode_booking = mysqli_real_escape_string($conn, $pemesanan['kode_booking']);
+    $final_total = isset($_SESSION['promo'][$kode_booking]['final_total'])
+        ? (float)$_SESSION['promo'][$kode_booking]['final_total']
+        : (float)$pemesanan['total_harga'];
     
     // Check if QRIS already exists
     $query = "SELECT * FROM pembayaran WHERE kode_booking = '$kode_booking' AND metode_bayar = 'qris'";
@@ -111,7 +124,7 @@ function generateQRIS($pemesanan, $conn) {
         $row_max = mysqli_fetch_assoc($result_max);
         $next_id = ($row_max['max_id'] ?? 0) + 1;
         
-        $qr_code = generateQRCode($pemesanan['kode_booking'], $pemesanan['total_harga']);
+        $qr_code = generateQRCode($pemesanan['kode_booking'], $final_total);
         
         $query = "INSERT INTO pembayaran (
             id_pembayaran,
@@ -127,7 +140,7 @@ function generateQRIS($pemesanan, $conn) {
             '{$pemesanan['id_pemesanan']}',
             '$kode_booking',
             'qris',
-            {$pemesanan['total_harga']},
+            {$final_total},
             '$qr_code',
             'pending',
             NOW()
@@ -159,6 +172,9 @@ function generateVA($pemesanan, $conn) {
     error_log("GenerateVA called");
     
     $kode_booking = mysqli_real_escape_string($conn, $pemesanan['kode_booking']);
+    $final_total = isset($_SESSION['promo'][$kode_booking]['final_total'])
+        ? (float)$_SESSION['promo'][$kode_booking]['final_total']
+        : (float)$pemesanan['total_harga'];
     
     // Check if VA already exists
     $query = "SELECT * FROM pembayaran WHERE kode_booking = '$kode_booking' AND metode_bayar LIKE 'va_%'";
@@ -218,7 +234,7 @@ function generateVA($pemesanan, $conn) {
                 'va_{$key}',
                 '$va_number',
                 '{$bank['name']}',
-                {$pemesanan['total_harga']},
+                {$final_total},
                 'pending',
                 NOW()
             )";
@@ -269,7 +285,11 @@ function generateVANumber() {
 }
 
 function generateQRISHTML($payment, $pemesanan) {
-    $amount = number_format($pemesanan['total_harga'], 0, ',', '.');
+    $kode_booking = $pemesanan['kode_booking'];
+    $final_total = isset($_SESSION['promo'][$kode_booking]['final_total'])
+        ? (float)$_SESSION['promo'][$kode_booking]['final_total']
+        : (float)$pemesanan['total_harga'];
+    $amount = number_format($final_total, 0, ',', '.');
     
     $qr_data = urlencode("QRIS|{$payment['qr_code']}|{$pemesanan['total_harga']}");
     $qr_image = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={$qr_data}";
@@ -433,7 +453,11 @@ function generateQRISHTML($payment, $pemesanan) {
 }
 
 function generateVAHTML($payment, $pemesanan) {
-    $amount = number_format($pemesanan['total_harga'], 0, ',', '.');
+    $kode_booking = $pemesanan['kode_booking'];
+    $final_total = isset($_SESSION['promo'][$kode_booking]['final_total'])
+        ? (float)$_SESSION['promo'][$kode_booking]['final_total']
+        : (float)$pemesanan['total_harga'];
+    $amount = number_format($final_total, 0, ',', '.');
     
     $html = "
     <div class='va-container'>
@@ -477,7 +501,7 @@ function generateVAHTML($payment, $pemesanan) {
                 <p class='amount-label'>Total Pembayaran</p>
                 <div class='amount-display'>
                     <h3 class='amount-value'>Rp {$amount}</h3>
-                    <button class='btn-copy' onclick='copyText(\"{$pemesanan['total_harga']}\", this)'>
+                        <button class='btn-copy' onclick='copyText({$final_total}, this)'>
                         <i class='bi bi-copy'></i> Salin
                     </button>
                 </div>
@@ -626,4 +650,70 @@ function checkPaymentStatus($kode_booking, $conn) {
             'message' => 'Payment not found'
         ]);
     }
+}
+
+function applyPromo($pemesanan, $conn, $promo_code) {
+    $kode_booking = mysqli_real_escape_string($conn, $pemesanan['kode_booking']);
+    $base_total = (float)$pemesanan['total_harga'];
+
+    if ($promo_code === '') {
+        echo json_encode(['success' => false, 'message' => 'Kode promo wajib diisi']);
+        return;
+    }
+
+    $code = mysqli_real_escape_string($conn, $promo_code);
+    $q = mysqli_query($conn, "SELECT * FROM promo_diskon WHERE kode_promo = '$code' LIMIT 1");
+    if (!$q || mysqli_num_rows($q) === 0) {
+        echo json_encode(['success' => false, 'message' => 'Kode promo tidak ditemukan']);
+        return;
+    }
+    $promo = mysqli_fetch_assoc($q);
+
+    if (($promo['status'] ?? 'inactive') !== 'active') {
+        echo json_encode(['success' => false, 'message' => 'Promo tidak aktif']);
+        return;
+    }
+
+    $now = time();
+    $start = strtotime($promo['tanggal_mulai']);
+    $end = strtotime($promo['tanggal_selesai']);
+    if ($now < $start || $now > $end) {
+        echo json_encode(['success' => false, 'message' => 'Promo di luar periode berlaku']);
+        return;
+    }
+
+    $minTrans = (float)($promo['min_transaksi'] ?? 0);
+    if ($minTrans > 0 && $base_total < $minTrans) {
+        echo json_encode(['success' => false, 'message' => 'Belum memenuhi minimum transaksi']);
+        return;
+    }
+
+    // Compute discount
+    $discount = 0.0;
+    if (($promo['jenis_diskon'] ?? 'percentage') === 'percentage') {
+        $discount = $base_total * ((float)$promo['nilai_diskon'] / 100.0);
+        $maxCap = (float)($promo['max_diskon'] ?? 0);
+        if ($maxCap > 0) { $discount = min($discount, $maxCap); }
+    } else {
+        $discount = (float)$promo['nilai_diskon'];
+    }
+    $discount = max(0.0, min($discount, $base_total));
+    $final_total = $base_total - $discount;
+
+    // Save to session for this booking
+    $_SESSION['promo'][$kode_booking] = [
+        'code' => $promo_code,
+        'name' => $promo['nama_promo'] ?? $promo_code,
+        'discount' => $discount,
+        'final_total' => $final_total,
+    ];
+
+    echo json_encode([
+        'success' => true,
+        'message' => 'Promo diterapkan',
+        'discount' => $discount,
+        'final_total' => $final_total,
+        'code' => $promo_code,
+        'name' => $_SESSION['promo'][$kode_booking]['name']
+    ]);
 }

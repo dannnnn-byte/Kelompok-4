@@ -131,7 +131,29 @@ $detik = $sisa_waktu % 60;
                     <h4 class="breakdown-title">Rincian Harga</h4>
                     <div class="price-row">
                         <span>Total Pembayaran</span>
-                        <strong class="price-value">Rp <?= number_format($pemesanan['total_harga'], 0, ',', '.') ?></strong>
+                        <strong class="price-value" id="baseTotal">Rp <?= number_format($pemesanan['total_harga'], 0, ',', '.') ?></strong>
+                    </div>
+                    <div id="promoInfo" style="display:none; margin-top:8px;">
+                        <div class="price-row">
+                            <span>Kode Promo <span id="promoCodeLabel" class="badge bg-warning"></span></span>
+                            <strong class="price-value text-danger">- Rp <span id="promoDiscount" class="text-danger">0</span></strong>
+                        </div>
+                        <div class="price-row">
+                            <span>Total Setelah Promo</span>
+                            <strong class="price-value text-success">Rp <span id="finalTotal">0</span></strong>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="promoCodeInput" placeholder="Masukkan Kode Promo">
+                            <button class="btn btn-outline-primary" type="button" onclick="applyPromo()">
+                                Terapkan
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" onclick="clearPromo()">
+                                Batalkan
+                            </button>
+                        </div>
+                        <small class="text-muted">Promo yang berlaku akan mengurangi total saat metode pembayaran dibuat.</small>
                     </div>
                 </div>
             </div>
@@ -307,6 +329,51 @@ function selectPayment(method) {
         `;
         console.error('Payment detail error:', error);
     });
+}
+
+function formatRupiah(num){
+    return new Intl.NumberFormat('id-ID').format(Math.round(Number(num) || 0));
+}
+
+function applyPromo(){
+    const code = document.getElementById('promoCodeInput').value.trim();
+    if(!code){ alert('Masukkan kode promo.'); return; }
+    const payload = new URLSearchParams({
+        action: 'apply_promo',
+        kode_booking: '<?= $kode_booking ?>',
+        promo_code: code
+    }).toString();
+    fetch('payment_processor.php',{
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: payload
+    })
+    .then(r=>r.json())
+    .then(d=>{
+        if(d.success){
+            document.getElementById('promoInfo').style.display='block';
+            document.getElementById('promoCodeLabel').textContent = d.code;
+            document.getElementById('promoDiscount').textContent = formatRupiah(d.discount);
+            document.getElementById('finalTotal').textContent = formatRupiah(d.final_total);
+            alert('Promo diterapkan: '+ d.name);
+        } else {
+            alert(d.message || 'Promo tidak dapat diterapkan');
+        }
+    })
+    .catch(e=>{ console.error(e); alert('Gagal menerapkan promo'); });
+}
+
+function clearPromo(){
+    const payload = new URLSearchParams({
+        action: 'clear_promo',
+        kode_booking: '<?= $kode_booking ?>'
+    }).toString();
+    fetch('payment_processor.php',{
+        method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: payload
+    })
+    .then(r=>r.json())
+    .then(d=>{
+        document.getElementById('promoInfo').style.display='none';
+        document.getElementById('promoCodeInput').value='';
+    })
 }
 
 // Confirm Payment

@@ -226,7 +226,8 @@ document.addEventListener('click', function(e) {
 });
 
 function loadNotifications() {
-    fetch('notification_handler.php?action=get_notifications')
+    const basePath = window.location.pathname.includes('/admin/') ? '../notification_handler.php' : 'notification_handler.php';
+    fetch(basePath + '?action=get_notifications')
         .then(res => res.json())
         .then(data => {
             const list = document.getElementById('notificationList');
@@ -260,7 +261,8 @@ function loadNotifications() {
 }
 
 function updateNotificationCount() {
-    fetch('notification_handler.php?action=get_unread_count')
+    const basePath = window.location.pathname.includes('/admin/') ? '../notification_handler.php' : 'notification_handler.php';
+    fetch(basePath + '?action=get_unread_count')
         .then(res => res.json())
         .then(data => {
             const badge = document.getElementById('notificationBadge');
@@ -312,7 +314,8 @@ function getTimeAgo(datetime) {
 }
 
 function markAllRead() {
-    fetch('notification_handler.php', {
+    const basePath = window.location.pathname.includes('/admin/') ? '../notification_handler.php' : 'notification_handler.php';
+    fetch(basePath, {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: 'action=mark_read'

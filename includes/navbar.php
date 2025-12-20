@@ -94,6 +94,42 @@ $basePath = (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? '../' : '';
              Dashboard Admin
           </a>
         </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/user_list.php">
+             Manajemen Pengguna
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/wisata_list.php">
+             Paket Wisata
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/kota_list.php">
+             Kota / Destinasi
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/hotel_list.php">
+             Hotel
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/analytics.php">
+             Analytics
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item"
+             href="<?= $basePath ?>admin/promo_management.php">
+             Promo
+          </a>
+        </li>
         <li><hr class="dropdown-divider"></li>
 
       <!-- MENU USER -->

@@ -396,4 +396,4 @@ function deletePromo(id) {
 }
 </script>
 
-<?php include '../includes/footer.php'; ?>
+<?php include 'footer_admin.php'; ?>

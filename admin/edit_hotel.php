@@ -34,10 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_hotel'])) {
     $lokasi = mysqli_real_escape_string($conn, $_POST['lokasi']);
     $bintang = isset($_POST['bintang']) && $_POST['bintang'] !== '' ? (int)$_POST['bintang'] : null;
 
-    $uploadDir = __DIR__ . '/../uploads/hotel/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
+    $uploadDir = __DIR__ . '/../img/';
 
     // Handle gambar
     $gambar = $hotel['gambar_hotel']; // Default ke gambar lama

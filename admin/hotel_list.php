@@ -75,7 +75,7 @@ $data_hotel = mysqli_query($conn, $query);
                             </td>
                             <td>
                                 <?php if (!empty($row['gambar_hotel'])): ?>
-                                    <img src="../uploads/hotel/<?= urlencode($row['gambar_hotel']) ?>" alt="gambar" style="width:80px; height:60px; object-fit:cover; border-radius:6px;">
+                                    <img src="../img/<?= urlencode($row['gambar_hotel']) ?>" alt="gambar" style="width:150px; height:120px; object-fit:cover; border-radius:6px;">
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>

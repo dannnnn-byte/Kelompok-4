@@ -11,10 +11,7 @@ include '../koneksi.php';
 include '../includes/header.php';
 include '../includes/navbar.php';
 
-$uploadDir = __DIR__ . '/../uploads/hotel/';
-if (!is_dir($uploadDir)) {
-  mkdir($uploadDir, 0777, true);
-}
+$uploadDir = __DIR__ . '/../img/';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_hotel'])) {
   $nama = mysqli_real_escape_string($conn, $_POST['nama_hotel'] ?? '');

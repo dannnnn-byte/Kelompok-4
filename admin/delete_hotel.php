@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_hotel'])) {
     $query = "DELETE FROM master_hotel WHERE id_hotel = '$id_hotel'";
     if (mysqli_query($conn, $query)) {
         // Hapus file gambar jika ada
-        $uploadDir = __DIR__ . '/../uploads/hotel/';
+        $uploadDir = __DIR__ . '/../img/';
         if (!empty($gambar) && file_exists($uploadDir . $gambar)) {
             @unlink($uploadDir . $gambar);
         }

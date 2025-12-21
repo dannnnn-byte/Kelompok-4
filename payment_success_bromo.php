@@ -146,8 +146,8 @@ $jumlah = $pemesanan['jumlah_orang'];
 
             <!-- Action Buttons -->
             <div class="action-buttons-grid">
-                <a href="destinasi/bromo.php" class="btn-home">
-                    <i class="bi bi-house"></i> Kembali ke Halaman Bromo
+                <a href="riwayat_bromo.php" class="btn-home">
+                    <i class="bi bi-house"></i> Riwayat Pemesanan
                 </a>
             </div>
 

@@ -494,6 +494,17 @@ $data_bromo = mysqli_query($conn, $query_bromo);
         <tbody>
         <?php if (mysqli_num_rows($data_bromo) > 0): ?>
             <?php $no = 1; while($b = mysqli_fetch_assoc($data_bromo)): ?>
+                <?php
+// PRIORITAS STATUS (ADMIN)
+if ($b['status'] === 'paid') {
+    $status = 'paid';
+} elseif (!empty($b['bukti_bayar'])) {
+    $status = 'menunggu_verifikasi';
+} else {
+    $status = 'pending';
+}
+?>
+
                 <tr>
                     <td><?= $no++ ?></td>
                     <td><?= htmlspecialchars($b['nama_user']) ?></td>
@@ -503,9 +514,20 @@ $data_bromo = mysqli_query($conn, $query_bromo);
                     <td><?= $b['sewa_trail'] === 'ya' ? $b['jumlah_trail'].' unit' : '-' ?></td>
                     <td>Rp <?= number_format($b['total_harga'], 0, ',', '.') ?></td>
                     <td>
-                        <span class="badge <?= $b['status'] === 'paid' ? 'bg-success' : 'bg-warning text-dark' ?>">
-                            <?= ucfirst($b['status']) ?>
-                        </span>
+                        <?php
+if ($status === 'paid') {
+    $badge = 'bg-success';
+} elseif ($status === 'menunggu_verifikasi') {
+    $badge = 'bg-info';
+} else {
+    $badge = 'bg-warning text-dark';
+}
+?>
+
+<span class="badge <?= $badge ?>">
+    <?= ucfirst(str_replace('_', ' ', $status)) ?>
+</span>
+
                     </td>
                     <td>
                         <?php if (!empty($b['bukti_bayar'])): ?>

@@ -22,14 +22,20 @@ if (!$user_id) {
 
 /* ================= QUERY RIWAYAT ================= */
 $stmt = $conn->prepare("
-    SELECT *
-    FROM pemesanan_bromo
-    WHERE user_id = ?
-    ORDER BY id DESC
+    SELECT 
+        pb.*,
+        pay.bukti_bayar,
+        pay.status_bayar
+    FROM pemesanan_bromo pb
+    LEFT JOIN pembayaran_bromo pay 
+        ON pay.bromo_id = pb.id
+    WHERE pb.user_id = ?
+    ORDER BY pb.id DESC
 ");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $data = $stmt->get_result();
+
 ?>
 
 <div class="container py-5">
@@ -67,18 +73,28 @@ $data = $stmt->get_result();
 
 <?php $no = 1; while ($r = $data->fetch_assoc()): ?>
 <?php
+// PRIORITAS STATUS FINAL
+if ($r['status'] === 'paid') {
+    $status = 'paid';
+} elseif (!empty($r['bukti_bayar'])) {
+    $status = 'menunggu_verifikasi';
+} else {
     $status = $r['status'] ?? 'pending';
+}
 
-    if ($status === 'paid') {
-        $badge = 'bg-success';
-    } elseif ($status === 'menunggu_verifikasi') {
-        $badge = 'bg-info';
-    } elseif ($status === 'cancelled') {
-        $badge = 'bg-danger';
-    } else {
-        $badge = 'bg-warning text-dark';
-    }
+// badge
+if ($status === 'paid') {
+    $badge = 'bg-success';
+} elseif ($status === 'menunggu_verifikasi') {
+    $badge = 'bg-info';
+} elseif ($status === 'cancelled') {
+    $badge = 'bg-danger';
+} else {
+    $badge = 'bg-warning text-dark';
+}
 ?>
+
+
 <tr>
     <td><?= $no++ ?></td>
 

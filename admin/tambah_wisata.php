@@ -23,17 +23,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_wisata'])) {
     $durasi = mysqli_real_escape_string($conn, $_POST['durasi']);
     $harga = (int)$_POST['harga'];
     
-    // Handle gambar
-    $gambar = '';
-    if (!empty($_FILES['gambar']['name'])) {
-        $target_dir = "../img/";
-        $gambar_file = basename($_FILES['gambar']['name']);
-        $target_file = $target_dir . $gambar_file;
-        
-        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
-            $gambar = $gambar_file;
+    // Wajib upload gambar paket; simpan dengan nama unik dan batasi ukuran
+    if (empty($_FILES['gambar']['name'])) {
+        $error = "Gambar paket wajib diupload";
+    } else {
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        if ($_FILES['gambar']['size'] > $maxSize) {
+            $error = "Ukuran gambar maksimal 5MB";
         } else {
-            $error = "Gagal mengupload gambar";
+            $target_dir = "../img/";
+            $safe_name = preg_replace('/[^A-Za-z0-9._-]/', '', basename($_FILES['gambar']['name']));
+            $gambar_file = time() . '-' . $safe_name;
+            $target_file = $target_dir . $gambar_file;
+            
+            if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
+                $gambar = $gambar_file;
+            } else {
+                $error = "Gagal mengupload gambar";
+            }
         }
     }
     
@@ -114,12 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_wisata'])) {
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Gambar Paket</label>
+                          <label class="form-label">Gambar Paket <span class="text-danger">*</span></label>
                     <input type="file" 
                            class="form-control" 
                            name="gambar"
-                           accept="image/*">
-                    <small class="text-muted">Format: JPG, PNG, WebP (Max 5MB)</small>
+                              accept="image/*" required>
+                          <small class="text-muted">Format: JPG, PNG, WebP (Max 5MB)</small>
                 </div>
 
                 <div class="d-flex gap-2">

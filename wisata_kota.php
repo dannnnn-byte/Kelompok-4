@@ -42,13 +42,6 @@ $qPaket = mysqli_query($conn, "
         <h2 class="fw-bold text-center flex-grow-1">
             PAKET WISATA <?= strtoupper($kota_terpilih); ?>
         </h2>
-        
-        <!-- ✅ Tombol tambah hanya admin -->
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-            <a href="admin/tambah_wisata.php?id_kota=<?= $kota['id_kota'] ?>" class="btn btn-success fw-bold ms-3">
-                <i class="bi bi-plus-lg"></i> Paket
-            </a>
-        <?php endif; ?>
     </div>
 
     <div class="row g-4">
@@ -66,29 +59,6 @@ $qPaket = mysqli_query($conn, "
                             <i class="bi bi-heart-fill"></i>
                         </button>
                         <script>checkWishlistStatus(<?= $p['id_paket']; ?>, document.currentScript.previousElementSibling);</script>
-                        <?php endif; ?>
-
-                        <!-- ✅ Tombol CRUD untuk Admin -->
-                        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-                        <div class="position-absolute top-0 end-0 p-3" style="z-index: 10; background: rgba(0,0,0,0.6); border-radius: 0 0 0 8px;">
-                            <div class="d-flex gap-2">
-                                <a href="admin/edit_wisata.php?id=<?= $p['id_paket'] ?>" 
-                                   class="btn btn-warning btn-sm fw-bold"
-                                   title="Edit Paket"
-                                   style="padding: 6px 10px;">
-                                    <i class="bi bi-pencil-square"></i> Edit
-                                </a>
-                                <form method="POST" action="admin/delete_wisata.php" class="d-inline" 
-                                      onsubmit="return confirm('Yakin hapus paket <?= htmlspecialchars($p['nama_paket']) ?>?')">
-                                    <input type="hidden" name="id_paket" value="<?= $p['id_paket'] ?>">
-                                    <button type="submit" class="btn btn-danger btn-sm fw-bold"
-                                            title="Hapus Paket"
-                                            style="padding: 6px 10px;">
-                                        <i class="bi bi-trash-fill"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
                         <?php endif; ?>
 
                         <div class="card-body text-white d-flex flex-column"

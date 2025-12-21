@@ -16,7 +16,7 @@ $q_count = mysqli_query($conn, "SELECT COUNT(*) total FROM kota");
 $total_kota = mysqli_fetch_assoc($q_count)['total'] ?? 0;
 
 /* ================= QUERY DATA KOTA ================= */
-$query = "SELECT * FROM kota ORDER BY id_kota DESC";
+$query = "SELECT * FROM kota ORDER BY id_kota ASC";
 $data_kota = mysqli_query($conn, $query);
 ?>
 
@@ -53,8 +53,8 @@ $data_kota = mysqli_query($conn, $query);
                     <thead class="table-dark">
                         <tr>
                             <th style="width: 50px;">No</th>
+                            <th style="width: 200px;">Gambar</th>
                             <th>Nama Kota</th>
-                            <th>Tanggal Dibuat</th>
                             <th style="width: 150px;">Aksi</th>
                         </tr>
                     </thead>
@@ -62,8 +62,14 @@ $data_kota = mysqli_query($conn, $query);
                         <?php $no = 1; while ($row = mysqli_fetch_assoc($data_kota)): ?>
                         <tr>
                             <td><?= $no++ ?></td>
+                            <td>
+                                <?php if (!empty($row['gambar_kota'])): ?>
+                                    <img src="../img/<?= htmlspecialchars($row['gambar_kota']) ?>" alt="<?= htmlspecialchars($row['nama_kota']) ?>" style="width:160px;height:110px;object-fit:cover;" class="rounded border">
+                                <?php else: ?>
+                                    <span class="text-muted">Tidak ada gambar</span>
+                                <?php endif; ?>
+                            </td>
                             <td><strong><?= htmlspecialchars($row['nama_kota']) ?></strong></td>
-                            <td><?= isset($row['created_at']) ? date('d M Y', strtotime($row['created_at'])) : '-' ?></td>
                             <td>
                                 <div class="d-flex gap-2">
                                     <a href="edit_kota.php?id=<?= $row['id_kota'] ?>" 

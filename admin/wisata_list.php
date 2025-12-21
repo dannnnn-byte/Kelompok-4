@@ -20,7 +20,7 @@ $query = "
 SELECT p.*, k.nama_kota
 FROM paket_wisata p
 JOIN kota k ON p.id_kota = k.id_kota
-ORDER BY p.id_paket DESC
+ORDER BY p.id_paket ASC
 ";
 $data_wisata = mysqli_query($conn, $query);
 ?>
@@ -59,6 +59,7 @@ $data_wisata = mysqli_query($conn, $query);
                         <tr>
                             <th style="width: 50px;">No</th>
                             <th>Nama Paket</th>
+                            <th style="width: 220px;">Gambar</th>
                             <th>Kota</th>
                             <th>Durasi</th>
                             <th>Harga</th>
@@ -70,6 +71,13 @@ $data_wisata = mysqli_query($conn, $query);
                         <tr>
                             <td><?= $no++ ?></td>
                             <td><strong><?= htmlspecialchars($row['nama_paket']) ?></strong></td>
+                            <td>
+                                <?php if (!empty($row['gambar_paket'])): ?>
+                                    <img src="../img/<?= htmlspecialchars($row['gambar_paket']) ?>" alt="<?= htmlspecialchars($row['nama_paket']) ?>" style="width:200px;height:130px;object-fit:cover;" class="rounded border">
+                                <?php else: ?>
+                                    <span class="text-muted">Tidak ada gambar</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?= htmlspecialchars($row['nama_kota']) ?></td>
                             <td><?= htmlspecialchars($row['durasi']) ?></td>
                             <td>Rp <?= number_format($row['harga_per_pax'], 0, ',', '.') ?></td>

@@ -104,20 +104,20 @@ $jumlah = $pemesanan['jumlah_orang'];
                         <div>
                             <p class="label">Status</p>
                             <?php
-                                $status = strtolower($payment['status_bayar'] ?? 'pending');
+                                $status = strtolower($payment['status_bayar'] ?? 'menunggu_verifikasi');
 
                                 if ($status === 'lunas') {
                                     $badgeClass = 'lunas';
                                     $iconClass  = 'bi bi-check-circle';
                                     $statusText = 'Lunas';
-                                } elseif ($status === 'pending') {
-                                    $badgeClass = 'pending';
+                                } elseif ($status === 'menunggu_verifikasi') {
+                                    $badgeClass = 'menunggu_verifikasi';
                                     $iconClass  = 'bi bi-clock-history';
-                                    $statusText = 'pending';
+                                    $statusText = 'Menunggu Verifikasi';
                                 } else {
-                                    $badgeClass = 'pending';
+                                    $badgeClass = 'menunggu_verifikasi';
                                     $iconClass  = 'bi bi-clock-history';
-                                    $statusText = 'Pending';
+                                    $statusText = 'Menunggu Verifikasi';
                                 }
                             ?>
                             <span class="status-badge <?= $badgeClass ?>">
@@ -385,7 +385,7 @@ const fileInput = document.getElementById('bukti_bayar');
     font-size: 0.95rem;
 }
 
-.status-badge.pending {
+.status-badge.menunggu_verifikasi {
     background: #fef3c7;
     color: #92400e;
 }

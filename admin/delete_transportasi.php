@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_transport'])) {
     // Hapus data
     if (mysqli_query($conn, "DELETE FROM master_transport WHERE id_transport = '$id_transport'")) {
         // Hapus file gambar jika ada
-        $uploadDir = __DIR__ . '/../uploads/transport/';
+        $uploadDir = __DIR__ . '/../img/';
         if (!empty($gambar) && file_exists($uploadDir . $gambar)) {
             @unlink($uploadDir . $gambar);
         }

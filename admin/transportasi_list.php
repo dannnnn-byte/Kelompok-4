@@ -66,7 +66,7 @@ $data_transport = mysqli_query($conn, "SELECT * FROM master_transport ORDER BY i
                             <td><?= $row['fasilitas_mobil'] ? nl2br(htmlspecialchars($row['fasilitas_mobil'])) : '-' ?></td>
                             <td>
                                 <?php if (!empty($row['gambar_transport'])): ?>
-                                    <img src="../uploads/transport/<?= urlencode($row['gambar_transport']) ?>" alt="gambar" style="width:80px; height:60px; object-fit:cover; border-radius:6px;">
+                                    <img src="../img/<?= urlencode($row['gambar_transport']) ?>" alt="gambar" style="width:150px; height:110px; object-fit:cover; border-radius:8px;">
                                 <?php else: ?>
                                     <span class="text-muted">-</span>
                                 <?php endif; ?>

@@ -38,8 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_wisata'])) {
     }
     
     if (!isset($error)) {
-        $query = "INSERT INTO paket_wisata (id_kota, nama_paket, deskripsi, durasi, harga_per_pax, gambar_paket) 
-                  VALUES ($id_kota, '$nama_paket', '$deskripsi', '$durasi', $harga, '$gambar')";
+        // Kolom deskripsi di tabel adalah deskripsi_wisata
+        $query = "INSERT INTO paket_wisata (id_kota, nama_paket, deskripsi_wisata, durasi, harga_per_pax, gambar_paket) 
+              VALUES ($id_kota, '$nama_paket', '$deskripsi', '$durasi', $harga, '$gambar')";
         if (mysqli_query($conn, $query)) {
             $_SESSION['success_message'] = "Paket wisata berhasil ditambahkan";
             header("Location: wisata_list.php");

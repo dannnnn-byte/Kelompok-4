@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_kota'])) {
     if (empty($nama_kota)) {
         $error = "Nama kota tidak boleh kosong";
     } else {
-        $query = "INSERT INTO kota (nama_kota, created_at) VALUES ('$nama_kota', NOW())";
+        // Tabel kota saat ini tidak memiliki kolom created_at, jadi hanya simpan nama
+        $query = "INSERT INTO kota (nama_kota) VALUES ('$nama_kota')";
         if (mysqli_query($conn, $query)) {
             $_SESSION['success_message'] = "Kota berhasil ditambahkan";
             header("Location: kota_list.php");

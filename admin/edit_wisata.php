@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_wisata'])) {
         $query_update = "UPDATE paket_wisata SET 
             id_kota = $id_kota,
             nama_paket = '$nama_paket',
-            deskripsi = '$deskripsi',
+            deskripsi_wisata = '$deskripsi',
             durasi = '$durasi',
             harga_per_pax = $harga,
             gambar_paket = '$gambar'
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_wisata'])) {
                     <label class="form-label">Deskripsi</label>
                     <textarea class="form-control" 
                               name="deskripsi" 
-                              rows="4"><?= htmlspecialchars($paket['deskripsi']) ?></textarea>
+                              rows="4"><?= htmlspecialchars($paket['deskripsi_wisata']) ?></textarea>
                 </div>
 
                 <div class="row">

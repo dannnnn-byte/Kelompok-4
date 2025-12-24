@@ -1,4 +1,5 @@
 # KELOMPOK 4
+
 ## Anggota Kelompok
 | No | Nama Lengkap                     | NIM            | GitHub |
 |----|----------------------------------|----------------|--------|
@@ -10,84 +11,86 @@
 | 6  | Riko Tampati                     | 240411100136   | [@riko123-pixel](https://github.com/riko123-pixel) |
 
 ---
+
 ## Struktur Folder Project
+
 Kelompok-4/
 ├── admin/
-│   ├── dashboard.php
-│   ├── analytics.php
-│   ├── wisata_list.php
-│   ├── wisata_crud.php
-│   ├── tambah_wisata.php
-│   ├── edit_wisata.php
-│   ├── delete_wisata.php
-│   ├── hotel_list.php
-│   ├── tambah_hotel.php
-│   ├── edit_hotel.php
-│   ├── delete_hotel.php
-│   ├── kota_list.php
-│   ├── tambah_kota.php
-│   ├── edit_kota.php
-│   ├── delete_kota.php
-│   ├── transportasi_list.php
-│   ├── tambah_transportasi.php
-│   ├── edit_transportasi.php
-│   ├── delete_transportasi.php
-│   ├── user_list.php
-│   ├── add_user.php
-│   ├── edit_user.php
-│   ├── delete_user.php
-│   ├── edit_pemesanan.php
-│   ├── delete_pemesanan.php
-│   ├── verify_payment.php
-│   ├── promo_management.php
-│   ├── destinasi_populer.php
-│   ├── tambah_destinasi_populer.php
-│   ├── hapus_destinasi_populer.php
-│   ├── header_admin.php
-│   ├── footer_admin.php
-│   ├── sidebar_admin.php
-│   └── logout.php
+│ ├── dashboard.php
+│ ├── analytics.php
+│ ├── wisata_list.php
+│ ├── wisata_crud.php
+│ ├── tambah_wisata.php
+│ ├── edit_wisata.php
+│ ├── delete_wisata.php
+│ ├── hotel_list.php
+│ ├── tambah_hotel.php
+│ ├── edit_hotel.php
+│ ├── delete_hotel.php
+│ ├── kota_list.php
+│ ├── tambah_kota.php
+│ ├── edit_kota.php
+│ ├── delete_kota.php
+│ ├── transportasi_list.php
+│ ├── tambah_transportasi.php
+│ ├── edit_transportasi.php
+│ ├── delete_transportasi.php
+│ ├── user_list.php
+│ ├── add_user.php
+│ ├── edit_user.php
+│ ├── delete_user.php
+│ ├── edit_pemesanan.php
+│ ├── delete_pemesanan.php
+│ ├── verify_payment.php
+│ ├── promo_management.php
+│ ├── destinasi_populer.php
+│ ├── tambah_destinasi_populer.php
+│ ├── hapus_destinasi_populer.php
+│ ├── header_admin.php
+│ ├── footer_admin.php
+│ ├── sidebar_admin.php
+│ └── logout.php
 │
 ├── assets/
-│   ├── style.css
-│   ├── booking-style.css
-│   ├── dashboard_home.css
-│   ├── footer2.css
-│   ├── footer_admin.css
-│   ├── payment-style.css
-│   └── wisataPic.css
+│ ├── style.css
+│ ├── booking-style.css
+│ ├── dashboard_home.css
+│ ├── footer2.css
+│ ├── footer_admin.css
+│ ├── payment-style.css
+│ └── wisataPic.css
 │
 ├── databasenya/
-│   └── paling baru.sql
+│ └── paling baru.sql
 │
 ├── destinasi/
-│   ├── bromo.php
-│   ├── kawahijen.php
-│   ├── museumangkut.php
-│   ├── pantaicamplong.php
-│   ├── tumpaksewu.php
-│   └── wbl.php
+│ ├── bromo.php
+│ ├── kawahijen.php
+│ ├── museumangkut.php
+│ ├── pantaicamplong.php
+│ ├── tumpaksewu.php
+│ └── wbl.php
 │
 ├── img/
-│   └── (file gambar destinasi & aset visual)
+│ └── (file gambar destinasi & aset visual)
 │
 ├── includes/
-│   ├── auth.php
-│   ├── header.php
-│   ├── footer.php
-│   ├── navbar.php
-│   ├── dashboard_home.php
-│   ├── chat_widget.php
-│   ├── notification_widget.php
-│   ├── review_widget.php
-│   ├── wishlist_button.php
-│   └── style.css
+│ ├── auth.php
+│ ├── header.php
+│ ├── footer.php
+│ ├── navbar.php
+│ ├── dashboard_home.php
+│ ├── chat_widget.php
+│ ├── notification_widget.php
+│ ├── review_widget.php
+│ ├── wishlist_button.php
+│ └── style.css
 │
 ├── uploads/
-│   ├── bukti/
-│   ├── bukti_bayar/
-│   ├── bukti_bromo/
-│   └── destinasi/
+│ ├── bukti/
+│ ├── bukti_bayar/
+│ ├── bukti_bromo/
+│ └── destinasi/
 │
 ├── index.php
 ├── explore.php
@@ -138,4 +141,3 @@ Kelompok-4/
 ├── SELESAI_OVERVIEW_DESTINASI.txt
 │
 └── README.md
-

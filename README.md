@@ -1,7 +1,5 @@
 # Kelompok 4
 
-## Daftar Anggota Kelompok
-
 | No | Nama Lengkap                     | NIM            |
 |----|----------------------------------|----------------|
 | 1  | Alif Baiatur Ridhwan El Habibie   | 240411100156   |

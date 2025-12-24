@@ -1,14 +1,5 @@
 # KELOMPOK 4
-
-## Deskripsi Project
-
-**Jawatrip** adalah sebuah sistem informasi pariwisata berbasis web yang dirancang untuk membantu pengguna dalam merencanakan dan melakukan pemesanan perjalanan wisata di wilayah Pulau Jawa. Sistem ini menyediakan informasi destinasi wisata, layanan pemesanan, serta manajemen data pengguna secara terstruktur dan terintegrasi.
-
-Melalui Jawatrip, pengguna dapat melihat detail destinasi wisata, melakukan pemesanan paket perjalanan, serta memantau status pemesanan secara real-time. Di sisi lain, admin memiliki fitur untuk mengelola data destinasi, pengguna, dan pemesanan guna memastikan proses bisnis berjalan dengan efektif dan efisien.
-
-Project ini dikembangkan sebagai bagian dari tugas akademik dengan tujuan menerapkan konsep **perancangan basis data**, **Entity Relationship Diagram (ERD)**, serta implementasi sistem informasi berbasis web yang sesuai dengan kebutuhan pengguna.
-
-# Anggota Kelompok
+## Anggota Kelompok
 | No | Nama Lengkap                     | NIM            | GitHub |
 |----|----------------------------------|----------------|--------|
 | 1  | Alif Baiatur Ridhwan El Habibie   | 240411100156   | [@alifbait](https://github.com/alifbait) |
@@ -19,4 +10,70 @@ Project ini dikembangkan sebagai bagian dari tugas akademik dengan tujuan menera
 | 6  | Riko Tampati                     | 240411100136   | [@riko123-pixel](https://github.com/riko123-pixel) |
 
 ---
-
+## Struktur Folder Project Jawatrip
+Jawatrip/
+├── admin/
+│ ├── dashboard.php
+│ ├── kelola_destinasi.php
+│ ├── tambah_destinasi.php
+│ ├── edit_destinasi.php
+│ ├── hapus_destinasi.php
+│ ├── kelola_pemesanan.php
+│ ├── verifikasi_pembayaran.php
+│ ├── kelola_user.php
+│ └── laporan.php
+│
+├── user/
+│ ├── index.php
+│ ├── destinasi.php
+│ ├── detail_destinasi.php
+│ ├── pesan.php
+│ ├── riwayat.php
+│ ├── detail_pesanan.php
+│ ├── bayar.php
+│ └── batal.php
+│
+├── auth/
+│ ├── login.php
+│ ├── register.php
+│ ├── proses_login.php
+│ ├── proses_register.php
+│ └── logout.php
+│
+├── assets/
+│ ├── css/
+│ │ ├── style.css
+│ │ ├── admin.css
+│ │ └── auth.css
+│ ├── js/
+│ │ ├── script.js
+│ │ ├── validasi.js
+│ │ └── konfirmasi.js
+│ └── img/
+│ ├── destinasi/
+│ ├── banner/
+│ ├── user/
+│ └── logo/
+│
+├── includes/
+│ ├── header.php
+│ ├── footer.php
+│ ├── navbar.php
+│ ├── sidebar_admin.php
+│ └── functions.php
+│
+├── database/
+│ ├── jawatrip.sql
+│ ├── erd_jawatrip.png
+│ └── dfd_jawatrip.png
+│
+├── uploads/
+│ ├── bukti_pembayaran/
+│ └── foto_destinasi/
+│
+├── config/
+│ └── koneksi.php
+│
+├── index.php
+├── .htaccess
+└── README.md

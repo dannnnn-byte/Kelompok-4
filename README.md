@@ -60,7 +60,7 @@ Kelompok-4/
 │ └── wisataPic.css
 │
 ├── databasenya/
-│ └── paling baru.sql
+│ └── jawatrip.sql
 │
 ├── destinasi/
 │ ├── bromo.php

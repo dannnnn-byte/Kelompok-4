@@ -10,7 +10,7 @@
 | 6  | Riko Tampati                     | 240411100136   | [@riko123-pixel](https://github.com/riko123-pixel) |
 
 ---
-## Struktur Folder Project Jawatrip
+## Struktur Folder Project
 Jawatrip/
 ├── admin/
 │ ├── dashboard.php

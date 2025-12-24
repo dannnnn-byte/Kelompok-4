@@ -349,7 +349,7 @@ if (!$destinasi) {
         </div>
     </a>
 
-    <a href="lumajang.php?kota=Ijen" class="promo-link">
+    <a href="" class="promo-link">
         <div class="promo-card">
             <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
@@ -363,7 +363,7 @@ if (!$destinasi) {
         </div>
     </a>
 
-    <a href="destinasi_detail.php?kota=TumpakSewu" class="promo-link">
+    <a href="" class="promo-link">
         <div class="promo-card">
             <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>
@@ -377,7 +377,7 @@ if (!$destinasi) {
         </div>
     </a>
 
-    <a href="destinasi_detail.php?kota=MuseumAngkut" class="promo-link">
+    <a href="" class="promo-link">
         <div class="promo-card">
             <div class="promo-img">
                 <span class="promo-tag">PAKET WISATA</span>

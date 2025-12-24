@@ -8,7 +8,7 @@ Melalui Jawatrip, pengguna dapat melihat detail destinasi wisata, melakukan peme
 
 Project ini dikembangkan sebagai bagian dari tugas akademik dengan tujuan menerapkan konsep **perancangan basis data**, **Entity Relationship Diagram (ERD)**, serta implementasi sistem informasi berbasis web yang sesuai dengan kebutuhan pengguna.
 
-
+# Anggota Kelompok
 | No | Nama Lengkap                     | NIM            | GitHub |
 |----|----------------------------------|----------------|--------|
 | 1  | Alif Baiatur Ridhwan El Habibie   | 240411100156   | [@alifbait](https://github.com/alifbait) |

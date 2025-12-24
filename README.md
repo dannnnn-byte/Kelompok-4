@@ -10,3 +10,11 @@
 | 6  | Riko Tampati                     | 240411100136   | [@riko123-pixel](https://github.com/riko123-pixel) |
 
 ---
+
+## Deskripsi Project
+
+**Jawatrip** adalah sebuah sistem informasi pariwisata berbasis web yang dirancang untuk membantu pengguna dalam merencanakan dan melakukan pemesanan perjalanan wisata di wilayah Pulau Jawa. Sistem ini menyediakan informasi destinasi wisata, layanan pemesanan, serta manajemen data pengguna secara terstruktur dan terintegrasi.
+
+Melalui Jawatrip, pengguna dapat melihat detail destinasi wisata, melakukan pemesanan paket perjalanan, serta memantau status pemesanan secara real-time. Di sisi lain, admin memiliki fitur untuk mengelola data destinasi, pengguna, dan pemesanan guna memastikan proses bisnis berjalan dengan efektif dan efisien.
+
+Project ini dikembangkan sebagai bagian dari tugas akademik dengan tujuan menerapkan konsep **perancangan basis data**, **Entity Relationship Diagram (ERD)**, serta implementasi sistem informasi berbasis web yang sesuai dengan kebutuhan pengguna.

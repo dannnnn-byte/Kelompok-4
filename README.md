@@ -11,61 +11,72 @@
 | 6  | Riko Tampati                     | 240411100136   | [@riko123-pixel](https://github.com/riko123-pixel) |
 
 ---
-/sistem_hotel/
+## Struktur Folder Project
+``
+/Jawatrip/
 │
 ├── index.php
 ├── login.php
-├── register.php  
+├── register.php
 ├── logout.php
-├── rooms.php
-├── room_detail.php
-├── booking.php
-├── profile.php
-├── booking_history.php
-├── facilities.php
-├── leave_review.php
+├── explore.php
+├── wisata.php
+├── wisata_kota.php
+├── wisatamalang.php
+├── paket.php
+├── batu.php
+├── destinasi_detail.php
+├── pesan.php
+├── pembayaran.php
+├── riwayat.php
+├── profil.php
 │
 ├── admin/
-│   ├── admin_manage_fasilitas.php
-│   ├── index.php
-│   ├── manage_bookings.php
-│   ├── manage_fasilitas.php
-│   ├── manage_reviews.php
-│   ├── manage_room_types.php
-│   ├── manage_rooms.php
-│   ├── manage_users.php
+│   ├── dashboard.php
+│   ├── analytics.php
+│   ├── wisata_list.php
+│   ├── tambah_wisata.php
+│   ├── edit_wisata.php
+│   ├── delete_wisata.php
+│   ├── hotel_list.php
+│   ├── kota_list.php
+│   ├── transportasi_list.php
+│   ├── user_list.php
+│   ├── verify_payment.php
+│   └── logout.php
+│
+├── destinasi/
+│   ├── bromo.php
+│   ├── kawahijen.php
+│   ├── museumangkut.php
+│   ├── pantaicamplong.php
+│   ├── tumpaksewu.php
+│   └── wbl.php
 │
 ├── config/
-│   ├── database.php
+│   └── koneksi.php
 │
 ├── core/
-│   ├── auth.php
-│   ├── booking_logic.php
+│   └── auth_check.php
 │
 ├── actions/
-│   ├── action_login.php
-│   ├── action_register.php
-│   ├── action_booking.php
-│   ├── action_submit_review.php
-│   ├── action_submit_payment_details.php
-│   ├── action_update_profile.php
-│   ├── action_upload_bukti.php
-│   ├── action_update_profile_photo.php
+│   ├── proses_pesan_bromo.php
+│   ├── upload_bukti_bromo.php
+│   └── filter_handler.php
 │
 ├── includes/
 │   ├── header.php
 │   ├── footer.php
-│   ├── admin_header.php
-│   ├── admin_footer.php
-│   ├── admin_sidebar.php
+│   ├── navbar.php
+│   └── sidebar_admin.php
 │
 └── assets/
     ├── css/
     │   ├── style.css
-    │   ├── admin_style.css
-    ├── images/
-    │   ├── profile/
-    │   ├── rooms/
-    │   ├── image.png
+    │   ├── admin.css
+    ├── img/
+    │   ├── destinasi/
+    │   └── banner/
     └── uploads/
-        ├── payment.png
+        ├── bukti/
+        └── bukti_bromo/
